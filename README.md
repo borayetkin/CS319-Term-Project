@@ -1,7 +1,7 @@
 # CS319-Term-Project
 
 ## 1. Project Overview
-This project is a comprehensive web-based system designed to manage campus tours for high schools visiting Bilkent University. It supports the full lifecycle of tour management, including tour applications, guide assignment, prioritization, and performance evaluations. Additionally, it manages work hour logging (puantaj) for guides, collects feedback, and handles various event types like university fairs and summer tours.
+This project is a comprehensive web-based system designed to manage Bilkent University Promotion Department and its various activities. It supports the full lifecycle of tour management, including tour applications, guide assignment, prioritization, and performance evaluations. Additionally, it manages work hour logging (puantaj) for guides, collects feedback, and handles various event types like university fairs and summer tours.
 
 **Tech Stack**: MERN (MongoDB, Express.js, React.js, Node.js).
 
