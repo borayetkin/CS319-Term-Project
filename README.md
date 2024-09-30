@@ -1,7 +1,7 @@
 # CS319-Term-Project
 
 ## 1. Project Overview
-This project is a comprehensive web-based system designed to manage Bilkent University Promotion Department and its various activities. It supports the full lifecycle of tour management, including tour applications, guide assignment, prioritization, and performance evaluations. Additionally, it manages work hour logging (puantaj) for guides, collects feedback, and handles various event types like university fairs and summer tours.
+This project is a comprehensive web-based system designed to manage Bilkent University Tanıtım Ofisi and its various activities. It supports the full lifecycle of tour management, including tour applications, guide assignment, prioritization. Additionally, it manages work hour logging for guides, collects feedback, and handles various event types like university fairs and summer tours.
 
 **Tech Stack**: MERN (MongoDB, Express.js, React.js, Node.js).
 
@@ -28,9 +28,8 @@ This project is a comprehensive web-based system designed to manage Bilkent Univ
 - **Upon application** schools are assigned a “most probable” approval date, which may be adjusted based on priority shifts.
 
 ### 2.3 Guide Management
-- **Guide Availability**:Guides can upload their course schedules as screenshots or manually select the days and hours they are available. The system tracks guide attributes such as the high school they graduated from and their academic major, which can be used to match them to appropriate tours.
-- **Guide Assignment**: Guides can claim tours or be manually assigned by coordinators. Advisors and coordinators can view guide schedules to assign tours accordingly. Intern guides (trainees) are automatically assigned by the system to gain experience.
-- **Guide Performance Review**: High schools can review guides after each tour. Performance is evaluated based on feedback.
+- **Guide Availability**:Guides can upload their course schedules or manually select the days and hours they are available. The system stores guide informations such as their academic major, which can be used to match them to appropriate tours.
+- **Guide Assignment**: Guides are manually assigned by coordinators. Advisors and coordinators can view guide schedules to assign tours accordingly. Intern guides (trainees) are automatically assigned by the system to gain experience.
 
 ### 2.4 Puantaj (Work Hours Logging)
 - Guides log their work hours for each tour, and coordinators access monthly reports for payroll processing.Puantaj data is refreshed monthly, and reports are generated for payroll processing. This data is only accessible to coordinators and higher-level users.
@@ -48,16 +47,17 @@ This project is a comprehensive web-based system designed to manage Bilkent Univ
 - **Data & Analysis Dashboard:** A centralized dashboard where coordinators can access all tour-related data, including high school success rates, percentage of Bilkent student shares, advisor and guide ratings, and more.
 
 ### 2.8 Advisor Functions
-- **Conference Room Arrangements**: Schedule and book rooms for tours and assign guides based on availability and performance.
 - Advisors assign guides to tours based on availability, performance reviews, and qualifications. They can only see tours and guides for their assigned days.
 - Advisors can use custom filters to search for guides based on their academic major, school of graduation, and experience level (trainee, junior, senior).
+  
 ### 2.9 Event ID and Feedback
 - Applicant schools receive an event ID to check tour status and provide feedback, which is used to evaluate guide performance.
 - Event page also contains important information when visiting Bilkent: roads, rules etc.
 
-### 2.10 Excel Automation
-- Automates data transfer between Excel and the system’s database, simplifying data entry for schools and guides.
-- High schools can upload participant information in Excel format, simplifying data entry for large groups.
+### 2.10 Table Automation
+- Automates data transfer between the tables and the system’s database, simplifying data entry for schools and guides.
+- High schools can upload participant information in table format, simplifying data entry for large groups.
+  
 ## 3. Project Structure
 
 ### Backend (Node.js + Express)
@@ -72,15 +72,13 @@ This project is a comprehensive web-based system designed to manage Bilkent Univ
 ## 4. Corner Cases
 1. Duplicate Applications
 2. Overbooked Days
-3. Guide No-Shows
+3. Guide Absence
 4. Tour Cancellations/Rescheduling
 5. Data Integrity
 6. Guide Assignment Conflicts
-7. Performance-Based Assignment
 
 ## 5. Advanced Features
-1. Excel Automation
+1. Table Automation
 2. Custom Filters for Advisors
 3. Pre-registration for Guides
 4. Automated Notifications
-5. Guide Performance Review
