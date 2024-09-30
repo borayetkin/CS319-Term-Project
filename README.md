@@ -21,7 +21,7 @@ This project is a comprehensive web-based system designed to manage Bilkent Univ
 - **Tour Application**: High schools apply for tours by selecting preferred dates, entering student counts, and specifying special needs.
 - **A calendar interface** is provided, showing session availability and busyness.
 - **Tour Prioritization**: The system prioritizes tours based on:
-	-	Top-tier / Loyal / New High Schools
+	-	Top-tier High Schools
 	-	Out-of-Town High Schools
 	-	First-Come, First-Served for other applications.
 - **Appointment Algorithm**: High schools select available sessions from a calendar. If a day is marked busy, they can still apply, but approval is not guaranteed. Schools can apply 2+ weeks in advance.
