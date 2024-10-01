@@ -12,6 +12,7 @@ This project is a comprehensive web-based system designed to manage Bilkent Univ
 - **Coordinator**: Manages tours, assigns guides, and accesses reports.
 - **Advisor**: Schedules guides for their assigned days.
 - **Guide**: Student guides can see and claim available tours.
+- **Student**: Students can apply for individually guided tours. Students can browse tour availability and request personalized tours.
 - **Trainee**: Beginner guides who assist in tours to gain experience.
 
 - **Authentication**: JWT-based authentication for secure login with role-based access control. Different levels of access are provided based on user roles (e.g., coordinators can access all data, guides only see their assigned tours).
