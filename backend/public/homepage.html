@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <a href="#">Bilkent Tours</a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="homepage.html">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Tours</a></li>
+          <li><a id="auth-link">Login</a></li>
+          <!-- This will dynamically change to "Logout" if logged in -->
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="welcome-section">
+        <h1>Welcome to Bilkent Tours!</h1>
+        <p>Book and explore guided tours for high schools.</p>
+        <a href="tours.html" class="cta-button">Book a Tour</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Bilkent Tours. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // Check if the user is logged in by looking for the token in localStorage
+      const token = localStorage.getItem("authToken");
+      const authLink = document.getElementById("auth-link");
+
+      if (token) {
+        // User is logged in, show "Logout"
+        authLink.textContent = "Logout";
+        authLink.href = "#"; // Prevent navigating away
+        authLink.addEventListener("click", function () {
+          // Remove the token from localStorage and redirect to login page
+          localStorage.removeItem("authToken");
+          window.location.href = "login.html";
+        });
+      } else {
+        // User is not logged in, show "Login"
+        authLink.textContent = "Login";
+        authLink.href = "login.html"; // Redirect to login page
+      }
+    </script>
+  </body>
+</html>
