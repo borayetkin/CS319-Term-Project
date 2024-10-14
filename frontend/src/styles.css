@@ -23,7 +23,7 @@ body {
 /* Navbar Styling */
 .navbar {
   background-color: #333;
-  padding: 20px;
+  padding: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,7 +42,7 @@ body {
 }
 
 .navbar .nav-links li {
-  margin: 0 7px; /* Reduce space between nav items */
+  margin: 0 6px; /* Reduce space between nav items */
   height: 37px;
 }
 
@@ -64,6 +64,7 @@ body {
 .navbar .nav-links a:hover {
   background-color: #555;
   border-radius: 4px;
+  transition: background-color 0.1s ease;
 }
 
 /* Logout Button Styling (aligned with nav items, no background) */
@@ -80,11 +81,12 @@ body {
 .navbar .nav-links .logout-button:hover {
   background-color: #555;
   border-radius: 4px;
+  transition: background-color 0.1s ease;
 }
 
 /* Login Button Styling (green button) */
 .navbar .nav-links .auth-button {
-  background-color: #4caf50;
+  background-color: #3a913d;
   color: white;
   border: none;
   cursor: pointer;
@@ -94,7 +96,7 @@ body {
 
 .navbar .nav-links .auth-button:hover {
   background-color: #297b2d;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.1s ease;
 }
 
 /* Main content styling */
@@ -123,7 +125,7 @@ main {
 
 .cta-button {
   text-decoration: none;
-  background-color: #4caf50;
+  background-color: #3a913d;
   color: white;
   padding: 10px 20px;
   border-radius: 4px;
@@ -131,7 +133,8 @@ main {
 }
 
 .cta-button:hover {
-  background-color: #45a049;
+  background-color: #41bf48;
+  transition: background-color 0.1s ease;
 }
 
 /* Footer Styling */
@@ -181,7 +184,7 @@ button {
 }
 
 button {
-  background-color: #4caf50;
+  background-color: #3a913d;
   color: white;
   cursor: pointer;
   border: none;
@@ -190,4 +193,5 @@ button {
 
 button:hover {
   background-color: #45a049;
+  transition: background-color 0.1s ease;
 }

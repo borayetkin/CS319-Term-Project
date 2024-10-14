@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -29,23 +28,28 @@ const Navbar = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/about">About</Link>
-        </li>
-        <li>
           <Link to="/tours">Tours</Link>
         </li>
+
         {isLoggedIn ? (
-          <li>
-            <button className="logout-button" onClick={handleLogout}>
-              Logout
-            </button>
-          </li>
+          <>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </>
         ) : (
-          <li>
-            <Link className="auth-button" to="/login">
-              Login
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link className="auth-button" to="/login">
+                Login
+              </Link>
+            </li>
+          </>
         )}
       </ul>
     </nav>

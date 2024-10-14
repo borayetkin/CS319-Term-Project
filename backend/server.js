@@ -27,6 +27,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./src/config/db");
+const tourRoutes = require("./src/routes/tourRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const path = require("path");
 const cors = require("cors"); // Import CORS
@@ -55,6 +56,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tours", tourRoutes); // All routes start with /api/tours
 
 // Start the server
 const PORT = process.env.PORT || 3000;
