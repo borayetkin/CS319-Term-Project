@@ -31,9 +31,8 @@ exports.registerUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Respond with token and redirect URL
-    //res.status(201).json({ token, redirectUrl: "/homepage.html" }); // Redirect to homepage after successful signup
-    res.redirect("/homepage.html"); // Server-side redirect
+    // Respond with token and success message (for frontend to handle redirection)
+    res.status(201).json({ token, message: "User registered successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -66,9 +65,8 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Respond with token and redirect URL
-    //res.status(200).json({ token, redirectUrl: "/homepage.html" }); // Redirect to homepage after successful login
-    res.redirect("/homepage.html"); // Server-side redirect
+    // Respond with token and success message
+    res.status(200).json({ token, message: "Login successful" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
