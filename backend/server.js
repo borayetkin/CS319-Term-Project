@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/tours", tourRoutes); // All routes start with /api/tours
+app.use("/api/tours", tourRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

@@ -7,11 +7,13 @@ import {
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Profile from "./pages/Profile"; // Import Profile
+import Profile from "./pages/Profile";
 import TourApplication from "./pages/TourApplication";
+import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import PrivateRoute from "./components/PrivateRoute"; // Import PrivateRoute
+import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute"; // Import AdminRoute
 
 function App() {
   return (
@@ -30,6 +32,16 @@ function App() {
             <PrivateRoute>
               <Profile />
             </PrivateRoute>
+          }
+        />
+
+        {/* Protected Admin Route */}
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
           }
         />
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Import Link for navigation
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ const Login = () => {
 
   return (
     <div className="container">
-      <h1>Login</h1>
+      <h1>Log in</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email:</label>
@@ -63,8 +64,21 @@ const Login = () => {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit">Log in</button>
       </form>
+
+      {/* Signup link section */}
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <p>
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            style={{ color: "#4caf50", textDecoration: "none" }}
+          >
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

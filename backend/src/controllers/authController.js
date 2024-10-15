@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // Register a new user
-exports.registerUser = async (req, res) => {
+exports.signupUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   // Check if all fields are provided
@@ -20,8 +20,12 @@ exports.registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
-    user = new User({ name, email, password: hashedPassword, role });
+    // Conditionally assign the "admin" role (only if email matches or some criteria is met)
+    const isAdminEmail = email === "admin@gmail.com"; // Change this to the desired admin email
+    const userRole = isAdminEmail ? "admin" : role; // Default to "admin" if email matches
+
+    // Create new user with conditional role
+    user = new User({ name, email, password: hashedPassword, role: userRole });
     await user.save();
 
     // Generate JWT
@@ -31,7 +35,6 @@ exports.registerUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Respond with token and success message (for frontend to handle redirection)
     res.status(201).json({ token, message: "User registered successfully" });
   } catch (err) {
     console.error(err);
@@ -102,6 +105,17 @@ exports.updateProfile = async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: "Profile updated successfully", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Fetch all users (Admin only)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password"); // Exclude passwords from the returned users
+    res.json(users);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
