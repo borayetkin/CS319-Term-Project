@@ -1,0 +1,72 @@
+/* General Reset and Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Main content styling */
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Centering content on the page */
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height to center vertically */
+}
+
+/* Welcome section styling */
+.welcome-section {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.welcome-section h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.welcome-section p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* CTA button styling */
+.cta-button {
+  text-decoration: none;
+  background-color: #3a913d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.cta-button:hover {
+  background-color: #41bf48;
+  transition: background-color 0.1s ease;
+}
+
+/* Footer Styling */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  position: relative;
+  bottom: 0;
+}

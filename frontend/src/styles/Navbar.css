@@ -1,0 +1,69 @@
+/* Navbar Styling */
+.navbar {
+  background-color: #333;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .logo a {
+  color: white;
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.navbar .nav-links {
+  list-style-type: none;
+  display: flex;
+  align-items: center; /* Ensure all nav items are vertically aligned */
+}
+
+.navbar .nav-links li {
+  margin: 0 6px; /* Reduce space between nav items */
+  height: 37px;
+}
+
+.navbar .nav-links a,
+.navbar .nav-links button {
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar .nav-links a {
+  color: white;
+}
+
+.navbar .nav-links a:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.navbar .logout-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.navbar .logout-button:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.navbar .auth-button {
+  background-color: #3a913d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navbar .auth-button:hover {
+  background-color: #297b2d;
+}

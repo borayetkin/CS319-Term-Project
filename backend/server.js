@@ -1,8 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./src/config/db");
-const tourRoutes = require("./src/routes/tourRoutes");
+const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
+const tourRoutes = require("./src/routes/tourRoutes");
+
 const path = require("path");
 const cors = require("cors"); // Import CORS
 
@@ -29,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
+app.use("/api", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);
 

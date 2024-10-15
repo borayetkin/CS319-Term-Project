@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import "../styles/Home.css";
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
