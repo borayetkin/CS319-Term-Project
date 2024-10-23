@@ -8,65 +8,107 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Main content styling */
-main {
+/* Styling for the home main container */
+.home-main {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 0;
 }
 
-/* Centering content on the page */
-.centered-container {
+/* Welcome section styling with a background image */
+.home-welcome-section {
+  position: relative;
+  text-align: left; /* Align text to the left inside the box */
+  background: url("../public/images/bilkent3.jpeg") no-repeat center center;
+  background-size: cover;
+  color: white;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
   display: flex;
+  justify-content: flex-end; /* Align the container to the right */
+  align-items: center; /* Center vertically */
+  padding: 0;
+  padding-top: 60px; /* Add padding equal to the height of the navbar */
+  z-index: 1;
+}
+
+.home-welcome-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(
+    0,
+    0,
+    0,
+    0.2
+  ); /* Semi-transparent black to darken the image */
+  z-index: -1; /* Place it behind the content */
+}
+
+/* Text container with dark background */
+.home-text-container {
+  background: rgba(0, 0, 0, 0.65); /* Semi-transparent black background */
+  padding: 30px;
+  max-width: 400px;
+  height: 500px;
+  margin: 50px; /* Add some margin for spacing */
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  height: 100vh; /* Full viewport height to center vertically */
+  z-index: 2;
+  border-radius: 8px;
 }
 
-/* Welcome section styling */
-.welcome-section {
-  text-align: center;
-  padding: 50px 20px;
+.home-text-container h1,
+.home-text-container p {
+  position: relative;
+  z-index: 2;
+  color: white; /* Set text color to white */
+  text-align: left; /* Align the paragraph text to the left */
 }
-
-.welcome-section h1 {
+.home-text-container h1 {
   font-size: 36px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
-.welcome-section p {
+.home-text-container p {
   font-size: 18px;
-  margin-bottom: 20px;
+  margin-bottom: 35px;
 }
 
 /* CTA button styling */
-.cta-button {
+.home-cta-button {
   text-decoration: none;
-  background-color: #3a913d;
+  background-color: #2b68cb;
   color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 18px;
-}
-
-.cta-button:hover {
-  background-color: #41bf48;
-  transition: background-color 0.1s ease;
-}
-
-/* Footer Styling */
-footer {
-  background-color: #333;
-  color: white;
+  padding: 10px 25px; /* Smaller padding to make the button smaller */
   text-align: center;
-  padding: 20px;
-  width: 100%;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 2;
   position: relative;
-  bottom: 0;
+  margin-top: 10px;
+}
+
+.home-cta-button:hover {
+  background-color: #1c4a93;
+  transform: translateY(-0.1px);
+}
+
+/* Adjust padding for main content to avoid footer overlap */
+.home-main {
+  padding-bottom: 60px; /* Height of the footer */
 }

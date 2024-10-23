@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // Import jwt-decode to extract token info
-import "../styles/Navbar.css";
+import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
+import "../styles/Navbar.css"; // Ensure this import is correct
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,7 +44,6 @@ const Navbar = () => {
             <li>
               <Link to="/profile">Profile</Link>
             </li>
-            {/* Conditionally render the Admin Dashboard link if the user is an admin */}
             {isAdmin && (
               <li>
                 <Link to="/admin/users">Admin Dashboard</Link>

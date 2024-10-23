@@ -49,12 +49,18 @@ const Home = () => {
         </div>
       ) : (
         <div>
-          <section className="welcome-section">
-            <h1>Welcome to Bilkent Tours!</h1>
-            <p>Book and explore guided tours for high schools.</p>
-            <Link to="/tours" className="cta-button">
-              Book a Tour
-            </Link>
+          <section className="home-welcome-section">
+            <div className="home-text-container">
+              <h1>Bilkent Üniversitesi Kampüs Ziyaretleri</h1>
+              <p>
+                Kampüs ziyaretiniz süresince üniversitenin eğitim programları
+                hakkında rehber öğrencilerimizden bilgi alabilecek, kampüsün
+                güzelliklerini ve olanaklarını yerinde görebileceksiniz.
+              </p>
+              <Link to="/tours" className="home-cta-button">
+                Rezervasyon Yap
+              </Link>
+            </div>
           </section>
         </div>
       )}
