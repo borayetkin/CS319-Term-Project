@@ -5,25 +5,6 @@ footer {
   text-align: center;
   padding: 20px;
   width: 100%;
-  position: relative; /* Changed from fixed to relative */
+  position: relative;
   bottom: 0;
-}
-
-/* Main content should fill the remaining height */
-html,
-body {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1; /* Makes the main content take up the remaining space */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0; /* Adding some padding to give space around content */
 }
