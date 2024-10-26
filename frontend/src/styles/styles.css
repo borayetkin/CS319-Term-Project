@@ -1,4 +1,5 @@
-* General Reset and Global Styles */ * {
+/* General Reset and Global Styles */
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -26,7 +27,6 @@ main {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  padding-top: 80px; /* Increased padding to accommodate the navbar height */
 }
 
 /* Form container styling */
@@ -64,15 +64,3 @@ button {
   border-radius: 4px;
 }
 
-button {
-  background-color: #3a913d;
-  color: white;
-  cursor: pointer;
-  border: none;
-  font-size: 18px;
-}
-
-button:hover {
-  background-color: #45a049;
-  transition: background-color 0.1s ease;
-}

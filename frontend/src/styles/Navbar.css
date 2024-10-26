@@ -1,13 +1,10 @@
 /* Navbar Styling */
 .navbar {
-  background-color: #2d2a62;
+  background-color: #333;
   padding: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed; /* Fixed position to keep navbar at the top */
-  width: 100%;
-  z-index: 1000; /* High z-index to stay above content */
 }
 
 .navbar .logo a {
@@ -19,11 +16,11 @@
 .navbar .nav-links {
   list-style-type: none;
   display: flex;
-  align-items: center;
+  align-items: center; /* Ensure all nav items are vertically aligned */
 }
 
 .navbar .nav-links li {
-  margin: 0 6px;
+  margin: 0 6px; /* Reduce space between nav items */
   height: 37px;
 }
 
@@ -42,7 +39,7 @@
 }
 
 .navbar .nav-links a:hover {
-  background-color: #403d85;
+  background-color: #555;
   border-radius: 4px;
 }
 
@@ -54,12 +51,12 @@
 }
 
 .navbar .logout-button:hover {
-  background-color: #403d85;
+  background-color: #555;
   border-radius: 4px;
 }
 
 .navbar .auth-button {
-  background-color: #6e6aaf;
+  background-color: #3a913d;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -68,5 +65,5 @@
 }
 
 .navbar .auth-button:hover {
-  background-color: #5b5794;
+  background-color: #297b2d;
 }
