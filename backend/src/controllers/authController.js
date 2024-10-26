@@ -52,14 +52,14 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
-    //Check if user exists
+    // Check if user exists
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Sorry, your email addres is not in the system." });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Wrong password" });
+      return res.status(400).json({ message: "Invalid credentials" });
 
     // Generate JWT
     const token = jwt.sign(
