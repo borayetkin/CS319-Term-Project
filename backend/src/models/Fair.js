@@ -1,0 +1,16 @@
+const Event = require('./Event');
+const fairSchema = new mongoose.Schema({
+    location : {
+        type: String,
+        required : true
+      },
+  });
+
+fairSchema.methods.setLocation = function (location) {
+    this.location = location
+    return this.save()
+}
+
+
+const Fair = Event.discriminator("Fair", fairSchema);
+module.exports = Fair;

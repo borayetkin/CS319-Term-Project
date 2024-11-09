@@ -1,19 +1,20 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
+const UserModel = require("../models/User");
+const bcrypt = require("bcryptjs"); 
 const jwt = require("jsonwebtoken");
+const { saveUser, getUser } = require("./UserController");
 
 // Register a new user
 exports.signupUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, birthdate, password, role } = req.body;
 
   // Check if all fields are provided
-  if (!name || !email || !password || !role) {
+  if (!name || !email || !password || !role || !birthdate) {
     return res.status(400).json({ message: "Please provide all fields" });
   }
 
   try {
     // Check if user already exists
-    let user = await User.findOne({ email });
+    let user = await UserModel.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
     // Hash password
@@ -24,17 +25,8 @@ exports.signupUser = async (req, res) => {
     const isAdminEmail = email === "admin@gmail.com"; // Change this to the desired admin email
     const userRole = isAdminEmail ? "admin" : role; // Default to "admin" if email matches
 
-    // Create new user with conditional role
-    user = new User({ name, email, password: hashedPassword, role: userRole });
-    await user.save();
-
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
+    token = await saveUser({ name, email, password: hashedPassword, role: userRole, birthdate : birthdate })
+    
     res.status(201).json({ token, message: "User registered successfully" });
   } catch (err) {
     console.error(err);
@@ -53,7 +45,7 @@ exports.loginUser = async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     // Compare passwords
@@ -79,7 +71,7 @@ exports.loginUser = async (req, res) => {
 // Get the current user's profile
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password"); // Exclude password
+    const user = await UserModel.findById(req.user.id).select("-password"); // Exclude password
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -94,7 +86,7 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   const { name, email } = req.body;
   try {
-    let user = await User.findById(req.user.id);
+    let user = await UserModel.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
