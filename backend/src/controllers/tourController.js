@@ -1,5 +1,7 @@
 // tourController.js
+const SchoolTour = require("../models/SchoolTour");
 const Tour = require("../models/Tour");
+const Applicant = require("../models/Applicant");
 
 // Create a new tour
 exports.createTour = async (req, res) => {
@@ -16,6 +18,37 @@ exports.createTour = async (req, res) => {
     });
     await newTour.save();
     res.status(201).json(newTour);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+// Create a new applicant and connect to the tour
+
+exports.createApplicantAndTour = async (req, res) => {
+  const { schoolName, contactPerson, email, visitDate, studentCount,phoneNumber } = req.body;
+  
+  
+  try {
+    const newTour = new SchoolTour({
+      schoolName,
+      contactPerson,
+      email,
+      visitDate,
+      studentCount,
+    });
+    await newTour.save();
+    
+    console.log(newTour._id);
+    const newApplicant = new Applicant({
+      name: schoolName,
+      email: email,
+      event: newTour._id,
+      phoneNumber: phoneNumber
+    });
+    await newApplicant.save();
+
+    res.status(201).json({ tour: newTour, applicant: newApplicant });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
