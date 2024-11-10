@@ -1,4 +1,6 @@
+const { default: mongoose } = require('mongoose');
 const Event = require('./Event');
+
 const fairSchema = new mongoose.Schema({
     location : {
         type: String,

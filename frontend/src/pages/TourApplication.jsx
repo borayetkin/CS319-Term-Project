@@ -36,8 +36,8 @@ const TourApplication = () => {
     const { tourType, ...tourData } = formData;
     const endpoint =
       tourType === "school"
-        ? "/api/tours/school" // Use createSchoolTour route
-        : "/api/tours/individual"; // Use createIndividualTour route
+        ? "/api/events/schooltours" // Use createSchoolTour route
+        : "/api/events/individualtours"; // Use createIndividualTour route
 
     try {
       const response = await fetch(`http://localhost:3000${endpoint}`, {

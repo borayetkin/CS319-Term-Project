@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 exports.saveUser = async ({ name, email, password, role, birthdate }) =>{
     // Create new user with conditional role
-    user = new User({ name, email, password: password, role: role, birthdate : birthdate });
+    const user = new User({ name, email, password, role, birthdate });
     await user.save();
 
     // Generate JWT
@@ -14,7 +14,7 @@ exports.saveUser = async ({ name, email, password, role, birthdate }) =>{
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    return token
+    return token;
 }
 exports.getAllUsers = async (req, res) => {
   try {
