@@ -7,7 +7,6 @@ const Home = () => {
   const [tours, setTours] = useState([]);
   const [sortOption, setSortOption] = useState("visitDate"); // State for sorting option
 
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -44,13 +43,13 @@ const Home = () => {
     });
   };
 
-    // Handle sorting option change
-    const handleSortChange = (e) => {
-      setSortOption(e.target.value);
-    };
-  
-    // Sorted tours based on the selected option
-    const sortedTours = sortTours(tours, sortOption);
+  // Handle sorting option change
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  // Sorted tours based on the selected option
+  const sortedTours = sortTours(tours, sortOption);
 
   return (
     <div>
@@ -70,37 +69,42 @@ const Home = () => {
 
           {tours.length > 0 ? (
             <table className="tour-table">
-            <thead>
-              <tr>
-                <th>School Name</th>
-                <th>Contact Person</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Number of Students</th>
-                <th>Contact</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-    <tbody>
-    {sortedTours.map((tour) => (
-        <tr key={tour._id}>
-          <td>{tour.schoolName}</td>
-          <td>{tour.contactPerson}</td>
-          <td>{new Date(tour.visitDate).toLocaleDateString()}</td> {/* Format date */}
-          <td>{new Date(tour.visitDate).toLocaleTimeString()}</td> {/* Format time */}
-          <td>{tour.studentCount}</td>
-          <td>{tour.email}</td>
-          <td>{tour.status}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-        ) : (
-        <p className="no-tours-message">No tour applications found.</p>
-        )}
-        
+              <thead>
+                <tr>
+                  <th>School Name</th>
+                  <th>Contact Person</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Number of Students</th>
+                  <th>Contact</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedTours.map((tour) => (
+                  <tr key={tour._id}>
+                    <td>{tour.schoolName}</td>
+                    <td>{tour.contactPerson}</td>
+                    <td>
+                      {new Date(tour.visitDate).toLocaleDateString()}
+                    </td>{" "}
+                    {/* Format date */}
+                    <td>
+                      {new Date(tour.visitDate).toLocaleTimeString()}
+                    </td>{" "}
+                    {/* Format time */}
+                    <td>{tour.studentCount}</td>
+                    <td>{tour.email}</td>
+                    <td>{tour.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="no-tours-message">No tour applications found.</p>
+          )}
         </div>
-        )  : (
+      ) : (
         <div>
           <section className="home-welcome-section">
             <div className="home-text-container">

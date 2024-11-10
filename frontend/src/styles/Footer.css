@@ -1,30 +1,12 @@
 /* Footer Styling */
 footer {
+  bottom: 0;
   background-color: #333;
   color: white;
   text-align: center;
-  padding: 20px;
-  margin-top: auto;
   padding: 10px 0;
-  text-align: center;
   width: 100%;
-}
-
-/* Main content should fill the remaining height */
-html,
-body {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1; /* Makes the main content take up the remaining space */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0; /* Adding some padding to give space around content */
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
