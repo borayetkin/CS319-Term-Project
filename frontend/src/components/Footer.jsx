@@ -5,7 +5,7 @@ import "../styles/Footer.css";
 const Footer = () => {
   return (
     <footer>
-      <p>&copy; 2024 Bilkent Tours. All rights reserved.</p>
+      <p>&copy; 2024 Atom. All rights reserved.</p>
     </footer>
   );
 };
