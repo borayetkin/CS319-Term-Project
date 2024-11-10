@@ -17,3 +17,4 @@ router.delete("/admin/users/:id", adminAuth, deleteUser);
 router.put("/admin/users/:id/role", adminAuth, updateUserRole);
 
 module.exports = router;
+ 

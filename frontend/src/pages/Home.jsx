@@ -10,21 +10,30 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsLoggedIn(true);
+
+
       fetchTourApplications(token); // Fetch tours if logged in
+
     }
   }, []);
 
   // Fetch tour applications from the backend
   const fetchTourApplications = async (token) => {
+
     try {
       const response = await fetch("http://localhost:3000/api/tours", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      if (response.status === 401) {
+        // Unauthorized: clear local storage
+        setIsLoggedIn(false);
+        localStorage.clear();
+      }else{
+      setIsLoggedIn(true);
       const data = await response.json();
-      setTours(data);
+      setTours(data);}
     } catch (error) {
       console.error("Error fetching tours:", error);
     }
