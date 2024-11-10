@@ -1,0 +1,102 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #f8f9fa; /* Slightly off-white background */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softer shadow */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1c1c1e;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  border: 2px solid transparent;
+  padding: 6px 12px;
+  border-radius: 12px; /* Rounded corners */
+  transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+.logo a::before {
+  content: '◐';
+  font-size: 1.5rem;
+  margin-right: 8px;
+  color: #1c1c1e;
+  transition: all 0.5s ease-in-out;
+
+}
+
+.logo a:hover {
+  font-size: 1.5rem;
+  color: linear-gradient(120deg, #2b43e2, #bb1d96, #8a2be2);
+  border-radius: 24px;
+  background-color: rgba(0, 122, 255, 0); /* Remove background color */
+  box-shadow: 0 2px 24px rgba(29, 74, 187, 0.5); /* Add shadow */
+ 
+}
+
+/* Navbar links styling */
+.nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 1.5rem;
+}
+
+.nav-links a {
+  font-size: 1rem;
+  color: #1c1c1e;
+  text-decoration: none;
+  padding: 12px 12px;
+  border-radius: 12px; /* Rounded corners */
+  position: relative; /* Needed for pseudo-elements */
+  transition: all 0.3s ease-in-out; /* Smooth transition */
+  background-size: 200% 200%; /* Set for gradient animations */
+}
+
+
+.nav-links a:hover {
+  color: #fff; /* Change text to white */
+  border-radius: 24px;
+  padding: 12px 12px;
+  background-color: rgba(0, 122, 255, 0); /* Remove background color */
+  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5); /* Add shadow */
+  transform: scale(1.0); /* Slight scale up on hover */
+  background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
+}
+
+.nav-links  .logout-button {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin-left: 1.5rem;
+
+  font-size: 1rem;
+  color: #1c1c1e;
+  text-decoration: none;
+  padding: 12px 12px;
+  position: relative; /* Needed for pseudo-elements */
+  border-radius: 12px; /* Rounded corners */
+  transition: all 0.3s ease-in-out; /* Smooth transition */
+  background-size: 200% 200%; /* Set for gradient animations */
+}
+
+.nav-links  .logout-button:hover {
+  color: #fff; /* Change text to white */
+  border-radius: 24px;
+  padding: 12px 12px;
+  background-color: rgba(0, 122, 255, 0); /* Remove background color */
+  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5); /* Add shadow */
+  transform: scale(1.0); /* Slight scale up on hover */
+  background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
+}
+
+
+

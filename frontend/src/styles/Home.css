@@ -1,0 +1,185 @@
+/* General Reset and Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Styling for the home main container */
+.home-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+/* Welcome section styling with a background image */
+.home-welcome-section {
+  position: relative;
+  text-align: left; /* Align text to the left inside the box */
+  background: url("../public/images/bilkent3.jpeg") no-repeat center center;
+  background-size: cover;
+  color: white;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  justify-content: flex-end; /* Align the container to the right */
+  align-items: center; /* Center vertically */
+  padding: 0;
+  padding-top: 60px; /* Add padding equal to the height of the navbar */
+  z-index: 1;
+}
+
+.home-welcome-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(
+    0,
+    0,
+    0,
+    0.2
+  ); /* Semi-transparent black to darken the image */
+  z-index: -1; /* Place it behind the content */
+}
+/* Tour Styling */
+
+.tour-applications {
+  padding: 2rem;
+  background-color: #fff;
+  max-width: 1200px;
+  margin: 2rem auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tour list layout */
+.tour-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Tour card styling */
+.tour-item {
+  width: 100%;
+}
+
+thead {
+  background-color: #911515;
+  color: white;
+}
+
+.tour-card {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Aligning content inside the card */
+.tour-info {
+  display: flex;
+  flex-wrap: wrap; /* Ensures the elements wrap if the screen is too small */
+  gap: 1rem; /* Adds some space between the items */
+}
+
+.tour-info p {
+  margin: 0;
+  flex: 1; /* Distribute the available space evenly */
+  white-space: nowrap; /* Prevents the text from wrapping to the next line */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds ellipsis (...) if text overflows */
+}
+
+.tour-school-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.tour-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.tour-details p {
+  margin: 0;
+  flex: 1 1 45%;
+}
+
+/* Text container with dark background */
+.home-text-container {
+  background: rgba(0, 0, 0, 0.65); /* Semi-transparent black background */
+  padding: 30px;
+  max-width: 400px;
+  height: 500px;
+  margin: 50px; /* Add some margin for spacing */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+  border-radius: 8px;
+}
+
+.home-text-container h1,
+.home-text-container p {
+  position: relative;
+  z-index: 2;
+  color: white; /* Set text color to white */
+  text-align: left; /* Align the paragraph text to the left */
+}
+.home-text-container h1 {
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+
+.home-text-container p {
+  font-size: 18px;
+  margin-bottom: 35px;
+}
+
+/* CTA button styling */
+.home-cta-button {
+  text-decoration: none;
+  background-color: #2b68cb;
+  color: white;
+  padding: 10px 25px; /* Smaller padding to make the button smaller */
+  text-align: center;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 2;
+  position: relative;
+  margin-top: 10px;
+}
+
+.home-cta-button:hover {
+  background-color: #1c4a93;
+  transform: translateY(-0.1px);
+}
+
+/* Adjust padding for main content to avoid footer overlap */
+.home-main {
+  padding-bottom: 60px; /* Height of the footer */
+}
