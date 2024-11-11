@@ -1,23 +1,18 @@
 const Applicant = require('../models/Applicant');
-
 // Create a new applicant
 exports.createApplicant = async (req, res) => {
     try {
         const { name, email, phone } = req.body;
-
         // Validate input fields
         if (!name || !email || !phone) {
             return res.status(400).send("All fields are required");
         }
-
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).send("Invalid email format");
         }
-
         // Additional validation can be added here (e.g., phone number format)
-
         const applicant = new Applicant(req.body);
         await applicant.save();
         res.status(201).send(applicant);
@@ -26,7 +21,6 @@ exports.createApplicant = async (req, res) => {
         res.status(400).send("Server error");
     }
 };
-
 // Get all applicants
 exports.getAllApplicants = async (req, res) => {
   try {
@@ -34,7 +28,6 @@ exports.getAllApplicants = async (req, res) => {
     res.status(200).send(applicants);
   } catch (error) {
     console.error(error);
-
     res.status(500).send("Server error");
   }
 };
@@ -45,12 +38,10 @@ exports.addEventToApplicant = async (req, res) => {
         if (!applicant) {
             return res.status(404).send("Applicant not found");
         }
-
         const { event } = req.body;
         if (!event) {
             return res.status(400).send("Event is required");
         }
-
         await applicant.saveEvent(event);
         res.status(200).send(applicant);
     } catch (error) {
@@ -58,7 +49,6 @@ exports.addEventToApplicant = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
-
 exports.getApplicantById = async (req, res) => {
   try {
     const applicant = await Applicant.findById(req.params.id);
@@ -72,7 +62,6 @@ exports.getApplicantById = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 // Update an applicant by ID
 exports.updateApplicant = async (req, res) => {
   try {
@@ -83,11 +72,9 @@ exports.updateApplicant = async (req, res) => {
     res.status(200).send(applicant);
   } catch (error) {
     console.error(error)
-
     res.status(400).send("Server error");
   }
 };
-
 // Delete an applicant by ID
 exports.deleteApplicant = async (req, res) => {
   try {
@@ -98,7 +85,6 @@ exports.deleteApplicant = async (req, res) => {
     res.status(200).send(applicant);
   } catch (error) {
     console.error(error)
-
     res.status(500).send("Server error");
   }
 };

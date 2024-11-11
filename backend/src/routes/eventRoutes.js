@@ -1,23 +1,18 @@
-const express = require("express");
-
-const {
-  createSchoolTour,
-  createIndividualTour,
-  getEvent,
-  getAllEvents,
-  destroyEvent,
-} = require("../controllers/EventController");
-
-const auth = require("../middleware/authMiddleware");
-
+const express = require('express');
 const router = express.Router();
-router.get("/:id",auth,getEvent)
-router.get("/", auth, getAllEvents); // Fetch all school tours
-router.delete("/:id", auth, destroyEvent); // Delete a specific school tour by ID
+const eventController = require('../controllers/EventController');
 
-// School Tours routes
-router.post("/schooltours", createSchoolTour); // Create a new school tour (not protected)
+// School tour routes now point to EventController
+router.post('/schooltours', eventController.createSchoolTour);
 
-// Individual Tours routes
-router.post("/individualtours", createIndividualTour); // Create a new individual tour (not protected)
+// Other event routes
+router.post('/individualtours', eventController.createIndividualTour);
+router.post('/fairs', eventController.createFair);
+router.get('/:id', eventController.getEvent);
+router.get('/', eventController.getAllEvents);
+router.put('/:eventId', eventController.updateEvent);
+router.delete('/:id', eventController.destroyEvent);
+router.post('/assign-advisor', eventController.asignAdvisorToTour);
+router.delete('/events/:eventId', eventController.deleteEvent);
+
 module.exports = router;

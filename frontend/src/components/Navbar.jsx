@@ -6,6 +6,7 @@ import "../styles/Navbar.css";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false); // New state to track if user is admin
+  const [isCoordinator, setIsCoordinator] = useState(false); // Add coordinator state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +17,9 @@ const Navbar = () => {
       if (decodedToken.role === "admin") {
         setIsAdmin(true); // Check if the user is admin
       }
+      if (decodedToken.role === "coordinator") {
+        setIsCoordinator(true);
+      }
     }
   }, []);
 
@@ -23,6 +27,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setIsAdmin(false); // Reset admin status after logout
+    setIsCoordinator(false); // Reset coordinator status
     navigate("/");
   };
 
@@ -32,35 +37,70 @@ const Navbar = () => {
         <Link to="/">ATOM</Link>
       </div>
       <ul className="nav-links">
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/tours">Tours</Link>
-        </li>
-
         {isLoggedIn ? (
+          isCoordinator ? (
+            // Coordinator Navigation
+            <>
+              <li>
+                <Link to="/events">Events</Link>
+              </li>
+              <li>
+                <Link to="/applications">Applications</Link>
+              </li>
+              <li>
+                <Link to="/guides">Guides</Link>
+              </li>
+              <li>
+                <Link to="/availability">Availability</Link>
+              </li>
+              <li>
+                <Link to="/profile">Profile</Link>
+              </li>
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            // Regular User Navigation
+            <>
+              <li>
+                <Link to="/">Applications</Link>
+              </li>
+              <li>
+                <Link to="/tours">Tours</Link>
+              </li>
+              <li>
+                <Link to="/profile">Profile</Link>
+              </li>
+              {isAdmin && (
+                <li>
+                  <Link to="/admin/users">Admin Dashboard</Link>
+                </li>
+              )}
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          )
+        ) : (
+          // Not Logged In Navigation
           <>
             <li>
-              <Link to="/profile">Profile</Link>
+              <Link to="/">Home</Link>
             </li>
-            {isAdmin && (
-              <li>
-                <Link to="/admin/users">Admin Dashboard</Link>
-              </li>
-            )}
             <li>
-              <button className="logout-button" onClick={handleLogout}>
-                Logout
-              </button>
+              <Link to="/tours">Tours</Link>
+            </li>
+            <li>
+              <Link className="auth-button" to="/login">
+                Log in
+              </Link>
             </li>
           </>
-        ) : (
-          <li>
-            <Link className="auth-button" to="/login">
-              Log in
-            </Link>
-          </li>
         )}
       </ul>
     </nav>

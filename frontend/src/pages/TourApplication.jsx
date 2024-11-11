@@ -5,14 +5,13 @@ const TourApplication = () => {
   const [step, setStep] = useState(1); // Step 1 for tour type selection, Step 2 for form fields
   const [formData, setFormData] = useState({
     tourType: "", // Store selected tour type
-    schoolName: "",
-    contactPerson: "",
+    contactPerson: "", // Will be used as studentName for individual tours
     email: "",
     visitDate: "",
+    visitTime: "",
+    city: "",
     studentCount: "",
     additionalNotes: "",
-    hoursOfWork: 3,
-    requiredNumberOfGuides: 1,
     studentHighSchool: "", // Only for Individual Tour
     phoneNumber: "", // For applicant connection
   });
@@ -34,10 +33,27 @@ const TourApplication = () => {
     e.preventDefault();
 
     const { tourType, ...tourData } = formData;
-    const endpoint =
-      tourType === "school"
-        ? "/api/events/schooltours" // Use createSchoolTour route
-        : "/api/events/individualtours"; // Use createIndividualTour route
+    const endpoint = tourType === "school"
+      ? "/api/events/schooltours"
+      : "/api/events/individualtours";
+
+    // Format the date and time properly
+    const dateTime = new Date(`${formData.visitDate}T${formData.visitTime}`);
+
+    const requestData = tourType === "school" ? {
+      ...tourData,
+      visitDate: dateTime,
+      typeStr: "School Tour",
+    } : {
+      visitDate: dateTime,
+      studentName: formData.contactPerson, // Use contact person as student name
+      studentHighSchool: formData.studentHighSchool,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      city: formData.city,
+      additionalNotes: formData.additionalNotes,
+      typeStr: "Individual Tour",
+    };
 
     try {
       const response = await fetch(`http://localhost:3000${endpoint}`, {
@@ -45,7 +61,7 @@ const TourApplication = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(tourData), // Convert the form data to JSON format
+        body: JSON.stringify(requestData),
       });
 
       const data = await response.json();
@@ -79,7 +95,9 @@ const TourApplication = () => {
         // Step 2: Form Fields
         <form onSubmit={handleSubmit}>
           {/* Common Fields */}
-          <label htmlFor="contactPerson">Contact Person:</label>
+          <label htmlFor="contactPerson">
+            {formData.tourType === "individual" ? "Student Name:" : "Contact Person:"}
+          </label>
           <input
             type="text"
             id="contactPerson"
@@ -109,6 +127,26 @@ const TourApplication = () => {
             required
           />
 
+          <label htmlFor="visitTime">Visit Time:</label>
+          <input
+            type="time"
+            id="visitTime"
+            name="visitTime"
+            value={formData.visitTime}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="city">City:</label>
+          <input
+            type="text"
+            id="city"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            required
+          />
+
           <label htmlFor="additionalNotes">Additional Notes:</label>
           <textarea
             id="additionalNotes"
@@ -117,27 +155,6 @@ const TourApplication = () => {
             onChange={handleChange}
           />
 
-          <label htmlFor="hoursOfWork">Hours of Work:</label>
-          <input
-            type="number"
-            id="hoursOfWork"
-            name="hoursOfWork"
-            value={formData.hoursOfWork}
-            onChange={handleChange}
-            required
-            min="1"
-          />
-
-          <label htmlFor="requiredNumberOfGuides">Required Number of Guides:</label>
-          <input
-            type="number"
-            id="requiredNumberOfGuides"
-            name="requiredNumberOfGuides"
-            value={formData.requiredNumberOfGuides}
-            onChange={handleChange}
-            required
-            min="1"
-          />
 
           {formData.tourType === "school" ? (
             // Fields specific to School Tour
@@ -165,7 +182,7 @@ const TourApplication = () => {
           ) : (
             // Fields specific to Individual Tour
             <>
-              <label htmlFor="studentHighSchool">Student's High School:</label>
+              <label htmlFor="studentHighSchool">High School:</label>
               <input
                 type="text"
                 id="studentHighSchool"

@@ -1,5 +1,4 @@
-/* General Reset and Global Styles */
-* {
+* General Reset and Global Styles */ * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -8,25 +7,16 @@
 html,
 body {
   height: 100%;
-  width: 100%;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll */
-  background: linear-gradient(
-    135deg,
-    #c1c8e4,
-    #8892ba,
-    #99a2c8,
-    #89b0c5
-  ); /* Multi-tone gradient */
-  color: #333; /* Default text color */
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
 }
 
-/* Flexbox layout for consistent footer placement */
+/* Flexbox layout to ensure the footer stays at the bottom */
 body {
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
-  padding-bottom: 60px;
 }
 
 /* Main content styling */
@@ -36,32 +26,48 @@ main {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  padding-top: 80px; /* Adjusted for navbar height */
-  height: 100vh;
-  padding-bottom: 60px;
+  padding-top: 80px; /* Increased padding to accommodate the navbar height */
 }
 
 /* Form container styling */
 .container {
-  background: linear-gradient(
-    135deg,
-    rgba(220, 217, 223, 0.7),
-    rgba(230, 224, 234, 0.7),
-    rgba(222, 214, 230, 0.7),
-    rgba(243, 241, 245, 0.7)
-  ); /* Matching gradient background */
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 40px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin: 50px auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 /* Button Styling */
 button {
   background-color: #5a67b3;
   color: white;
-  padding: 12px 20px;
+  padding: 15px;
   border: none;
   border-radius: 12px;
   cursor: pointer;

@@ -1,130 +1,192 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom";
 import "../styles/Home.css";
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [tours, setTours] = useState([]);
-  const [sortOption, setSortOption] = useState("visitDate"); // State for sorting option
+  const [events, setEvents] = useState([]);
+  const [sortOption, setSortOption] = useState("visitDate");
+  const [showIndividualTours, setShowIndividualTours] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-
-
-      fetchTourApplications(token); // Fetch tours if logged in
-
+      fetchEvents(token); // Fetch events if logged in
     }
   }, []);
 
-  // Fetch tour applications from the backend
-  const fetchTourApplications = async (token) => {
-
+  // Fetch events from the backend
+  const fetchEvents = async (token) => {
     try {
-      const response = await fetch("http://localhost:3000/api/tours", {
+      const response = await fetch("http://localhost:3000/api/events", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.status === 401) {
-        // Unauthorized: clear local storage
         setIsLoggedIn(false);
         localStorage.clear();
-      }else{
-      setIsLoggedIn(true);
-      const data = await response.json();
-      setTours(data);}
+      } else {
+        setIsLoggedIn(true);
+        const data = await response.json();
+        setEvents(data);
+      }
     } catch (error) {
-      console.error("Error fetching tours:", error);
+      console.error("Error fetching events:", error);
     }
   };
 
-  const sortTours = (tours, option) => {
-    return [...tours].sort((a, b) => {
-      if (option === "schoolName") {
-        return a.schoolName.localeCompare(b.schoolName);
+  const sortEvents = (events, option) => {
+    return [...events].sort((a, b) => {
+      if (option === "applicant") {
+        return a.applicant.localeCompare(b.applicant);
       } else if (option === "visitDate") {
         return new Date(a.visitDate) - new Date(b.visitDate);
-      } else if (option === "studentCount") {
-        return b.studentCount - a.studentCount;
+      } else if (option === "requiredNumberOfGuides") {
+        return b.requiredNumberOfGuides - a.requiredNumberOfGuides;
       }
       return 0;
     });
   };
 
-  // Handle sorting option change
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
   };
 
-  // Sorted tours based on the selected option
-  const sortedTours = sortTours(tours, sortOption);
+  const filteredEvents = events.filter(event => {
+    if (showIndividualTours) {
+      return event.__t === 'IndividualTour';
+    }
+    return event.__t === 'SchoolTour';
+  });
+
+  const toggleEventType = () => {
+    setShowIndividualTours(!showIndividualTours);
+  };
+
+  const sortedEvents = sortEvents(filteredEvents, sortOption);
+
+  const handleDecline = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // Remove the event from the local state
+        setEvents(events.filter(event => event._id !== eventId));
+      } else {
+        console.error('Failed to decline application');
+      }
+    } catch (error) {
+      console.error('Error declining application:', error);
+    }
+  };
 
   return (
     <div>
       {isLoggedIn ? (
-        <div className="tour-applications">
-          <h1>Current Tour Applications</h1>
+        <div className="event-applications">
+          <h1>Current Event Applications</h1>
 
-          {/* Sorting Dropdown */}
-          <div className="sort-options">
-            <label htmlFor="sort">Sort by:</label>
-            <select id="sort" value={sortOption} onChange={handleSortChange}>
-              <option value="visitDate">Visit Date</option>
-              <option value="schoolName">School Name</option>
-              <option value="studentCount">Student Count</option>
-            </select>
+          <div className="filter-controls">
+            <button 
+              onClick={toggleEventType}
+              className="toggle-button"
+            >
+              {showIndividualTours ? 'Show School Tours' : 'Show Individual Tours'}
+            </button>
+
+            <div className="sort-options">
+              <label htmlFor="sort">Sort by:</label>
+              <select id="sort" value={sortOption} onChange={handleSortChange}>
+                <option value="visitDate">Visit Date</option>
+                <option value="applicant">Applicant</option>
+                <option value="requiredNumberOfGuides">Required Guides</option>
+              </select>
+            </div>
           </div>
 
-          {tours.length > 0 ? (
-            <table className="tour-table">
+          {sortedEvents.length > 0 ? (
+            <table className="event-table">
               <thead>
                 <tr>
-                  <th>School Name</th>
-                  <th>Contact Person</th>
+                  {showIndividualTours ? (
+                    <>
+                      <th>High School</th>
+                      <th>Student Name</th>
+                    </>
+                  ) : (
+                    <>
+                      <th>School Name</th>
+                      <th>Contact Person</th>
+                    </>
+                  )}
+                  <th>Event Type</th>
                   <th>Date</th>
                   <th>Time</th>
-                  <th>Number of Students</th>
-                  <th>Contact</th>
-                  <th>Action</th>
+                  <th>Location</th>
+                  {!showIndividualTours && <th>Student Count</th>}
+                  <th>Required Guides</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                  <th>Decline</th>
                 </tr>
               </thead>
               <tbody>
-                {sortedTours.map((tour) => (
-                  <tr key={tour._id}>
-                    <td>{tour.schoolName}</td>
-                    <td>{tour.contactPerson}</td>
+                {sortedEvents.map((event) => (
+                  <tr key={event._id}>
+                    {showIndividualTours ? (
+                      <>
+                        <td>{event.studentHighSchool || "N/A"}</td>
+                        <td>{event.studentName || "N/A"}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{event.schoolName || "N/A"}</td>
+                        <td>{event.contactPerson || "N/A"}</td>
+                      </>
+                    )}
+                    <td>{event.typeStr}</td>
+                    <td>{new Date(event.visitDate).toLocaleDateString()}</td>
+                    <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
+                    <td>{event.city || event.location || "N/A"}</td>
+                    {!showIndividualTours && <td>{event.studentCount || "N/A"}</td>}
+                    <td>{event.requiredNumberOfGuides || 1}</td>
+                    <td>{event.status || "pending"}</td>
+                    <td>{event.additionalNotes || "N/A"}</td>
                     <td>
-                      {new Date(tour.visitDate).toLocaleDateString()}
-                    </td>{" "}
-                    {/* Format date */}
-                    <td>
-                      {new Date(tour.visitDate).toLocaleTimeString()}
-                    </td>{" "}
-                    {/* Format time */}
-                    <td>{tour.studentCount}</td>
-                    <td>{tour.email}</td>
-                    <td>{tour.status}</td>
+                      <button 
+                        onClick={() => handleDecline(event._id)}
+                        className="decline-button"
+                      >
+                        Decline
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p className="no-tours-message">No tour applications found.</p>
+            <p className="no-events-message">
+              No {showIndividualTours ? 'individual tour' : 'school tour'} applications found.
+            </p>
           )}
         </div>
       ) : (
         <div>
           <section className="home-welcome-section">
             <div className="home-text-container">
-              <h1>Bilkent Üniversitesi Kampüs Ziyaretleri</h1>
+              <h1>Bilkent Üniversitesi Etkinlikleri</h1>
               <p>
-                Kampüs ziyaretiniz süresince üniversitenin eğitim programları
-                hakkında rehber öğrencilerimizden bilgi alabilecek, kampüsün
-                güzelliklerini ve olanaklarını yerinde görebileceksiniz.
+                Kampüs ziyaretiniz boyunca etkinliklerimizden haberdar olabilir, üniversitenin sunduğu fırsatları ve etkinlikleri yerinde görebilirsiniz.
               </p>
-              <Link to="/tours" className="home-cta-button">
-                Rezervasyon Yap
+              <Link to="/events" className="home-cta-button">
+                Etkinliklere Göz At
               </Link>
             </div>
           </section>

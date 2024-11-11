@@ -4,7 +4,6 @@ const Event = require("./Event");
 const SchoolTour = require('./SchoolTour');
 const IndividualTour = require("./IndividualTour");
 console.log(Event.findById);
-
 const lol = async function () {
   try {
     const ev = new IndividualTour({
@@ -16,22 +15,15 @@ const lol = async function () {
     console.log(err);
   }
 };
-
 const lol2 = async function () {
   try {
     const ev = await Event.findById("672ea82829707a570f78ed0d");
     //await ev.addAssignee("672608bf15b069cf23704c02");
     const assignees = await ev.setAssignedAdvisor("672608bf15b069cf23704c02");
-
   } catch (err) {
     console.log(err);
   }
 };
-
-
-
-
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -60,11 +52,9 @@ const userSchema = new mongoose.Schema({
       default: [],
     },
   ],
-
   birthdate: {
     type: Date,
   },
-
   // Guide Attributes
   bilkentId: {
     type: Number,
@@ -80,7 +70,6 @@ const userSchema = new mongoose.Schema({
     { type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] },
   ],
 });
-
 userSchema.methods.updateAssignedDay = function updateAssignedDay(day) {
   this.assignedDay = day;
   return this.save();
@@ -93,7 +82,6 @@ userSchema.methods.acceptTour = function acceptTour(tourId) {
     return Promise.reject(new Error("Tour has already been accepted"));
   }
 };
-
 userSchema.methods.addAssignedEvent = function (eventId) {
   if (!this.assignedEvents.includes(eventId)) {
     this.assignedEvents.push(eventId);
@@ -121,12 +109,8 @@ userSchema.methods.completeEvent = function (eventId) {
     return Promise.reject(new Error("Server Error"));
   }
 };
-
 userSchema.methods.applyToFair = function (fairID){
     // To be implemented
 }
-
-
-
 const User = mongoose.model("User", userSchema);
 module.exports = User;

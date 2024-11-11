@@ -1,13 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs"); 
 const jwt = require("jsonwebtoken");
-
-
 exports.saveUser = async ({ name, email, password, role, birthdate }) =>{
     // Create new user with conditional role
     const user = new User({ name, email, password, role, birthdate });
     await user.save();
-
     // Generate JWT
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -25,7 +22,6 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password"); // Exclude password
@@ -38,19 +34,16 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 exports.updateUser = async (req, res) => {
   try {
     let user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     // Update fields
     Object.keys(req.body).forEach(key => {
       user[key] = req.body[key] || user[key];
     });
-
     await user.save();
     res.status(200).json({ message: "Profile updated successfully", user });
   } catch (err) {
@@ -70,7 +63,6 @@ exports.userUpdateAssignedDay = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
 exports.userAcceptTour = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -83,7 +75,6 @@ exports.userAcceptTour = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
 exports.userAddAssignedEvent = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -96,7 +87,6 @@ exports.userAddAssignedEvent = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
 exports.userCompleteEvent = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -109,7 +99,6 @@ exports.userCompleteEvent = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
 exports.userApplyToFair = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
