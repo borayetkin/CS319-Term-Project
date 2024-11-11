@@ -80,7 +80,7 @@ const TourApplication = () => {
 
       <p className="tour-application-description">
         Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
-        kurumlarının kampüs ziyaret talepleri için aşağıdaki formu doldurarak
+        kurumların ve bireysel ziyaretçilerin kampüs ziyaret talepleri için aşağıdaki formu doldurarak
         başvuruda bulunmalarını rica ederiz. Kampüs turları planlarımız
         çerçevesinde size e-posta ile geri dönüş yapılacaktır.
       </p>

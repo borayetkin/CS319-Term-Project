@@ -1,56 +1,18 @@
-/* General Reset and Global Styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll */
-  background: linear-gradient(135deg, #c1c8e4, #a3adc3, #96acdb, #89b0c5);
-  color: #333; /* Default text color */
-}
-
-/* Styling for the home main container */
-.home-main {
-  flex: 1;
-  display: flex;
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  padding: 2rem;
-  height: 100vh; /* Full viewport height */
-}
-
-/* Welcome section styling */
 .home-welcome-section {
   position: relative;
-  text-align: left; /* Align text to the left inside the box */
-  color: #333; /* Dark text for contrast */
+  text-align: left;
+  color: #333;
   width: 100%;
-  height: 100vh; /* Full viewport height */
+  height: calc(100vh - 54.5px);
   display: flex;
-  justify-content: center; /* Center the content */
-  align-items: center; /* Center vertically */
+  justify-content: center;
+  align-items: center;
+  padding-top: 54.5px;
   padding: 2rem;
   z-index: 1;
 }
-
-.home-main {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start; /* Align content to the left */
-  align-items: center;
-  padding: 2rem; /* Add padding for spacing */
-  height: 100vh; /* Full viewport height */
-}
-
-/* Text container */
 .home-text-container {
-  padding: 40px; /* Equal padding for all sides */
+  padding: 40px;
   max-width: 550px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -60,20 +22,20 @@ body {
     rgba(230, 224, 234, 0.7),
     rgba(222, 214, 230, 0.7),
     rgba(243, 241, 245, 0.7)
-  ); /* Multi-tone, whitish gradient with transparency */
-  color: #333; /* Dark text for contrast */
+  );
+  color: #333;
   display: flex;
-  flex-direction: column; /* Arrange content in a column */
-  justify-content: space-between; /* Space out content evenly */
-  height: 450px; /* Set desired height */
+  flex-direction: column;
+  justify-content: space-between;
+  height: 450px;
   margin-right: auto;
 }
 
 .home-text-container h1,
 .home-text-container p {
   position: relative;
-  color: #2d2f77; /* Darker purple-blue for heading */
-  text-align: left; /* Align text to the left */
+  color: #2d2f77;
+  text-align: left;
 }
 
 .home-text-container h1 {
@@ -84,13 +46,12 @@ body {
 .home-text-container p {
   font-size: 1.2rem;
   margin-bottom: 25px;
-  color: #2b3349; /* Richer, darker text for paragraphs */
+  color: #2b3349;
 }
 
-/* CTA button styling */
 .home-cta-button {
   text-decoration: none;
-  background-color: #5a67b3; /* Richer purpleish-blue */
+  background-color: #5a67b3;
   color: white;
   padding: 12px 30px;
   text-align: center;
@@ -108,29 +69,22 @@ body {
   transform: scale(1.02);
 }
 
-/* Adjust padding for main content to avoid footer overlap */
-.home-main {
-  padding-bottom: 60px; /* Height of the footer */
-}
-
-/* Tour Styling */
 .tour-applications {
   padding: 2rem;
-  background-color: #e1e4f2; /* Light purpleish-blue */
+  background-color: #e1e4f2;
   max-width: 1200px;
   margin: 2rem auto;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Table styling */
 .tour-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 thead {
-  background-color: #5a67b3; /* Purpleish-blue */
+  background-color: #5a67b3;
   color: white;
 }
 
@@ -146,12 +100,5 @@ th {
 }
 
 tr:hover {
-  background-color: #d2d6e8; /* Richer hover effect */
-}
-
-/* No tours message */
-.no-tours-message {
-  color: #3e4a6b;
-  text-align: center;
-  margin: 20px 0;
+  background-color: #d2d6e8;
 }

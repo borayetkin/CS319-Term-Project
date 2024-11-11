@@ -2,7 +2,7 @@
 footer {
   bottom: 0;
   background-color: #333;
-  color: white;
+  color: rgb(148, 71, 199);
   text-align: center;
   padding: 10px 0;
   width: 100%;
@@ -10,4 +10,10 @@ footer {
   left: 0;
   right: 0;
   margin-bottom: auto;
+}
+
+#footer-paragraph {
+  color: #989595;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
