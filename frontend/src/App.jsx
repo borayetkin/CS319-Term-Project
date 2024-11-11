@@ -19,11 +19,7 @@ import UsersPage from "./pages/DashboardPages/UsersPage"; // The current dashboa
 import SettingsPage from "./pages/DashboardPages/SettingsPage"; // Additional page
 import SchoolPriorityPage from "./pages/DashboardPages/SchoolPriorityPage"; // Additional page
 
-
-
 function App() {
-
-  
   return (
     <Router>
       <Navbar />
@@ -32,7 +28,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/tours" element={<TourApplication />} />
-
+        <Route path="/events" element={<TourApplication />} />
 
         {/* Protected Profile Route */}
         <Route

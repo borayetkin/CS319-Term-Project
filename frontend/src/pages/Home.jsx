@@ -53,11 +53,11 @@ const Home = () => {
     setSortOption(e.target.value);
   };
 
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = events.filter((event) => {
     if (showIndividualTours) {
-      return event.__t === 'IndividualTour';
+      return event.__t === "IndividualTour";
     }
-    return event.__t === 'SchoolTour';
+    return event.__t === "SchoolTour";
   });
 
   const toggleEventType = () => {
@@ -69,21 +69,24 @@ const Home = () => {
   const handleDecline = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/events/${eventId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         // Remove the event from the local state
-        setEvents(events.filter(event => event._id !== eventId));
+        setEvents(events.filter((event) => event._id !== eventId));
       } else {
-        console.error('Failed to decline application');
+        console.error("Failed to decline application");
       }
     } catch (error) {
-      console.error('Error declining application:', error);
+      console.error("Error declining application:", error);
     }
   };
 
@@ -94,11 +97,10 @@ const Home = () => {
           <h1>Current Event Applications</h1>
 
           <div className="filter-controls">
-            <button 
-              onClick={toggleEventType}
-              className="toggle-button"
-            >
-              {showIndividualTours ? 'Show School Tours' : 'Show Individual Tours'}
+            <button onClick={toggleEventType} className="toggle-button">
+              {showIndividualTours
+                ? "Show School Tours"
+                : "Show Individual Tours"}
             </button>
 
             <div className="sort-options">
@@ -155,12 +157,14 @@ const Home = () => {
                     <td>{new Date(event.visitDate).toLocaleDateString()}</td>
                     <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
                     <td>{event.city || event.location || "N/A"}</td>
-                    {!showIndividualTours && <td>{event.studentCount || "N/A"}</td>}
+                    {!showIndividualTours && (
+                      <td>{event.studentCount || "N/A"}</td>
+                    )}
                     <td>{event.requiredNumberOfGuides || 1}</td>
                     <td>{event.status || "pending"}</td>
                     <td>{event.additionalNotes || "N/A"}</td>
                     <td>
-                      <button 
+                      <button
                         onClick={() => handleDecline(event._id)}
                         className="decline-button"
                       >
@@ -173,7 +177,8 @@ const Home = () => {
             </table>
           ) : (
             <p className="no-events-message">
-              No {showIndividualTours ? 'individual tour' : 'school tour'} applications found.
+              No {showIndividualTours ? "individual tour" : "school tour"}{" "}
+              applications found.
             </p>
           )}
         </div>
@@ -183,9 +188,11 @@ const Home = () => {
             <div className="home-text-container">
               <h1>Bilkent Üniversitesi Etkinlikleri</h1>
               <p>
-                Kampüs ziyaretiniz boyunca etkinliklerimizden haberdar olabilir, üniversitenin sunduğu fırsatları ve etkinlikleri yerinde görebilirsiniz.
+                Kampüs ziyaretiniz boyunca etkinliklerimizden haberdar olabilir,
+                üniversitenin sunduğu fırsatları ve etkinlikleri yerinde
+                görebilirsiniz.
               </p>
-              <Link to="/events" className="home-cta-button">
+              <Link to="/tours" className="home-cta-button">
                 Etkinliklere Göz At
               </Link>
             </div>
