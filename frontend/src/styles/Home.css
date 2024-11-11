@@ -104,7 +104,7 @@ body {
 }
 
 .home-cta-button:hover {
-  background-color: #444e98; /* Darker purpleish-blue on hover */
+  background-color: #444e98;
   transform: scale(1.02);
 }
 

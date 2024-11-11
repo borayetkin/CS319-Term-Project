@@ -105,9 +105,7 @@ const TourApplication = () => {
           >
             Individual Tour
           </button>
-          <p className="tour-type-description">
-            Visit planned individually, without school affiliation.
-          </p>
+          <p className="tour-type-description">Visit planned individually.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="tour-application-form">

@@ -1,4 +1,9 @@
 .navbar {
+  position: fixed; /* Fixes the navbar at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Make it full-width */
+  z-index: 1000; /* Ensures the navbar stays on top of other content */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -7,6 +12,10 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Softer, smaller shadow */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  padding-top: 60px; /* Adds space to prevent content from hiding under the navbar */
 }
 
 .logo a {
@@ -78,4 +87,10 @@
 
 .nav-links a.active {
   color: #2b43e2; /* Highlight color for active link */
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
 }
