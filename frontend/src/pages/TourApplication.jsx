@@ -1,59 +1,57 @@
 import React, { useState } from "react";
-import "../styles/TourApplication.css"; // Import the CSS for styling
+import "../styles/TourApplication.css";
 
 const TourApplication = () => {
-  const [step, setStep] = useState(1); // Step 1 for tour type selection, Step 2 for form fields
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    tourType: "", // Store selected tour type
-    contactPerson: "", // Will be used as studentName for individual tours
+    tourType: "",
+    contactPerson: "",
     email: "",
     visitDate: "",
     visitTime: "",
     city: "",
     studentCount: "",
     additionalNotes: "",
-    studentHighSchool: "", // Only for Individual Tour
-    phoneNumber: "", // For applicant connection
+    studentHighSchool: "",
+    phoneNumber: "",
   });
   const [message, setMessage] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle tour type selection
   const handleTourTypeSelection = (e) => {
     setFormData({ ...formData, tourType: e.target.value });
-    setStep(2); // Proceed to the next step to display relevant fields
+    setStep(2);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { tourType, ...tourData } = formData;
-    const endpoint = tourType === "school"
-      ? "/api/events/schooltours"
-      : "/api/events/individualtours";
-
-    // Format the date and time properly
+    const endpoint =
+      tourType === "school"
+        ? "/api/events/schooltours"
+        : "/api/events/individualtours";
     const dateTime = new Date(`${formData.visitDate}T${formData.visitTime}`);
 
-    const requestData = tourType === "school" ? {
-      ...tourData,
-      visitDate: dateTime,
-      typeStr: "School Tour",
-    } : {
-      visitDate: dateTime,
-      studentName: formData.contactPerson, // Use contact person as student name
-      studentHighSchool: formData.studentHighSchool,
-      email: formData.email,
-      phoneNumber: formData.phoneNumber,
-      city: formData.city,
-      additionalNotes: formData.additionalNotes,
-      typeStr: "Individual Tour",
-    };
+    const requestData =
+      tourType === "school"
+        ? {
+            ...tourData,
+            visitDate: dateTime,
+            typeStr: "School Tour",
+          }
+        : {
+            visitDate: dateTime,
+            studentName: formData.contactPerson,
+            studentHighSchool: formData.studentHighSchool,
+            email: formData.email,
+            phoneNumber: formData.phoneNumber,
+            city: formData.city,
+            additionalNotes: formData.additionalNotes,
+            typeStr: "Individual Tour",
+          };
 
     try {
       const response = await fetch(`http://localhost:3000${endpoint}`, {
@@ -76,27 +74,47 @@ const TourApplication = () => {
   };
 
   return (
-    <div className="container">
+    <div className="tour-application-container">
       <h1>Submit a Tour Application</h1>
-      {message && <p>{message}</p>}
+      {message && <p className="tour-application-message">{message}</p>}
+
+      <p className="tour-application-description">
+        Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
+        kurumlarının kampüs ziyaret talepleri için aşağıdaki formu doldurarak
+        başvuruda bulunmalarını rica ederiz. Kampüs turları planlarımız
+        çerçevesinde size e-posta ile geri dönüş yapılacaktır.
+      </p>
 
       {step === 1 ? (
-        // Step 1: Tour Type Selection
         <div className="tour-type-selection">
-          <label>Select Tour Type:</label>
-          <button onClick={handleTourTypeSelection} value="school">
+          <button
+            onClick={handleTourTypeSelection}
+            value="school"
+            className="tour-type-button"
+          >
             School Tour
           </button>
-          <button onClick={handleTourTypeSelection} value="individual">
+          <p className="tour-type-description">
+            Visit organized by a school for groups of students.
+          </p>
+
+          <button
+            onClick={handleTourTypeSelection}
+            value="individual"
+            className="tour-type-button"
+          >
             Individual Tour
           </button>
+          <p className="tour-type-description">
+            Visit planned individually, without school affiliation.
+          </p>
         </div>
       ) : (
-        // Step 2: Form Fields
-        <form onSubmit={handleSubmit}>
-          {/* Common Fields */}
+        <form onSubmit={handleSubmit} className="tour-application-form">
           <label htmlFor="contactPerson">
-            {formData.tourType === "individual" ? "Student Name:" : "Contact Person:"}
+            {formData.tourType === "individual"
+              ? "Student Name:"
+              : "Contact Person:"}
           </label>
           <input
             type="text"
@@ -155,9 +173,7 @@ const TourApplication = () => {
             onChange={handleChange}
           />
 
-
           {formData.tourType === "school" ? (
-            // Fields specific to School Tour
             <>
               <label htmlFor="schoolName">School Name:</label>
               <input
@@ -180,7 +196,6 @@ const TourApplication = () => {
               />
             </>
           ) : (
-            // Fields specific to Individual Tour
             <>
               <label htmlFor="studentHighSchool">High School:</label>
               <input
@@ -204,7 +219,9 @@ const TourApplication = () => {
             required
           />
 
-          <button type="submit">Submit Application</button>
+          <button type="submit" className="tour-application-submit">
+            Submit Application
+          </button>
         </form>
       )}
     </div>

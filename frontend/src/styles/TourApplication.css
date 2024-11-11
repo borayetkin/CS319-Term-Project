@@ -1,95 +1,182 @@
-/* Container styles */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-  }
-  
-  h1 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Tour Type Selection */
-  .tour-type-selection {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-  }
-  
-  .tour-type-selection label {
-    font-size: 18px;
-    font-weight: 500;
-    color: #555;
-  }
-  
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  
-  /* Form Styling */
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    margin-top: 10px;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="date"],
-  input[type="number"],
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-  }
-  
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  color: #333;
+}
 
-  
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
-  
+/* Updated Tour Application Container */
+.tour-application-container {
+  padding: 3rem;
+  background-color: rgba(225, 228, 242, 0.9);
+  max-width: 600px;
+  margin: 3rem auto;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 150px;
+}
 
-  
-  button[type="submit"]:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.4);
+/* Heading Styling */
+.tour-application-container h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #2b3349;
+  margin-bottom: 25px;
+}
+
+/* Description Text Styling */
+.tour-application-description {
+  font-size: 1rem;
+  color: #2b3349;
+  margin-bottom: 45px; /* Increased spacing */
+  text-align: left;
+  line-height: 1.5;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Message Styling */
+.tour-application-message {
+  text-align: center;
+  color: #28a745;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+/* Tour Type Selection */
+.tour-type-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; /* Increased spacing between buttons */
+  margin-bottom: 25px;
+}
+
+/* Adjusted Button Styling */
+.tour-type-button {
+  font-size: 1.2rem;
+  padding: 14px 32px; /* Made buttons wider */
+  background-color: #5a67b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  max-width: 350px;
+}
+
+.tour-type-button:hover {
+  background-color: #444e98;
+  transform: scale(1.05);
+}
+
+/* Tour Type Description */
+.tour-type-description {
+  font-size: 0.8rem;
+  color: #555;
+  text-align: center;
+  max-width: 300px; /* Equal width to buttons */
+  margin-top: -15px; /* Moved closer to buttons */
+}
+
+/* Tour Application Form Styling */
+.tour-application-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-application-form label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2b3349;
+  margin-top: 20px;
+}
+
+.tour-application-form input[type="text"],
+.tour-application-form input[type="email"],
+.tour-application-form input[type="date"],
+.tour-application-form input[type="time"],
+.tour-application-form input[type="number"],
+.tour-application-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  background-color: #f9f9fb;
+}
+
+.tour-application-form input:focus,
+.tour-application-form textarea:focus {
+  border-color: #5a67b3;
+  outline: none;
+}
+
+/* Textarea Styling */
+.tour-application-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Submit Button Styling */
+.tour-application-submit {
+  background-color: #28a745;
+  color: white;
+  padding: 18px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.tour-application-submit:hover {
+  background-color: #218818;
+  transform: scale(1.05);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .tour-application-container {
+    padding: 1.5rem;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 600px) {
-    .container {
-      padding: 15px;
-    }
-  
-    h1 {
-      font-size: 20px;
-    }
-  
-    .tour-type-selection button {
-      font-size: 14px;
-      padding: 8px 16px;
-    }
-  
-    button[type="submit"] {
-      padding: 10px;
-      font-size: 14px;
-    }
+
+  .tour-application-container h1 {
+    font-size: 2rem;
   }
+
+  .tour-type-button,
+  .tour-application-submit {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}
+
+/* Footer Adjustment for Positioning */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  width: 100%;
+}

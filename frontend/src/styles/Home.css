@@ -11,13 +11,7 @@ body {
   width: 100%;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden; /* Prevent horizontal scroll */
-  background: linear-gradient(
-    135deg,
-    #c1c8e4,
-    /* Richer light purple-blue */ #8892ba,
-    /* Slightly deeper */ #99a2c8,
-    /* Deeper purple-blue */ #89b0c5 /* Darker purple-blue */
-  ); /* Multi-tone gradient */
+  background: linear-gradient(135deg, #c1c8e4, #a3adc3, #96acdb, #89b0c5);
   color: #333; /* Default text color */
 }
 
@@ -111,6 +105,7 @@ body {
 
 .home-cta-button:hover {
   background-color: #444e98; /* Darker purpleish-blue on hover */
+  transform: scale(1.02);
 }
 
 /* Adjust padding for main content to avoid footer overlap */

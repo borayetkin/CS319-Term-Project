@@ -75,3 +75,7 @@
   color: #2b43e2; /* Simple color change */
   background-color: #e8e8f5; /* Light background color */
 }
+
+.nav-links a.active {
+  color: #2b43e2; /* Highlight color for active link */
+}

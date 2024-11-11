@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
 import "../styles/Navbar.css";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // New state to track if user is admin
-  const [isCoordinator, setIsCoordinator] = useState(false); // Add coordinator state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isCoordinator, setIsCoordinator] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
-      const decodedToken = jwtDecode(token); // Decode the token
+      const decodedToken = jwtDecode(token);
       if (decodedToken.role === "admin") {
-        setIsAdmin(true); // Check if the user is admin
+        setIsAdmin(true);
       }
       if (decodedToken.role === "coordinator") {
         setIsCoordinator(true);
@@ -26,10 +27,12 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    setIsAdmin(false); // Reset admin status after logout
-    setIsCoordinator(false); // Reset coordinator status
+    setIsAdmin(false);
+    setIsCoordinator(false);
     navigate("/");
   };
+
+  const isActive = (path) => location.pathname === path; // Helper function to check active link
 
   return (
     <nav className="navbar">
@@ -39,22 +42,46 @@ const Navbar = () => {
       <ul className="nav-links">
         {isLoggedIn ? (
           isCoordinator ? (
-            // Coordinator Navigation
             <>
               <li>
-                <Link to="/events">Events</Link>
+                <Link
+                  to="/events"
+                  className={isActive("/events") ? "active" : ""}
+                >
+                  Events
+                </Link>
               </li>
               <li>
-                <Link to="/applications">Applications</Link>
+                <Link
+                  to="/applications"
+                  className={isActive("/applications") ? "active" : ""}
+                >
+                  Applications
+                </Link>
               </li>
               <li>
-                <Link to="/guides">Guides</Link>
+                <Link
+                  to="/guides"
+                  className={isActive("/guides") ? "active" : ""}
+                >
+                  Guides
+                </Link>
               </li>
               <li>
-                <Link to="/availability">Availability</Link>
+                <Link
+                  to="/availability"
+                  className={isActive("/availability") ? "active" : ""}
+                >
+                  Availability
+                </Link>
               </li>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link
+                  to="/profile"
+                  className={isActive("/profile") ? "active" : ""}
+                >
+                  Profile
+                </Link>
               </li>
               <li>
                 <button className="logout-button" onClick={handleLogout}>
@@ -63,20 +90,36 @@ const Navbar = () => {
               </li>
             </>
           ) : (
-            // Regular User Navigation
             <>
               <li>
-                <Link to="/">Applications</Link>
+                <Link to="/" className={isActive("/") ? "active" : ""}>
+                  Applications
+                </Link>
               </li>
               <li>
-                <Link to="/tours">Tours</Link>
+                <Link
+                  to="/tours"
+                  className={isActive("/tours") ? "active" : ""}
+                >
+                  Tours
+                </Link>
               </li>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link
+                  to="/profile"
+                  className={isActive("/profile") ? "active" : ""}
+                >
+                  Profile
+                </Link>
               </li>
               {isAdmin && (
                 <li>
-                  <Link to="/admin/users">Admin Dashboard</Link>
+                  <Link
+                    to="/admin/users"
+                    className={isActive("/admin/users") ? "active" : ""}
+                  >
+                    Admin Dashboard
+                  </Link>
                 </li>
               )}
               <li>
@@ -87,13 +130,16 @@ const Navbar = () => {
             </>
           )
         ) : (
-          // Not Logged In Navigation
           <>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/" className={isActive("/") ? "active" : ""}>
+                Home
+              </Link>
             </li>
             <li>
-              <Link to="/tours">Tours</Link>
+              <Link to="/tours" className={isActive("/tours") ? "active" : ""}>
+                Tours
+              </Link>
             </li>
             <li>
               <Link className="auth-button" to="/login">
