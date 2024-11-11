@@ -9,174 +9,108 @@ html,
 body {
   height: 100%;
   width: 100%;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden; /* Prevent horizontal scroll */
+  background: linear-gradient(
+    135deg,
+    #c1c8e4,
+    /* Richer light purple-blue */ #8892ba,
+    /* Slightly deeper */ #99a2c8,
+    /* Deeper purple-blue */ #89b0c5 /* Darker purple-blue */
+  ); /* Multi-tone gradient */
+  color: #333; /* Default text color */
 }
 
 /* Styling for the home main container */
 .home-main {
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  padding: 2rem;
+  height: 100vh; /* Full viewport height */
 }
 
-/* Welcome section styling with a background image */
+/* Welcome section styling */
 .home-welcome-section {
   position: relative;
   text-align: left; /* Align text to the left inside the box */
-  background: url("../public/images/bilkent3.jpeg") no-repeat center center;
-  background-size: cover;
-  color: white;
+  color: #333; /* Dark text for contrast */
   width: 100%;
   height: 100vh; /* Full viewport height */
   display: flex;
-  justify-content: flex-end; /* Align the container to the right */
+  justify-content: center; /* Center the content */
   align-items: center; /* Center vertically */
-  padding: 0;
-  padding-top: 60px; /* Add padding equal to the height of the navbar */
+  padding: 2rem;
   z-index: 1;
 }
 
-.home-welcome-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(
-    0,
-    0,
-    0,
-    0.2
-  ); /* Semi-transparent black to darken the image */
-  z-index: -1; /* Place it behind the content */
-}
-/* Tour Styling */
-
-.tour-applications {
-  padding: 2rem;
-  background-color: #fff;
-  max-width: 1200px;
-  margin: 2rem auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Tour list layout */
-.tour-list {
+.home-main {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  list-style-type: none;
-  padding: 0;
+  justify-content: flex-start; /* Align content to the left */
+  align-items: center;
+  padding: 2rem; /* Add padding for spacing */
+  height: 100vh; /* Full viewport height */
 }
 
-/* Tour card styling */
-.tour-item {
-  width: 100%;
-}
-
-thead {
-  background-color: #911515;
-  color: white;
-}
-
-.tour-card {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 24px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Aligning content inside the card */
-.tour-info {
-  display: flex;
-  flex-wrap: wrap; /* Ensures the elements wrap if the screen is too small */
-  gap: 1rem; /* Adds some space between the items */
-}
-
-.tour-info p {
-  margin: 0;
-  flex: 1; /* Distribute the available space evenly */
-  white-space: nowrap; /* Prevents the text from wrapping to the next line */
-  overflow: hidden;
-  text-overflow: ellipsis; /* Adds ellipsis (...) if text overflows */
-}
-
-.tour-school-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.tour-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-}
-
-.tour-details p {
-  margin: 0;
-  flex: 1 1 45%;
-}
-
-/* Text container with dark background */
+/* Text container */
 .home-text-container {
-  background: rgba(0, 0, 0, 0.65); /* Semi-transparent black background */
-  padding: 30px;
-  max-width: 400px;
-  height: 500px;
-  margin: 50px; /* Add some margin for spacing */
+  padding: 40px; /* Equal padding for all sides */
+  max-width: 550px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(220, 217, 223, 0.7),
+    rgba(230, 224, 234, 0.7),
+    rgba(222, 214, 230, 0.7),
+    rgba(243, 241, 245, 0.7)
+  ); /* Multi-tone, whitish gradient with transparency */
+  color: #333; /* Dark text for contrast */
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  z-index: 2;
-  border-radius: 8px;
+  flex-direction: column; /* Arrange content in a column */
+  justify-content: space-between; /* Space out content evenly */
+  height: 450px; /* Set desired height */
+  margin-right: auto;
 }
 
 .home-text-container h1,
 .home-text-container p {
   position: relative;
-  z-index: 2;
-  color: white; /* Set text color to white */
-  text-align: left; /* Align the paragraph text to the left */
+  color: #2d2f77; /* Darker purple-blue for heading */
+  text-align: left; /* Align text to the left */
 }
+
 .home-text-container h1 {
-  font-size: 36px;
-  margin-bottom: 40px;
+  font-size: 3rem;
+  margin-bottom: 20px;
 }
 
 .home-text-container p {
-  font-size: 18px;
-  margin-bottom: 35px;
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+  color: #2b3349; /* Richer, darker text for paragraphs */
 }
 
 /* CTA button styling */
 .home-cta-button {
   text-decoration: none;
-  background-color: #2b68cb;
+  background-color: #5a67b3; /* Richer purpleish-blue */
   color: white;
-  padding: 10px 25px; /* Smaller padding to make the button smaller */
+  padding: 12px 30px;
   text-align: center;
-  border-radius: 8px;
-  font-size: 18px;
+  border-radius: 12px;
+  font-size: 1.2rem;
   font-weight: bold;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, background-color 0.3s ease;
   z-index: 2;
   position: relative;
-  margin-top: 10px;
 }
 
 .home-cta-button:hover {
-  background-color: #1c4a93;
-  transform: translateY(-0.1px);
+  background-color: #444e98; /* Darker purpleish-blue on hover */
 }
 
 /* Adjust padding for main content to avoid footer overlap */
@@ -184,37 +118,45 @@ thead {
   padding-bottom: 60px; /* Height of the footer */
 }
 
-.filter-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+/* Tour Styling */
+.tour-applications {
+  padding: 2rem;
+  background-color: #e1e4f2; /* Light purpleish-blue */
+  max-width: 1200px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.toggle-button {
-  padding: 8px 16px;
-  background-color: #007bff;
+/* Table styling */
+.tour-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #5a67b3; /* Purpleish-blue */
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.toggle-button:hover {
-  background-color: #0056b3;
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.decline-button {
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+th {
+  font-weight: bold;
 }
 
-.decline-button:hover {
-  background-color: #cc0000;
+tr:hover {
+  background-color: #d2d6e8; /* Richer hover effect */
+}
+
+/* No tours message */
+.no-tours-message {
+  color: #3e4a6b;
+  text-align: center;
+  margin: 20px 0;
 }
