@@ -74,155 +74,162 @@ const TourApplication = () => {
   };
 
   return (
-    <div className="tour-application-container">
-      <h1>Submit a Tour Application</h1>
-      {message && <p className="tour-application-message">{message}</p>}
+    <section className="tour-application-section">
+      <div className="tour-application-container">
+        <h1>Submit a Tour Application</h1>
+        {message && <p className="tour-application-message">{message}</p>}
 
-      <p className="tour-application-description">
-        Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
-        kurumların ve bireysel ziyaretçilerin kampüs ziyaret talepleri için aşağıdaki formu doldurarak
-        başvuruda bulunmalarını rica ederiz. Kampüs turları planlarımız
-        çerçevesinde size e-posta ile geri dönüş yapılacaktır.
-      </p>
+        <p className="tour-application-description">
+          Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
+          kurumların ve bireysel ziyaretçilerin kampüs ziyaret talepleri için
+          aşağıdaki formu doldurarak başvuruda bulunmalarını rica ederiz. Kampüs
+          turları planlarımız çerçevesinde size e-posta ile geri dönüş
+          yapılacaktır.
+        </p>
 
-      {step === 1 ? (
-        <div className="tour-type-selection">
-          <button
-            onClick={handleTourTypeSelection}
-            value="school"
-            className="tour-type-button"
-          >
-            School Tour
-          </button>
-          <p className="tour-type-description">
-            Visit organized by a school for groups of students.
-          </p>
+        {step === 1 ? (
+          <div className="tour-type-selection">
+            <button
+              onClick={handleTourTypeSelection}
+              value="school"
+              className="tour-type-button"
+            >
+              School Tour
+            </button>
+            <p className="tour-type-description">
+              Visit organized by a school for groups of students.
+            </p>
 
-          <button
-            onClick={handleTourTypeSelection}
-            value="individual"
-            className="tour-type-button"
-          >
-            Individual Tour
-          </button>
-          <p className="tour-type-description">Visit planned individually.</p>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="tour-application-form">
-          <label htmlFor="contactPerson">
-            {formData.tourType === "individual"
-              ? "Student Name:"
-              : "Contact Person:"}
-          </label>
-          <input
-            type="text"
-            id="contactPerson"
-            name="contactPerson"
-            value={formData.contactPerson}
-            onChange={handleChange}
-            required
-          />
+            <button
+              onClick={handleTourTypeSelection}
+              value="individual"
+              className="tour-type-button"
+            >
+              Individual Tour
+            </button>
+            <p className="tour-type-description">Visit planned individually.</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="tour-application-form">
+            <label htmlFor="contactPerson">
+              {formData.tourType === "individual"
+                ? "Student Name:"
+                : "Contact Person:"}
+            </label>
+            <input
+              type="text"
+              id="contactPerson"
+              name="contactPerson"
+              value={formData.contactPerson}
+              onChange={handleChange}
+              required
+            />
 
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="example@example.com"
+            />
 
-          <label htmlFor="visitDate">Visit Date:</label>
-          <input
-            type="date"
-            id="visitDate"
-            name="visitDate"
-            value={formData.visitDate}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="phoneNumber">Phone Number:</label>
+            <input
+              type="tel"
+              id="phoneNumber"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+              placeholder="0 5XX XXX XX XX"
+              pattern="0 5\d{2} \d{3} \d{2} \d{2}"
+              title="Please enter a valid Turkish phone number (e.g., 0 5XX XXX XX XX)"
+            />
 
-          <label htmlFor="visitTime">Visit Time:</label>
-          <input
-            type="time"
-            id="visitTime"
-            name="visitTime"
-            value={formData.visitTime}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="visitDate">Visit Date:</label>
+            <input
+              type="date"
+              id="visitDate"
+              name="visitDate"
+              value={formData.visitDate}
+              onChange={handleChange}
+              required
+            />
 
-          <label htmlFor="city">City:</label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="visitTime">Visit Time:</label>
+            <input
+              type="time"
+              id="visitTime"
+              name="visitTime"
+              value={formData.visitTime}
+              onChange={handleChange}
+              required
+            />
 
-          <label htmlFor="additionalNotes">Additional Notes:</label>
-          <textarea
-            id="additionalNotes"
-            name="additionalNotes"
-            value={formData.additionalNotes}
-            onChange={handleChange}
-          />
+            <label htmlFor="city">City:</label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+            />
 
-          {formData.tourType === "school" ? (
-            <>
-              <label htmlFor="schoolName">School Name:</label>
-              <input
-                type="text"
-                id="schoolName"
-                name="schoolName"
-                value={formData.schoolName}
-                onChange={handleChange}
-                required
-              />
+            {formData.tourType === "school" ? (
+              <>
+                <label htmlFor="schoolName">School Name:</label>
+                <input
+                  type="text"
+                  id="schoolName"
+                  name="schoolName"
+                  value={formData.schoolName}
+                  onChange={handleChange}
+                  required
+                />
 
-              <label htmlFor="studentCount">Number of Students:</label>
-              <input
-                type="number"
-                id="studentCount"
-                name="studentCount"
-                value={formData.studentCount}
-                onChange={handleChange}
-                required
-              />
-            </>
-          ) : (
-            <>
-              <label htmlFor="studentHighSchool">High School:</label>
-              <input
-                type="text"
-                id="studentHighSchool"
-                name="studentHighSchool"
-                value={formData.studentHighSchool}
-                onChange={handleChange}
-                required
-              />
-            </>
-          )}
+                <label htmlFor="studentCount">Number of Students:</label>
+                <input
+                  type="number"
+                  id="studentCount"
+                  name="studentCount"
+                  value={formData.studentCount}
+                  onChange={handleChange}
+                  required
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="studentHighSchool">High School:</label>
+                <input
+                  type="text"
+                  id="studentHighSchool"
+                  name="studentHighSchool"
+                  value={formData.studentHighSchool}
+                  onChange={handleChange}
+                  required
+                />
+              </>
+            )}
 
-          <label htmlFor="phoneNumber">Phone Number:</label>
-          <input
-            type="text"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="additionalNotes">Additional Notes:</label>
+            <textarea
+              id="additionalNotes"
+              name="additionalNotes"
+              value={formData.additionalNotes}
+              onChange={handleChange}
+            />
 
-          <button type="submit" className="tour-application-submit">
-            Submit Application
-          </button>
-        </form>
-      )}
-    </div>
+            <button type="submit" className="tour-application-submit">
+              Submit Application
+            </button>
+          </form>
+        )}
+      </div>
+    </section>
   );
 };
 

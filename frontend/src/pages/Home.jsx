@@ -183,7 +183,7 @@ const Home = () => {
           )}
         </div>
       ) : (
-        <div>
+        <div className="home-container">
           <section className="home-welcome-section">
             <div className="home-text-container">
               <h1>Bilkent Üniversitesi Etkinlikleri</h1>
@@ -195,6 +195,28 @@ const Home = () => {
               <Link to="/tours" className="home-cta-button">
                 Etkinliklere Göz At
               </Link>
+            </div>
+          </section>
+          <section className="home-info-section">
+            <div className="home-info-container">
+              <h2>Kampüs Ziyaretinizde Sizi Neler Bekliyor:</h2>
+              <p>
+                Kampüs ziyaretinize İktisadi, İdari ve Sosyal Bilimler Fakültesi
+                önündeki tanıtımı alanında başlayacaksınız. Sizleri rehber
+                öğrenciler karşılayacak. Hedeflediğiniz bölümlere ilişkin
+                sorularınızı rehberlerimize yöneltebilecek, ilgi alanlarınızla
+                eşleşebilecek başka eğitim programlarını da tanıma fırsatı elde
+                edeceksiniz.
+              </p>
+              <p>
+                Bu ziyaretlerin önemli bir özelliği de eğitimin yanı sıra
+                üniversitenin diğer olanaklarına yönelik fikir edinebilmeniz
+                olacak. Kampüsü gezmek isterseniz yine rehber öğrenciler size
+                eşlik edecek. Kampüs turu öğrenci yurtlarından başlayacak ve
+                yurtlar bölgesindeki spor salonuyla devam edecek. Daha sonra
+                fakülte binaları ile kampüsün ana noktalarını görecek ve son
+                olarak kütüphaneyi gezeceksiniz.
+              </p>
             </div>
           </section>
         </div>
