@@ -14,7 +14,9 @@ const Home = () => {
       fetchEvents(token); // Fetch events if logged in
     }
   }, []);
-
+  const openEventPage = (eventId) => {
+    window.location.href = (`/events/${eventId}`)
+  }
   // Fetch events from the backend
   const fetchEvents = async (token) => {
     try {
@@ -72,16 +74,57 @@ const Home = () => {
       const response = await fetch(
         `http://localhost:3000/api/events/${eventId}`,
         {
-          method: "DELETE",
+          method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            status: "rejected"
+          })
         }
       );
 
       if (response.ok) {
+        window.location.reload()
+        //const response2 = await response.changeStatus("rejected")
+        //console.log(response2);
+        
+        //event.decline()
         // Remove the event from the local state
-        setEvents(events.filter((event) => event._id !== eventId));
+        //setEvents(events.filter((event) => event._id !== eventId));
+      } else {
+        console.error("Failed to decline application");
+      }
+    } catch (error) {
+      console.error("Error declining application:", error);
+    }
+  };
+  const handleAccept = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/api/events/${eventId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "accepted"
+          })
+        }
+      );
+
+      if (response.ok) {
+        window.location.reload()
+        //const response2 = await response.changeStatus("rejected")
+        //console.log(response2);
+        
+        //event.decline()
+        // Remove the event from the local state
+        //setEvents(events.filter((event) => event._id !== eventId));
       } else {
         console.error("Failed to decline application");
       }
@@ -136,12 +179,24 @@ const Home = () => {
                   <th>Required Guides</th>
                   <th>Status</th>
                   <th>Notes</th>
-                  <th>Decline</th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {sortedEvents.map((event) => (
-                  <tr key={event._id}>
+                {sortedEvents.map((event) => {  
+                  let isRejected = event.status === "rejected"
+                  let isAccepted = event.status === "accepted"
+                  let isPending = !isAccepted && !isRejected 
+
+                  let className = isRejected ? "link rejected"  : "link"
+                  className += isAccepted ? " accepted"  : ""
+                  className += isPending? " pending" : ""
+                return(
+          
+                  
+                  <tr key={event._id} className={ className} onClick={()=>openEventPage(event._id)}>
+                    
                     {showIndividualTours ? (
                       <>
                         <td>{event.studentHighSchool || "N/A"}</td>
@@ -161,18 +216,36 @@ const Home = () => {
                       <td>{event.studentCount || "N/A"}</td>
                     )}
                     <td>{event.requiredNumberOfGuides || 1}</td>
-                    <td>{event.status || "pending"}</td>
+                    <td>{event.status.toUpperCase() || "pending"}</td>
                     <td>{event.additionalNotes || "N/A"}</td>
-                    <td>
-                      <button
-                        onClick={() => handleDecline(event._id)}
+                    
+                    <td onClick={(e) => e.stopPropagation()}>
+                       { isPending && <button
+                        onClick={(e) => {e.stopPropagation();    
+                          handleDecline(event._id);}}
                         className="decline-button"
                       >
                         Decline
-                      </button>
+                      </button>}
+                
                     </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                       { isPending && <button
+                        onClick={(e) => {e.stopPropagation();    
+                          handleAccept(event._id);}}
+                        className="decline-button"
+                      >
+                        Accept
+                      </button>}
+                
+                    </td>
+
+
+
+   
                   </tr>
-                ))}
+              
+                )})}
               </tbody>
             </table>
           ) : (

@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute"; // Import AdminRoute
-
+import Event from "./pages/Event";
 import UsersPage from "./pages/DashboardPages/UsersPage"; // The current dashboard functionality
 import SettingsPage from "./pages/DashboardPages/SettingsPage"; // Additional page
 import SchoolPriorityPage from "./pages/DashboardPages/SchoolPriorityPage"; // Additional page
@@ -29,7 +29,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/tours" element={<TourApplication />} />
         <Route path="/events" element={<TourApplication />} />
-
+        <Route path="/events/:id" element={<Event/>} />
         {/* Protected Profile Route */}
         <Route
           path="/profile"

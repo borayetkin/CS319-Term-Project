@@ -34,14 +34,36 @@
   tbody tr:nth-child(even) {
     background-color: #f9f9f9;
   }
-  
+  tbody tr.accepted{
+    background-color: rgb(46, 46, 149);
+
+  }
+  tbody tr.rejected{
+    background-color: rgb(154, 29, 29);
+
+
+  }
+
+  tbody tr.rejected:hover{
+    background-color: rgb(178, 48, 48);
+  }
+
+  tbody tr.accepted:hover{
+    background-color: rgb(63, 63, 164);
+  }
+
+
+
+  tbody tr.pending td{
+    color: black;
+  }
   tbody tr:hover {
     background-color: #f1f1f1;
     transition: background-color 0.2s ease;
   }
   
   td {
-    color: #333;
+    color: rgb(198, 181, 181);
   }
   
   p {

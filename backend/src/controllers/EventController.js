@@ -116,10 +116,15 @@ module.exports.getAllEvents = async (req, res) => {
 
 module.exports.updateEvent = async (req, res) => {
   const { eventId } = req.params;
+  console.log(eventId);
+  
   const eventProp = req.body;
+  console.log(eventProp);
+  
   try {
     const updatedEvent = await Event.findByIdAndUpdate(eventId, eventProp, { new: true });
     res.status(200).json(updatedEvent);
+    
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
