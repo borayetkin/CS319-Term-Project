@@ -4,7 +4,7 @@ import "../styles/Navbar.css";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState(""); // Store the user's role
+  const [role, setRole] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -13,7 +13,7 @@ const Navbar = () => {
     if (token) {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       setIsLoggedIn(true);
-      setRole(decodedToken.role); // Set the user's role from the token
+      setRole(decodedToken.role);
     }
   }, []);
 
@@ -33,56 +33,16 @@ const Navbar = () => {
       </div>
       <ul className="nav-links">
         {isLoggedIn ? (
-          role === "admin" ? (
-            <>
-              <li>
-                <Link
-                  to="/profile"
-                  className={isActive("/profile") ? "active" : ""}
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard"
-                  className={isActive("/dashboard") ? "active" : ""}
-                >
-                  Admin Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/admin/events"
-                  className={isActive("/admin/events") ? "active" : ""}
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/admin/applications"
-                  className={isActive("/admin/applications") ? "active" : ""}
-                >
-                  Applications
-                </Link>
-              </li>
-              <li>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : role === "coordinator" ? (
-            <>
-              <li>
-                <Link
-                  to="/profile"
-                  className={isActive("/profile") ? "active" : ""}
-                >
-                  Profile
-                </Link>
-              </li>
+          <>
+            <li>
+              <Link
+                to="/profile"
+                className={isActive("/profile") ? "active" : ""}
+              >
+                Profile
+              </Link>
+            </li>
+            {["admin", "coordinator"].includes(role) && (
               <li>
                 <Link
                   to="/dashboard"
@@ -91,95 +51,43 @@ const Navbar = () => {
                   Dashboard
                 </Link>
               </li>
+            )}
+            {["admin", "advisor"].includes(role) && (
               <li>
                 <Link
-                  to="/coordinator/applications"
-                  className={
-                    isActive("/coordinator/applications") ? "active" : ""
-                  }
-                >
-                  Applications
-                </Link>
-              </li>
-              <li>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : role === "advisor" ? (
-            <>
-              <li>
-                <Link
-                  to="/profile"
-                  className={isActive("/profile") ? "active" : ""}
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/advisor/events"
-                  className={isActive("/advisor/events") ? "active" : ""}
+                  to="/events"
+                  className={isActive("/events") ? "active" : ""}
                 >
                   Events
                 </Link>
               </li>
+            )}
+            {["admin", "coordinator", "advisor"].includes(role) && (
               <li>
                 <Link
-                  to="/advisor/applications"
-                  className={isActive("/advisor/applications") ? "active" : ""}
+                  to="/applications"
+                  className={isActive("/applications") ? "active" : ""}
                 >
                   Applications
                 </Link>
               </li>
-              <li>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : role === "guide" ? (
-            <>
+            )}
+            {["admin", "guide"].includes(role) && (
               <li>
                 <Link
-                  to="/profile"
-                  className={isActive("/profile") ? "active" : ""}
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/guide/assigned-events"
-                  className={isActive("/guide/assigned-events") ? "active" : ""}
+                  to="/assigned-events"
+                  className={isActive("/assigned-events") ? "active" : ""}
                 >
                   Assigned Events
                 </Link>
               </li>
-              <li>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : (
-            <>
-              <li>
-                <Link
-                  to="/profile"
-                  className={isActive("/profile") ? "active" : ""}
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </li>
-            </>
-          )
+            )}
+            <li>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </>
         ) : (
           <>
             <li>
