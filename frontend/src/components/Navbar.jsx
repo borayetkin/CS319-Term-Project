@@ -45,8 +45,8 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
-                  to="/admin/admin-dashboard"
-                  className={isActive("/admin/admin-dashboard") ? "active" : ""}
+                  to="/dashboard"
+                  className={isActive("/dashboard") ? "active" : ""}
                 >
                   Admin Dashboard
                 </Link>
@@ -85,8 +85,8 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
-                  to="/coordinator/dashboard"
-                  className={isActive("/coordinator/dashboard") ? "active" : ""}
+                  to="/dashboard"
+                  className={isActive("/dashboard") ? "active" : ""}
                 >
                   Dashboard
                 </Link>

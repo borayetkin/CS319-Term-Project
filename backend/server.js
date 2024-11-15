@@ -4,7 +4,7 @@ const connectDB = require("./src/config/db");
 const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const tourRoutes = require("./src/routes/tourRoutes");
-const eventRoutes = require('./src/routes/eventRoutes');
+const eventRoutes = require("./src/routes/eventRoutes");
 const path = require("path");
 const cors = require("cors"); // Import CORS
 

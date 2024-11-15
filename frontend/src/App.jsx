@@ -10,12 +10,16 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Applications from "./pages/Applications";
 import Events from "./pages/Events";
-import AssignedEvents from "./pages/AssignedEvents"; // Import Assigned Events (Guide-specific)
-import Dashboard from "./pages/Dashboard"; // Coordinator-specific
+import AssignedEvents from "./pages/AssignedEvents";
+import {
+  AdminDashboard,
+  UsersTable,
+  SchoolPriority,
+  Settings,
+} from "./pages/AdminDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
-import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 
 function App() {
   return (
@@ -39,15 +43,21 @@ function App() {
           }
         />
 
-        {/* Coordinator Routes */}
+        {/* Admin and Coordinator Dashboard */}
         <Route
-          path="/coordinator/dashboard"
+          path="/dashboard"
           element={
-            <PrivateRoute allowedRoles={["coordinator"]}>
-              <Dashboard />
+            <PrivateRoute allowedRoles={["admin", "coordinator"]}>
+              <AdminDashboard />
             </PrivateRoute>
           }
-        />
+        >
+          <Route path="users" element={<UsersTable />} />
+          <Route path="schoolPriority" element={<SchoolPriority />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* Coordinator Routes */}
         <Route
           path="/coordinator/applications"
           element={
@@ -74,38 +84,13 @@ function App() {
             </PrivateRoute>
           }
         />
+
         {/* Guide Routes */}
         <Route
           path="/guide/assigned-events"
           element={
             <PrivateRoute allowedRoles={["guide"]}>
               <AssignedEvents />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Admin Routes */}
-        <Route
-          path="/admin/events"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <Events />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/applications"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <Applications />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/admin-dashboard"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
             </PrivateRoute>
           }
         />
