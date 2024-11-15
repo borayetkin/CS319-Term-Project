@@ -8,54 +8,109 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import TourApplication from "./pages/TourApplication";
-import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
+import Applications from "./pages/Applications";
+import Events from "./pages/Events";
+import AssignedEvents from "./pages/AssignedEvents"; // Import Assigned Events (Guide-specific)
+import Dashboard from "./pages/Dashboard"; // Coordinator-specific
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
-import AdminRoute from "./components/AdminRoute"; // Import AdminRoute
-import Event from "./pages/Event";
-import UsersPage from "./pages/DashboardPages/UsersPage"; // The current dashboard functionality
-import SettingsPage from "./pages/DashboardPages/SettingsPage"; // Additional page
-import SchoolPriorityPage from "./pages/DashboardPages/SchoolPriorityPage"; // Additional page
+import AdminDashboard from "./pages/AdminDashboard"; // Import AdminDashboard
 
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/tours" element={<TourApplication />} />
-        <Route path="/events" element={<TourApplication />} />
-        <Route path="/events/:id" element={<Event/>} />
-        {/* Protected Profile Route */}
+
+        {/* Private Routes */}
         <Route
           path="/profile"
           element={
-            <PrivateRoute>
+            <PrivateRoute
+              allowedRoles={["admin", "coordinator", "advisor", "guide"]}
+            >
               <Profile />
             </PrivateRoute>
           }
         />
 
-        {/* Protected Admin Route */}
+        {/* Coordinator Routes */}
         <Route
-          path="/admin"
+          path="/coordinator/dashboard"
           element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
+            <PrivateRoute allowedRoles={["coordinator"]}>
+              <Dashboard />
+            </PrivateRoute>
           }
-        >
-          <Route path="users" element={<UsersPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="schoolPriority" element={<SchoolPriorityPage />} />
-          {/* Add more nested routes as needed */}
-        </Route>
+        />
+        <Route
+          path="/coordinator/applications"
+          element={
+            <PrivateRoute allowedRoles={["coordinator"]}>
+              <Applications />
+            </PrivateRoute>
+          }
+        />
 
-        {/* Catch-all route */}
+        {/* Advisor Routes */}
+        <Route
+          path="/advisor/events"
+          element={
+            <PrivateRoute allowedRoles={["advisor"]}>
+              <Events />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/advisor/applications"
+          element={
+            <PrivateRoute allowedRoles={["advisor"]}>
+              <Applications />
+            </PrivateRoute>
+          }
+        />
+        {/* Guide Routes */}
+        <Route
+          path="/guide/assigned-events"
+          element={
+            <PrivateRoute allowedRoles={["guide"]}>
+              <AssignedEvents />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin/events"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Events />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/applications"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Applications />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/admin-dashboard"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Catch-all Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />

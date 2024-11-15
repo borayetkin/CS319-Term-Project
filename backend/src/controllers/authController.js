@@ -1,14 +1,14 @@
 const UserModel = require("../models/User");
-const bcrypt = require("bcryptjs"); 
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { saveUser, getUser } = require("./UserController");
 
 // Register a new user
 exports.signupUser = async (req, res) => {
-  const { name, email, birthdate, password, role } = req.body;
+  const { name, email, password, role } = req.body;
 
   // Check if all fields are provided
-  if (!name || !email || !password || !role || !birthdate) {
+  if (!name || !email || !password || !role) {
     return res.status(400).json({ message: "Please provide all fields" });
   }
 
@@ -22,11 +22,16 @@ exports.signupUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Conditionally assign the "admin" role (only if email matches or some criteria is met)
-    const isAdminEmail = email === "admin@gmail.com"; // Change this to the desired admin email
+    const isAdminEmail = email === "admin1@gmail.com"; // Change this to the desired admin email
     const userRole = isAdminEmail ? "admin" : role; // Default to "admin" if email matches
 
-    token = await saveUser({ name, email, password: hashedPassword, role: userRole, birthdate : birthdate })
-    
+    token = await saveUser({
+      name,
+      email,
+      password: hashedPassword,
+      role: userRole,
+    });
+
     res.status(201).json({ token, message: "User registered successfully" });
   } catch (err) {
     console.error(err);

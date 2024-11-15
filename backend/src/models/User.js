@@ -52,9 +52,6 @@ const userSchema = new mongoose.Schema({
       default: [],
     },
   ],
-  birthdate: {
-    type: Date,
-  },
   // Guide Attributes
   bilkentId: {
     type: Number,

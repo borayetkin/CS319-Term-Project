@@ -4,168 +4,234 @@ const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Fair = require("../models/Fair");
 
-
-module.exports.createSchoolTour = async (req, res) => {
-    try {
-        const schoolTour = new SchoolTour({
-            schoolName: req.body.schoolName,
-            contactPerson: req.body.contactPerson,
-            email: req.body.email,
-            visitDate: new Date(req.body.visitDate),
-            visitTime: req.body.visitTime,
-            city: req.body.city,
-            studentCount: req.body.studentCount,
-            additionalNotes: req.body.additionalNotes,
-            phoneNumber: req.body.phoneNumber
-        });
-        await schoolTour.save();
-
-        res.status(201).json({ 
-            message: 'School tour created successfully',
-            schoolTour
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Error creating school tour', 
-            error: error.message 
-        });
-    }
-};
-module.exports.createIndividualTour = async (req, res) => {
-  const { 
-    visitDate, 
-    studentHighSchool, 
-    studentName, 
-    additionalNotes = "", 
-    hoursOfWork = 3, 
-    requiredNumberOfGuides = 1, 
-    status = "pending" 
-  } = req.body;
-  
-  let tour = new IndividualTour({
-    visitDate,
-    studentHighSchool,
-    studentName,
-    additionalNotes,
-    hoursOfWork,
-    requiredNumberOfGuides,
-    status,
-    typeStr: "Individual Tour"
-  });
+// Create a school tour
+exports.createSchoolTour = async (req, res) => {
   try {
-    const savedTour = await tour.save();
-    res.status(201).json(savedTour);
+    const {
+      schoolName,
+      contactPerson,
+      email,
+      visitDate,
+      visitTime,
+      city,
+      studentCount,
+      additionalNotes,
+      phoneNumber,
+    } = req.body;
+
+    const schoolTour = new SchoolTour({
+      schoolName,
+      contactPerson,
+      email,
+      visitDate: new Date(visitDate),
+      visitTime,
+      city,
+      studentCount,
+      additionalNotes,
+      phoneNumber,
+    });
+
+    await schoolTour.save();
+
+    res.status(201).json({
+      message: "School tour created successfully",
+      schoolTour,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create individual tour" });
+    res.status(500).json({
+      message: "Error creating school tour",
+      error: error.message,
+    });
   }
 };
 
-module.exports.createFair = async (req, res) => {
-  const { visitDate, location, additionalNotes = "", hoursOfWork = 3, requiredNumberOfGuides = 1, status = "pending" } = req.body;
-  let fair = new Fair({
-    visitDate,
-    location,
-    additionalNotes,
-    hoursOfWork,
-    requiredNumberOfGuides,
-    status,
-  });
+// Create an individual tour
+exports.createIndividualTour = async (req, res) => {
   try {
+    const {
+      visitDate,
+      studentHighSchool,
+      studentName,
+      additionalNotes = "",
+      hoursOfWork = 3,
+      requiredNumberOfGuides = 1,
+      status = "pending",
+    } = req.body;
+
+    const individualTour = new IndividualTour({
+      visitDate,
+      studentHighSchool,
+      studentName,
+      additionalNotes,
+      hoursOfWork,
+      requiredNumberOfGuides,
+      status,
+      typeStr: "Individual Tour",
+    });
+
+    const savedTour = await individualTour.save();
+
+    res.status(201).json({
+      message: "Individual tour created successfully",
+      tour: savedTour,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to create individual tour",
+      error: error.message,
+    });
+  }
+};
+
+// Create a fair
+exports.createFair = async (req, res) => {
+  try {
+    const {
+      visitDate,
+      location,
+      additionalNotes = "",
+      hoursOfWork = 3,
+      requiredNumberOfGuides = 1,
+      status = "pending",
+    } = req.body;
+
+    const fair = new Fair({
+      visitDate,
+      location,
+      additionalNotes,
+      hoursOfWork,
+      requiredNumberOfGuides,
+      status,
+    });
+
     const savedFair = await fair.save();
-    res.status(201).json(savedFair);
+
+    res.status(201).json({
+      message: "Fair created successfully",
+      fair: savedFair,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create fair" });
+    res.status(500).json({
+      message: "Failed to create fair",
+      error: error.message,
+    });
   }
 };
 
-module.exports.destroyEvent = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const event = await Event.findById(id);
-    if (!event) {
-      return res.status(404).json({ error: "Id not found" });
-    }
-    await Event.findByIdAndDelete(id);
-    res.status(200).json({ message: "Event deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-module.exports.getEvent = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const event = await Event.findById(id);
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-    res.status(200).json(event);
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-module.exports.getAllEvents = async (req, res) => {
+// Get all events
+exports.getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ error: "Server Error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-module.exports.updateEvent = async (req, res) => {
-  const { eventId } = req.params;
-  console.log(eventId);
-  
-  const eventProp = req.body;
-  console.log(eventProp);
-  
+// Get a specific event
+exports.getEvent = async (req, res) => {
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, eventProp, { new: true });
-    res.status(200).json(updatedEvent);
-    
-  } catch (error) {
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-
-module.exports.asignAdvisorToTour = async (req, res) => {
-  const { advisorID, eventID } = req.body;
-  try {
-    const event = await Event.findById(eventID);
+    const { id } = req.params;
+    const event = await Event.findById(id);
     if (!event) {
-      return res.status(404).json({ error: "Event Not Found" });
+      return res.status(404).json({ message: "Event not found" });
     }
-    const advisor = await User.findById(advisorID);
-    if (!advisor) {
-      return res.status(404).json({ error: "User Not Found" });
-    }
-    if (advisor.role === "advisor" || advisor.role === "coordinator" || advisor.role === "admin") {
-      event.setAssignedAdvisor(advisorID);
-      await event.save();
-      res.status(200).json({ message: "Advisor assigned successfully" });
-    } else {
-      res.status(400).json({ error: "User is not an advisor or above" });
-    }
+    res.status(200).json(event);
   } catch (error) {
-    res.status(500).json({ error: "Server Error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-module.exports.notifyCoordinatorAboutFair = (req, res) => {
-  // To Be Implemented
-  res.status(501).json({ message: "Not implemented" });
-};
-
-module.exports.deleteEvent = async (req, res) => {
+// Update an event
+exports.updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    await Event.findByIdAndDelete(eventId);
-    res.status(200).json({ message: 'Event deleted successfully' });
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
+      new: true,
+    });
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({
+      message: "Event updated successfully",
+      event: updatedEvent,
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete event' });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+// Delete an event
+exports.deleteEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findByIdAndDelete(eventId);
 
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({ message: "Event deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to delete event", error: error.message });
+  }
+};
+
+// Assign advisor to a tour
+exports.assignAdvisorToTour = async (req, res) => {
+  try {
+    const { advisorID, eventID } = req.body;
+
+    const event = await Event.findById(eventID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const advisor = await User.findById(advisorID);
+    if (!advisor || advisor.role !== "advisor") {
+      return res.status(400).json({ message: "Invalid advisor ID" });
+    }
+
+    event.assignedAdvisor = advisorID;
+    await event.save();
+
+    res.status(200).json({ message: "Advisor assigned successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to assign advisor", error: error.message });
+  }
+};
+
+// Assign guide to an event
+exports.assignGuideToEvent = async (req, res) => {
+  try {
+    const { guideID, eventID } = req.body;
+
+    const event = await Event.findById(eventID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const guide = await User.findById(guideID);
+    if (!guide || guide.role !== "guide") {
+      return res.status(400).json({ message: "Invalid guide ID" });
+    }
+
+    if (!event.assignedGuides.includes(guideID)) {
+      event.assignedGuides.push(guideID);
+    }
+
+    await event.save();
+
+    res.status(200).json({ message: "Guide assigned successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to assign guide", error: error.message });
+  }
+};

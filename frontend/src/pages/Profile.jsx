@@ -4,6 +4,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    userType: "", // Add userType to the state
   });
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState(null);
@@ -20,7 +21,11 @@ const Profile = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          setFormData({ name: data.name, email: data.email });
+          setFormData({
+            name: data.name,
+            email: data.email,
+            userType: data.role,
+          }); // Include userType
         } else {
           console.error(data.message);
         }
@@ -47,7 +52,10 @@ const Profile = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email, // Only send updatable fields
+        }),
       });
 
       const data = await response.json();
@@ -91,6 +99,15 @@ const Profile = () => {
             value={formData.email}
             onChange={handleChange}
             required
+          />
+
+          <label htmlFor="userType">User Type:</label>
+          <input
+            type="text"
+            id="userType"
+            name="userType"
+            value={formData.userType} // Display userType
+            readOnly // Make the field read-only
           />
 
           <button type="submit">Update Profile</button>

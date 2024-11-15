@@ -1,38 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
 import "../styles/Navbar.css";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isCoordinator, setIsCoordinator] = useState(false);
+  const [role, setRole] = useState(""); // Store the user's role
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
       setIsLoggedIn(true);
-      const decodedToken = jwtDecode(token);
-      if (decodedToken.role === "admin") {
-        setIsAdmin(true);
-      }
-      if (decodedToken.role === "coordinator") {
-        setIsCoordinator(true);
-      }
+      setRole(decodedToken.role); // Set the user's role from the token
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    setIsAdmin(false);
-    setIsCoordinator(false);
+    setRole("");
     navigate("/");
   };
 
-  const isActive = (path) => location.pathname === path; // Helper function to check active link
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="navbar">
@@ -41,46 +33,128 @@ const Navbar = () => {
       </div>
       <ul className="nav-links">
         {isLoggedIn ? (
-          isCoordinator ? (
+          role === "admin" ? (
             <>
-              <li>
-                <Link
-                  to="/events"
-                  className={isActive("/events") ? "active" : ""}
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/applications"
-                  className={isActive("/applications") ? "active" : ""}
-                >
-                  Applications
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/guides"
-                  className={isActive("/guides") ? "active" : ""}
-                >
-                  Guides
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/availability"
-                  className={isActive("/availability") ? "active" : ""}
-                >
-                  Availability
-                </Link>
-              </li>
               <li>
                 <Link
                   to="/profile"
                   className={isActive("/profile") ? "active" : ""}
                 >
                   Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/admin-dashboard"
+                  className={isActive("/admin/admin-dashboard") ? "active" : ""}
+                >
+                  Admin Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/events"
+                  className={isActive("/admin/events") ? "active" : ""}
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/applications"
+                  className={isActive("/admin/applications") ? "active" : ""}
+                >
+                  Applications
+                </Link>
+              </li>
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : role === "coordinator" ? (
+            <>
+              <li>
+                <Link
+                  to="/profile"
+                  className={isActive("/profile") ? "active" : ""}
+                >
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/coordinator/dashboard"
+                  className={isActive("/coordinator/dashboard") ? "active" : ""}
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/coordinator/applications"
+                  className={
+                    isActive("/coordinator/applications") ? "active" : ""
+                  }
+                >
+                  Applications
+                </Link>
+              </li>
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : role === "advisor" ? (
+            <>
+              <li>
+                <Link
+                  to="/profile"
+                  className={isActive("/profile") ? "active" : ""}
+                >
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/advisor/events"
+                  className={isActive("/advisor/events") ? "active" : ""}
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/advisor/applications"
+                  className={isActive("/advisor/applications") ? "active" : ""}
+                >
+                  Applications
+                </Link>
+              </li>
+              <li>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : role === "guide" ? (
+            <>
+              <li>
+                <Link
+                  to="/profile"
+                  className={isActive("/profile") ? "active" : ""}
+                >
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/guide/assigned-events"
+                  className={isActive("/guide/assigned-events") ? "active" : ""}
+                >
+                  Assigned Events
                 </Link>
               </li>
               <li>
@@ -92,19 +166,6 @@ const Navbar = () => {
           ) : (
             <>
               <li>
-                <Link to="/" className={isActive("/") ? "active" : ""}>
-                  Applications
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/tours"
-                  className={isActive("/tours") ? "active" : ""}
-                >
-                  Tours
-                </Link>
-              </li>
-              <li>
                 <Link
                   to="/profile"
                   className={isActive("/profile") ? "active" : ""}
@@ -112,16 +173,6 @@ const Navbar = () => {
                   Profile
                 </Link>
               </li>
-              {isAdmin && (
-                <li>
-                  <Link
-                    to="/admin/users"
-                    className={isActive("/admin/users") ? "active" : ""}
-                  >
-                    Admin Dashboard
-                  </Link>
-                </li>
-              )}
               <li>
                 <button className="logout-button" onClick={handleLogout}>
                   Logout
@@ -132,18 +183,16 @@ const Navbar = () => {
         ) : (
           <>
             <li>
-              <Link to="/" className={isActive("/") ? "active" : ""}>
-                Home
+              <Link to="/login" className={isActive("/login") ? "active" : ""}>
+                Login
               </Link>
             </li>
             <li>
-              <Link to="/tours" className={isActive("/tours") ? "active" : ""}>
-                Tours
-              </Link>
-            </li>
-            <li>
-              <Link className="auth-button" to="/login">
-                Log in
+              <Link
+                to="/signup"
+                className={isActive("/signup") ? "active" : ""}
+              >
+                Signup
               </Link>
             </li>
           </>
