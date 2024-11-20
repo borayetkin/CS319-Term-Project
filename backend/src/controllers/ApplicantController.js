@@ -1,10 +1,16 @@
 const Applicant = require('../models/Applicant');
 // Create a new applicant
 exports.createApplicant = async (req, res) => {
+
     try {
-        const { name, email, phone } = req.body;
+
+        const { name, email, phoneNumber } = req.body;
+
+        
+        
+        
         // Validate input fields
-        if (!name || !email || !phone) {
+        if (!name || !email || !phoneNumber) {
             return res.status(400).send("All fields are required");
         }
         // Validate email format
@@ -15,7 +21,7 @@ exports.createApplicant = async (req, res) => {
         // Additional validation can be added here (e.g., phone number format)
         const applicant = new Applicant(req.body);
         await applicant.save();
-        res.status(201).send(applicant);
+        res.status(201).json(applicant);
     } catch (error) {
         console.error(error);
         res.status(400).send("Server error");
@@ -55,7 +61,7 @@ exports.getApplicantById = async (req, res) => {
     if (!applicant) {
       return res.status(404).send("Applicant not found");
     }
-    res.status(200).send(applicant);
+    res.status(200).json(applicant);
   } catch (error) {
     console.error(error);
     

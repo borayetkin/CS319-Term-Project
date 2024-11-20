@@ -15,4 +15,6 @@ fairSchema.methods.setLocation = function (location) {
 
 
 const Fair = Event.discriminator("Fair", fairSchema);
+Object.assign(fairSchema.methods, Event.schema.methods);
+
 module.exports = Fair;

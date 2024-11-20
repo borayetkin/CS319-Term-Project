@@ -1,13 +1,28 @@
 const Event = require("../models/Event");
 const User = require("../models/User");
+const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Fair = require("../models/Fair");
+const mongoose = require("mongoose");
 
+const ApplicantController = require("./ApplicantController");
+const Applicant = require("../models/Applicant");
+// Get events with status "accepted"
+
+exports.getAcceptedEvents = async (req, res) => {
+  try {
+    const acceptedEvents = await Event.find({ status: "accepted" });
+    res.status(200).json(acceptedEvents);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 // Create a school tour
 exports.createSchoolTour = async (req, res) => {
   try {
     const {
+      applicant,
       schoolName,
       contactPerson,
       email,
@@ -20,6 +35,7 @@ exports.createSchoolTour = async (req, res) => {
     } = req.body;
 
     const schoolTour = new SchoolTour({
+      applicant,
       schoolName,
       contactPerson,
       email,
@@ -30,9 +46,12 @@ exports.createSchoolTour = async (req, res) => {
       additionalNotes,
       phoneNumber,
     });
+    schoolTour.setRequiredNumberOfGuides();
+    schoolTour.addToApplicantEvents();
+    schoolTour.setWeekday();
 
+    
     await schoolTour.save();
-
     res.status(201).json({
       message: "School tour created successfully",
       schoolTour,
@@ -49,6 +68,7 @@ exports.createSchoolTour = async (req, res) => {
 exports.createIndividualTour = async (req, res) => {
   try {
     const {
+      applicant,
       visitDate,
       studentHighSchool,
       studentName,
@@ -59,6 +79,7 @@ exports.createIndividualTour = async (req, res) => {
     } = req.body;
 
     const individualTour = new IndividualTour({
+      applicant,
       visitDate,
       studentHighSchool,
       studentName,
@@ -68,6 +89,8 @@ exports.createIndividualTour = async (req, res) => {
       status,
       typeStr: "Individual Tour",
     });
+    savedTour.addToApplicantEvents();
+    savedTour.setWeekday();
 
     const savedTour = await individualTour.save();
 
@@ -103,7 +126,8 @@ exports.createFair = async (req, res) => {
       requiredNumberOfGuides,
       status,
     });
-
+    savedFair.addToApplicantEvents();
+    savedFair.setWeekday();
     const savedFair = await fair.save();
 
     res.status(201).json({
@@ -122,6 +146,7 @@ exports.createFair = async (req, res) => {
 exports.getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
+
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -145,19 +170,37 @@ exports.getEvent = async (req, res) => {
 // Update an event
 exports.updateEvent = async (req, res) => {
   try {
+    const { userrole, userid } = req.headers;
     const { eventId } = req.params;
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
-      new: true,
-    });
+    if (req.body.status && req.body.status == "accepted") {
+      try {
+        
+        const foundUser = await User.findById(userid);
+        const advisor = new Advisor(foundUser) 
+        await advisor.acceptTourApplication(eventId);
+        await advisor.save();
+        res.status(200).json({
+          message: "Event updated successfully",
+        });
+      } catch (error) {
 
-    if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found" });
+        console.error(error)
+        res.status(500).json({ message: "Server error", error: error.message });
+      }
+    } else {
+      const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
+        new: true,
+      });
+
+      if (!updatedEvent) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      res.status(200).json({
+        message: "Event updated successfully",
+        event: updatedEvent,
+      });
     }
-
-    res.status(200).json({
-      message: "Event updated successfully",
-      event: updatedEvent,
-    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -168,6 +211,9 @@ exports.deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     const event = await Event.findByIdAndDelete(eventId);
+    const applicant = await Applicant.findByIdAndDelete(
+      event.applicant.applicantID
+    );
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });

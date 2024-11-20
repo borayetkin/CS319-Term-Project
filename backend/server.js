@@ -5,6 +5,7 @@ const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const tourRoutes = require("./src/routes/tourRoutes");
 const eventRoutes = require("./src/routes/eventRoutes");
+const applicantRoutes = require("./src/routes/ApplicantRoutes");
 const path = require("path");
 const cors = require("cors"); // Import CORS
 
@@ -35,6 +36,7 @@ app.use("/api", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/applicants", applicantRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

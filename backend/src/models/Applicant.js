@@ -17,17 +17,13 @@ const applicantSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  event :{
-   type: mongoose.Schema.Types.ObjectId, ref: 'Event'
-  },
+  events :
+   [{type: mongoose.Schema.Types.ObjectId, ref: 'Event'}]
+  ,
 });
 applicantSchema.methods.saveEvent = async function(eventId) {
   try {
-    const event = await Event.findById(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-    this.event = eventId;
+    this.events.push(eventId);
     return this.save();
   } catch (error) {
     throw new Error(`Failed to save event: ${error.message}`);

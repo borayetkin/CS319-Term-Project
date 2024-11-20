@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import Event from "./pages/Event";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -17,7 +18,9 @@ import SchoolPriorityPage from "./pages/DashboardPages/SchoolPriorityPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import TourApplication from "./pages/TourApplication"
 import PrivateRoute from "./components/PrivateRoute";
+import AddUser from "./pages/DashboardPages/AddUser";
 
 function App() {
   return (
@@ -28,6 +31,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/apply" element={<TourApplication />} />
 
         {/* Private Routes */}
         <Route
@@ -51,6 +55,7 @@ function App() {
           }
         >
           <Route path="users" element={<UsersPage />} />
+          <Route path="adduser" element={<AddUser />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="schoolPriority" element={<SchoolPriorityPage />} />
         </Route>
@@ -79,12 +84,12 @@ function App() {
         <Route
           path="/assigned-events"
           element={
-            <PrivateRoute allowedRoles={["admin", "guide"]}>
+            <PrivateRoute allowedRoles={["admin", "guide"]}> {/*I do not think admin should see this */}
               <AssignedEvents />
             </PrivateRoute>
           }
         />
-
+  <Route path="/events/:id" element={<Event/>} />
         {/* Catch-all Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

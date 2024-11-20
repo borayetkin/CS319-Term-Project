@@ -3,7 +3,12 @@ const User = require('./User');
 const Applicant = require('./Applicant');
 const eventSchema = new mongoose.Schema({
   applicant: {
-    type:{type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'}, // For now, will be updated with a new applicant class
+    applicantID : [{type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'}],
+    name:{
+      type: String,
+      required: true,
+    }
+// For now, will be updated with a new applicant class
   },
   visitDate : {
     type: Date,
@@ -12,7 +17,7 @@ const eventSchema = new mongoose.Schema({
   assignedUsers: [{
     type: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}], default: []
   }],
-  reqiredNumberOfGuides : {
+  requiredNumberOfGuides : {
     type: Number,
     default : 1
   },
@@ -36,7 +41,12 @@ const eventSchema = new mongoose.Schema({
   additionalNotes :{
     type: String,
     default : ""
-  }
+  },
+    weekday : {
+        type : String,
+        default: "Monday",
+        enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    }
 });
 
 eventSchema.methods.changeDate =  function (date ){
@@ -81,6 +91,22 @@ eventSchema.methods.getAssignees = function () {
 eventSchema.methods.getApplicant = function () {
     return this.applicant
 }
+eventSchema.methods.addToApplicantEvents = function () {
 
+  
+  return Applicant.findById(this.applicant.applicantID)
+    .then(applicant => {
+      if (!applicant) {
+        return Promise.reject(new Error('Applicant not found'));
+      }
+
+      
+      return applicant.saveEvent(this._id);
+    });
+}
+eventSchema.methods.setWeekday = function () {
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  this.weekday = daysOfWeek[this.visitDate.getDay()];
+}
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;

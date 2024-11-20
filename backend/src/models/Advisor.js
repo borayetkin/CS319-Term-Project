@@ -16,20 +16,23 @@ const advisorSchema = new mongoose.Schema({
     ],
     required: true,
   },
-  dayApplications: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] }],
-  },
+  dayApplications:  [{ type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] }],
+
 });
 
 advisorSchema.methods.updateAssignedDay = function (day) {
   this.assignedDay = day
   return this.save()
 }
-advisorSchema.methods.acceptTourApplication = function (eventID) {
+advisorSchema.methods.acceptTourApplication = async function (eventID) {
   try {
-    return Event.findByIdAndUpdate(eventID, {status: "accepted"})
+    this.addAssignedEvent(eventID);
+    this.dayApplications.push(eventID);
+    
+    return Event.findByIdAndUpdate(eventID, {status: "accepted" , $push : {assignedUsers : this._id}});
     
   } catch (error) {
+    
     return Promise.reject(new Error("Server Error"))
   }
 }
@@ -40,4 +43,6 @@ advisorSchema.methods.addDayApplication = function (eventID) {
 
 
 const Advisor = User.discriminator("Advisor", advisorSchema);
+Object.assign(advisorSchema.methods, User.schema.methods);
+
 module.exports = Advisor;

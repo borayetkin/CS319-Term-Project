@@ -1,6 +1,7 @@
 // UsersPage.js
 import React, { useEffect, useState } from "react";
 import "../../styles/UsersPage.css"; // Import CSS
+import { Link } from "react-router-dom";
 
 
 const UsersPage = () => {
@@ -108,9 +109,15 @@ const UsersPage = () => {
                   </select>
                 </td>
                 <td>
-                <button className="delete-button" onClick={() => deleteUser(user._id)}>Delete</button>                </td>
+                  <button className="delete-button" onClick={() => deleteUser(user._id)}>Delete</button>
+                </td>
               </tr>
             ))}
+            <tr>
+              <td colSpan="4" className="add-user-link">
+                <Link to="/dashboard/adduser">Add User</Link>
+              </td>
+            </tr>
           </tbody>
         </table>
       ) : (

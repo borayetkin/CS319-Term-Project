@@ -4,6 +4,7 @@ const auth = require("../middleware/authMiddleware");
 
 // Destructure the required functions from the controller
 const {
+  getAcceptedEvents,
   createSchoolTour,
   createIndividualTour,
   createFair,
@@ -16,12 +17,13 @@ const {
 } = require("../controllers/EventController");
 
 // Routes for creating events
-router.post("/schooltours", auth, createSchoolTour);
-router.post("/individualtours", auth, createIndividualTour);
-router.post("/fairs", auth, createFair);
+router.post("/schooltours", createSchoolTour);
+router.post("/individualtours",  createIndividualTour);
+router.post("/fairs",createFair);
 
 // Routes for fetching events
 router.get("/", auth, getAllEvents);
+router.get("/accepted", auth, getAcceptedEvents);
 router.get("/:id", auth, getEvent);
 
 // Routes for updating and deleting events

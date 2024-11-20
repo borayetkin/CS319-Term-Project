@@ -1,0 +1,69 @@
+.applications-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    text-align: center;
+   
+}
+
+.applications-container h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.filter-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-controls label {
+    margin-right: 10px;
+}
+
+.filter-controls select {
+    padding: 5px;
+    font-size: 1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    color: black;
+    text-align: left;
+}
+tbody tr button{
+    display: inline-block;
+    width: auto;
+    margin: 0 .2rem;
+}
+tbody tr button.delete{
+    display: inline-block;
+    width: auto;
+    background-color: rgb(180, 24, 24);
+    margin: 0 .2rem;
+}
+table th {
+    background-color: #f2f2f2;
+}
+
+tbody tr.accepted {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+tbody tr.rejected {
+    background-color: #f8d7da;
+    color: #fe293f;
+}
+
+tbody  tr.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}

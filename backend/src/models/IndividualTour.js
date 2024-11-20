@@ -35,5 +35,7 @@ individualTourSchema.methods.setAssignedAdvisor = function (advisorId){
 }
 
 const IndividualTour = Event.discriminator("IndividualTour", individualTourSchema);
+Object.assign(individualTourSchema.methods, Event.schema.methods);
+
 module.exports = IndividualTour;
   

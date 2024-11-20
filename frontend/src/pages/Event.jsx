@@ -10,9 +10,14 @@ const Event = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEvent = async () => {
+    
+    const fetchEvent = async (token) => {
       try {
-        const response = await fetch(`http://localhost:3000/api/events/${id}`);
+        const response = await fetch(`http://localhost:3000/api/events/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch event");
         }
@@ -26,7 +31,10 @@ const Event = () => {
       }
     };
 
-    fetchEvent();
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchEvent(token); // Fetch events if logged in
+    }
   }, [id]);
 
   if (isLoading) {

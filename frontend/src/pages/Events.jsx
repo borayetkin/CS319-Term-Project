@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import '../styles/Events.css'
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -9,9 +10,14 @@ const Events = () => {
   const [filterType, setFilterType] = useState("");
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchAcceptedEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/events");
+        const response = await fetch("http://localhost:3000/api/events/accepted", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
@@ -24,7 +30,14 @@ const Events = () => {
       }
     };
 
-    fetchEvents();
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchAcceptedEvents(token); // Fetch events if logged in
+    } else {
+      setError("Authorization Denied");
+    }
+
+
   }, []);
 
   const sortEvents = (events, option) => {
@@ -42,6 +55,7 @@ const Events = () => {
 
   const filteredEvents = events.filter((event) =>
     filterType ? event.__t === filterType : true
+
   );
 
   const sortedEvents = sortEvents(filteredEvents, sortOption);
@@ -56,7 +70,7 @@ const Events = () => {
 
   return (
     <div className="events-container">
-      <h1>Events</h1>
+      <h1>CONFIRMED EVENTS</h1>
 
       <div className="filter-sort-controls">
         <div className="filter-controls">
@@ -87,7 +101,7 @@ const Events = () => {
       </div>
 
       {sortedEvents.length > 0 ? (
-        <table className="events-table">
+        <table className="">
           <thead>
             <tr>
               <th>Name</th>
@@ -100,7 +114,7 @@ const Events = () => {
           </thead>
           <tbody>
             {sortedEvents.map((event) => (
-              <tr key={event._id}>
+              <tr key={event._id} className="pending">
                 <td>{event.name}</td>
                 <td>{event.__t.replace(/([a-z])([A-Z])/g, "$1 $2")}</td>
                 <td>{new Date(event.visitDate).toLocaleDateString()}</td>

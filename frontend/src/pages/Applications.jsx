@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from "react";
+import "../styles/Applications.css";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [message, setMessage] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      fetchUserProfile(token);
       fetchApplications(token);
     }
   }, []);
-
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else {
+        setMessage("Failed to fetch user profile");
+      }
+    } catch (error) {
+      setMessage("Error fetching user profile: " + error.message);
+    }
+  };
   const fetchApplications = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/events", {
@@ -38,6 +56,8 @@ const Applications = () => {
         {
           method: "PUT",
           headers: {
+            userrole: user.role,
+            userid : user._id,
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
@@ -54,15 +74,41 @@ const Applications = () => {
       setMessage("Error: " + error.message);
     }
   };
+  const handleDelete = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        setMessage("Application deleted successfully.");
+        fetchApplications(token); // Refresh applications
+      } else {
+        setMessage("Failed to delete application.");
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+    }
+  };
 
-  const filteredApplications =
-    filterStatus === "all"
-      ? applications
-      : applications.filter((app) => app.status === filterStatus);
-
+  const filteredApplications = applications.filter((app) => {
+    if (filterStatus !== "all" && app.status !== filterStatus) {
+      return false;
+    }
+    if (user && user.role === "advisor" && user.assignedDay) {
+      console.log(app.weekday);
+      
+      const visitDay = app.weekday;
+      return visitDay === user.assignedDay;
+    }
+    return true;
+  });
   return (
     <div className="applications-container">
-      <h1>Applications</h1>
+      <h1>APPLICATIONS</h1>
       {message && <p>{message}</p>}
       <div className="filter-controls">
         <label htmlFor="filter">Filter by Status:</label>
@@ -89,26 +135,38 @@ const Applications = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredApplications.map((app) => (
-              <tr key={app._id}>
-                <td>{app.applicant || "N/A"}</td>
-                <td>{app.typeStr}</td>
-                <td>{new Date(app.visitDate).toLocaleDateString()}</td>
-                <td>{app.status}</td>
-                <td>
-                  {app.status === "pending" && (
-                    <>
-                      <button onClick={() => handleAction(app._id, "accepted")}>
-                        Accept
-                      </button>
-                      <button onClick={() => handleAction(app._id, "rejected")}>
-                        Decline
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredApplications.map((app) => {
+              let className = "";
+              if (app.status === "accepted") {
+                className = "accepted";
+              } else if (app.status === "rejected") {
+                className = "rejected";
+              } else {
+                className = "pending";
+              }
+
+              return (
+                <tr key={app._id} className={className}>
+                  <td>{app.applicant.name || "N/A"}</td>
+                  <td>{app.__t}</td>
+                  <td>{new Date(app.visitDate).toLocaleDateString()}</td>
+                  <td>{app.status}</td>
+                  <td>
+                    {app.status === "pending" && (
+                      <>
+                        <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
+                          Accept
+                        </button>
+                        <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
+                          Decline
+                        </button>
+                        <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
-
+import "../styles/UsersPage.css"
+import Events from "./Events";
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [events, setEvents] = useState([]);
@@ -136,125 +137,9 @@ const Home = () => {
   return (
     <div>
       {isLoggedIn ? (
-        <div className="event-applications">
-          <h1>Current Event Applications</h1>
-
-          <div className="filter-controls">
-            <button onClick={toggleEventType} className="toggle-button">
-              {showIndividualTours
-                ? "Show School Tours"
-                : "Show Individual Tours"}
-            </button>
-
-            <div className="sort-options">
-              <label htmlFor="sort">Sort by:</label>
-              <select id="sort" value={sortOption} onChange={handleSortChange}>
-                <option value="visitDate">Visit Date</option>
-                <option value="applicant">Applicant</option>
-                <option value="requiredNumberOfGuides">Required Guides</option>
-              </select>
-            </div>
-          </div>
-
-          {sortedEvents.length > 0 ? (
-            <table className="event-table">
-              <thead>
-                <tr>
-                  {showIndividualTours ? (
-                    <>
-                      <th>High School</th>
-                      <th>Student Name</th>
-                    </>
-                  ) : (
-                    <>
-                      <th>School Name</th>
-                      <th>Contact Person</th>
-                    </>
-                  )}
-                  <th>Event Type</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Location</th>
-                  {!showIndividualTours && <th>Student Count</th>}
-                  <th>Required Guides</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedEvents.map((event) => {  
-                  let isRejected = event.status === "rejected"
-                  let isAccepted = event.status === "accepted"
-                  let isPending = !isAccepted && !isRejected 
-
-                  let className = isRejected ? "link rejected"  : "link"
-                  className += isAccepted ? " accepted"  : ""
-                  className += isPending? " pending" : ""
-                return(
-          
-                  
-                  <tr key={event._id} className={ className} onClick={()=>openEventPage(event._id)}>
-                    
-                    {showIndividualTours ? (
-                      <>
-                        <td>{event.studentHighSchool || "N/A"}</td>
-                        <td>{event.studentName || "N/A"}</td>
-                      </>
-                    ) : (
-                      <>
-                        <td>{event.schoolName || "N/A"}</td>
-                        <td>{event.contactPerson || "N/A"}</td>
-                      </>
-                    )}
-                    <td>{event.typeStr}</td>
-                    <td>{new Date(event.visitDate).toLocaleDateString()}</td>
-                    <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
-                    <td>{event.city || event.location || "N/A"}</td>
-                    {!showIndividualTours && (
-                      <td>{event.studentCount || "N/A"}</td>
-                    )}
-                    <td>{event.requiredNumberOfGuides || 1}</td>
-                    <td>{event.status.toUpperCase() || "pending"}</td>
-                    <td>{event.additionalNotes || "N/A"}</td>
-                    
-                    <td onClick={(e) => e.stopPropagation()}>
-                       { isPending && <button
-                        onClick={(e) => {e.stopPropagation();    
-                          handleDecline(event._id);}}
-                        className="decline-button"
-                      >
-                        Decline
-                      </button>}
-                
-                    </td>
-                    <td onClick={(e) => e.stopPropagation()}>
-                       { isPending && <button
-                        onClick={(e) => {e.stopPropagation();    
-                          handleAccept(event._id);}}
-                        className="decline-button"
-                      >
-                        Accept
-                      </button>}
-                
-                    </td>
-
-
-
-   
-                  </tr>
-              
-                )})}
-              </tbody>
-            </table>
-          ) : (
-            <p className="no-events-message">
-              No {showIndividualTours ? "individual tour" : "school tour"}{" "}
-              applications found.
-            </p>
-          )}
-        </div>
+        
+          <Events/>
+     
       ) : (
         <div className="home-container">
           <section className="home-welcome-section">
@@ -265,7 +150,7 @@ const Home = () => {
                 üniversitenin sunduğu fırsatları ve etkinlikleri yerinde
                 görebilirsiniz.
               </p>
-              <Link to="/tours" className="home-cta-button">
+              <Link to="/apply" className="home-cta-button">
                 Etkinliklere Göz At
               </Link>
             </div>

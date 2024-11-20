@@ -14,10 +14,6 @@ const schoolTourSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    visitDate: {
-        type: Date,
-        required: true
-    },
     visitTime: {
         type: String,
         required: true
@@ -38,6 +34,7 @@ const schoolTourSchema = new mongoose.Schema({
         type: String,
         required: true
     }
+
 });
 
 schoolTourSchema.methods.setAssignedAdvisor = function (advisorId){
@@ -48,11 +45,17 @@ schoolTourSchema.methods.setAssignedAdvisor = function (advisorId){
         return Promise.reject(new Error("Server Error"))
     }
 }
+schoolTourSchema.methods.setRequiredNumberOfGuides = function (){
+    this.requiredNumberOfGuides = parseInt((this.studentCount / 60),10);
+    
+}
 
 schoolTourSchema.methods.setRating = function (rating){
     this.rating = rating
     return this.save()
 }
+
 const SchoolTour = Event.discriminator("SchoolTour", schoolTourSchema);
+Object.assign(schoolTourSchema.methods, Event.schema.methods);
 module.exports = SchoolTour;
   

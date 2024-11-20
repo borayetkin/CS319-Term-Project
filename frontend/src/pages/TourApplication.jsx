@@ -33,6 +33,7 @@ const TourApplication = () => {
       tourType === "school"
         ? "/api/events/schooltours"
         : "/api/events/individualtours";
+
     const dateTime = new Date(`${formData.visitDate}T${formData.visitTime}`);
 
     const requestData =
@@ -52,21 +53,42 @@ const TourApplication = () => {
             additionalNotes: formData.additionalNotes,
             typeStr: "Individual Tour",
           };
-
     try {
+      const response2 = await fetch(`http://localhost:3000/api/applicants`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body:
+          tourType === "school"
+            ? JSON.stringify({
+                name: formData.schoolName,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+              })
+            : {
+              name : formData.contactPerson,
+              email: formData.email,
+              phoneNumber: formData.phoneNumber
+            },
+      });
+      const data = await response2.json();
+
+      
+
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({ applicant: {applicantID : data._id, name :data.name}, ...requestData}),
       });
+      const data2 = await response.json();
 
-      const data = await response.json();
-      if (response.ok) {
+      if (response.ok && response2.ok) {
         setMessage("Tour application submitted successfully!");
       } else {
-        setMessage("Error: " + data.message);
+        setMessage("Error: " + data2.message);
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");
@@ -145,7 +167,7 @@ const TourApplication = () => {
               onChange={handleChange}
               required
               placeholder="0 5XX XXX XX XX"
-              pattern="0 5\d{2} \d{3} \d{2} \d{2}"
+              pattern="05\d{9}"
               title="Please enter a valid Turkish phone number (e.g., 0 5XX XXX XX XX)"
             />
 
