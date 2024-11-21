@@ -160,17 +160,18 @@ const Applications = () => {
                   <td>{new Date(app.visitDate).toLocaleDateString()}</td>
                   <td>{app.status}</td>
                   <td>
-                    {app.status === "pending" && (
+                    
                       <>
+                      {app.status === "pending" && (<>
                         <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
                           Accept
                         </button>
                         <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
                           Decline
-                        </button>
+                        </button></>)}
                         <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
                       </>
-                    )}
+                    
                   </td>
                 </tr>
               );

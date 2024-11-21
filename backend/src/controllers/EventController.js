@@ -18,7 +18,7 @@ exports.getAcceptedEvents = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-exports.getAcceptedEventsOfUser = async (req, res) => {
+exports.getAssigneddEventsOfUser = async (req, res) => {
   try {
     let userparams = req.user;
 

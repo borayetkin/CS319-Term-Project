@@ -6,7 +6,7 @@ const AddUser = () => {
     name: "",
     email: "",
     password: "",
-    role: "user", // default role
+    role: "guide", // default role
     assignedDay: "", // for advisors
   });
   const [success, setSuccess] = useState("");
@@ -28,7 +28,8 @@ const AddUser = () => {
         },
         body: JSON.stringify(formData),
       });
-
+      console.log(formData);
+      
       const data = await response.json();
       if (response.ok) {
         setSuccess(data.message);
@@ -36,7 +37,7 @@ const AddUser = () => {
           name: "",
           email: "",
           password: "",
-          role: "user",
+          role: "guide",
           assignedDay: "",
         });
       } else {
@@ -96,9 +97,9 @@ const AddUser = () => {
             onChange={handleChange}
             required
           >
-            <option value="user">User</option>
+            <option value="guide">Guide</option>
             <option value="advisor">Advisor</option>
-            <option value="admin">Admin</option>
+            <option value="coordinator">Coordinator</option>
           </select>
         </div>
         {formData.role === "advisor" && (

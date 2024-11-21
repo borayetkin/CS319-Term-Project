@@ -15,7 +15,7 @@ const {
   assignAdvisorToTour,
   assignGuideToEvent,
   getEventAssignees,
-  getAcceptedEventsOfUser,
+  getAssigneddEventsOfUser,
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
   
@@ -27,9 +27,9 @@ router.post("/individualtours",  createIndividualTour);
 router.post("/fairs",createFair);
 
 // Routes for fetching events
-router.get("/", auth, getAllEvents);
+router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);
-router.get("/user", auth, getAcceptedEventsOfUser);
+router.get("/user", auth, getAssigneddEventsOfUser);
 router.get("/advisor", auth, getApplicationsOfAdvisor);
 router.get("/:id", auth, getEvent);
 router.get("/:id/assignees", auth, getEventAssignees);
