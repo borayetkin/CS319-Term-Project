@@ -3,9 +3,9 @@ const {
   loginUser,
   signupUser,
   getProfile,
-  updateProfile,
+  updateUser,
   getAllUsers,
-} = require("../controllers/authController");
+} = require("../controllers/UserController");
 const auth = require("../middleware/authMiddleware"); // Middleware for protecting routes
 const adminAuth = require("../middleware/adminMiddleware"); // Middleware for admin-specific routes
 const router = express.Router();
@@ -20,7 +20,7 @@ router.post("/signup", signupUser);
 router.get("/profile", auth, getProfile);
 
 // Update user profile (protected route)
-router.put("/profile", auth, updateProfile);
+router.put("/profile", auth, updateUser);
 
 // Get all users (admin-only route)
 router.get("/users", [auth, adminAuth], getAllUsers);

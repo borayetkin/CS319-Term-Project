@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import '../styles/Events.css'
+import '../../styles/GuidePages/Events.css'
+import EventRow from "../../components/EventRow";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
+
   const [sortOption, setSortOption] = useState("visitDate");
   const [filterType, setFilterType] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchAcceptedEvents = async () => {
@@ -22,6 +26,7 @@ const Events = () => {
           throw new Error("Failed to fetch events");
         }
         const data = await response.json();
+        fetchUserProfile(token);
         setEvents(data);
         setIsLoading(false);
       } catch (error) {
@@ -30,6 +35,7 @@ const Events = () => {
       }
     };
 
+    
     const token = localStorage.getItem("token");
     if (token) {
       fetchAcceptedEvents(token); // Fetch events if logged in
@@ -40,6 +46,81 @@ const Events = () => {
 
   }, []);
 
+
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+
+
+      } else {
+        setMessage("Failed to fetch user profile");
+      }
+    } catch (error) {
+      setMessage("Error fetching user profile: " + error.message);
+    }
+  };
+  const addToAssignedEvents = async(eventId) =>{
+    try {
+      const token = localStorage.getItem("token");
+
+      
+      const response = await fetch(
+        `http://localhost:3000/api/events/assign-guide`,
+        {
+          method: "POST",
+          headers: {
+            userrole: user.role,
+            userid : user._id,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ eventID : eventId, userID : user._id }),
+        }
+      );
+      if (response.ok) {
+        setMessage(`Assigned To Event successfully.`);
+        window.location.reload();
+      } else {
+        setMessage(`Failed to assign application.`);
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+    }
+  }
+  const removeAssignedEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:3000/api/events/remove-guide`,
+        {
+          method: "POST",
+          headers: {
+            userrole: user.role,
+            userid: user._id,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ eventID: eventId, userID: user._id }),
+        }
+      );
+      if (response.ok) {
+        setMessage(`Removed from Event successfully.`);
+        window.location.reload();
+      } else {
+        setMessage(`Failed to remove from event.`);
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+    }
+  };
   const sortEvents = (events, option) => {
     return [...events].sort((a, b) => {
       if (option === "name") {
@@ -71,7 +152,7 @@ const Events = () => {
   return (
     <div className="events-container">
       <h1>CONFIRMED EVENTS</h1>
-
+    {message && <div>{message}</div>}
       <div className="filter-sort-controls">
         <div className="filter-controls">
           <label htmlFor="filterType">Filter by type:</label>
@@ -114,18 +195,13 @@ const Events = () => {
           </thead>
           <tbody>
             {sortedEvents.map((event) => (
-              <tr key={event._id} className="pending">
-                <td>{event.name}</td>
-                <td>{event.__t.replace(/([a-z])([A-Z])/g, "$1 $2")}</td>
-                <td>{new Date(event.visitDate).toLocaleDateString()}</td>
-                <td>{event.requiredNumberOfGuides}</td>
-                <td>{event.status}</td>
-                <td>
-                  <Link to={`/events/${event._id}`} className="view-details">
-                    View Details
-                  </Link>
-                </td>
-              </tr>
+              <EventRow
+              key={event._id}
+              event={event}
+              user={user}
+              addToAssignedEvents={addToAssignedEvents}
+              removeAssignedEvent={removeAssignedEvent}
+            />
             ))}
           </tbody>
         </table>

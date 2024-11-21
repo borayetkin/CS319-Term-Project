@@ -21,7 +21,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setRole("");
-    navigate("/");
+    window.location.href = "/"
   };
 
   const isActive = (path) => location.pathname === path;
@@ -52,7 +52,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {["admin", "advisor"].includes(role) && (
+            {["admin", "advisor", "guide"].includes(role) && (
               <li>
                 <Link
                   to="/events"
@@ -72,7 +72,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {["admin", "guide"].includes(role) && (
+            {["admin","advisor", "guide"].includes(role) && (
               <li>
                 <Link
                   to="/assigned-events"

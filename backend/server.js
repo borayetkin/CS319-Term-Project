@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 const connectDB = require("./src/config/db");
 const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
-const tourRoutes = require("./src/routes/tourRoutes");
 const eventRoutes = require("./src/routes/eventRoutes");
 const applicantRoutes = require("./src/routes/ApplicantRoutes");
 const path = require("path");
@@ -34,7 +33,6 @@ app.use(express.static(path.join(__dirname, "public")));
 // API Routes
 app.use("/api", adminRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/tours", tourRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/applicants", applicantRoutes);
 

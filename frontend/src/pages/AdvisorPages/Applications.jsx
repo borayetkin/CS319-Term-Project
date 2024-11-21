@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Applications.css";
+import "../../styles/AdvisorPages/Applications.css";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [message, setMessage] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserProfile(token);
-      fetchApplications(token);
+      
     }
   }, []);
   const fetchUserProfile = async (token) => {
@@ -23,6 +24,7 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
+        fetchApplications(token,data);
       } else {
         setMessage("Failed to fetch user profile");
       }
@@ -30,9 +32,15 @@ const Applications = () => {
       setMessage("Error fetching user profile: " + error.message);
     }
   };
-  const fetchApplications = async (token) => {
+  const fetchApplications = async (token,us) => {
     try {
-      const response = await fetch("http://localhost:3000/api/events", {
+      console.log(us);
+      
+      const response = us.role === "advisor" ? await fetch(`http://localhost:3000/api/events/advisor`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }) :await fetch(`http://localhost:3000/api/events/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,7 +74,7 @@ const Applications = () => {
       );
       if (response.ok) {
         setMessage(`Application ${status} successfully.`);
-        fetchApplications(token); // Refresh applications
+        fetchApplications(token,user); // Refresh applications
       } else {
         setMessage(`Failed to ${status} application.`);
       }
@@ -85,7 +93,7 @@ const Applications = () => {
       });
       if (response.ok) {
         setMessage("Application deleted successfully.");
-        fetchApplications(token); // Refresh applications
+        fetchApplications(token,user); // Refresh applications
       } else {
         setMessage("Failed to delete application.");
       }

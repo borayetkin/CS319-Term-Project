@@ -18,6 +18,39 @@ exports.getAcceptedEvents = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+exports.getAcceptedEventsOfUser = async (req, res) => {
+  try {
+    let userparams = req.user;
+
+    if (userparams.role !== "coordinator") {
+      const user2 = await User.findById(userparams.id);
+      const acceptedEvents = await Event.find({
+        _id: { $in: user2.assignedEvents },
+      });
+      res.status(200).json(acceptedEvents);
+    } else {
+      const acceptedEvents = await Event.find({ status: "accepted" });
+      res.status(200).json(acceptedEvents);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+exports.getApplicationsOfAdvisor = async (req, res) => {
+  try {
+    let userparams = req.user;
+
+    if (userparams.role === "advisor") {
+      const user2 = await User.findById(userparams.id);
+      const acceptedEvents = await Event.find({ weekday: user2.assignedDay });
+      res.status(200).json(acceptedEvents);
+    } else {
+      res.status(401).json({ error: "Access Denied" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 // Create a school tour
 exports.createSchoolTour = async (req, res) => {
   try {
@@ -50,7 +83,6 @@ exports.createSchoolTour = async (req, res) => {
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
 
-    
     await schoolTour.save();
     res.status(201).json({
       message: "School tour created successfully",
@@ -174,17 +206,15 @@ exports.updateEvent = async (req, res) => {
     const { eventId } = req.params;
     if (req.body.status && req.body.status == "accepted") {
       try {
-        
         const foundUser = await User.findById(userid);
-        const advisor = new Advisor(foundUser) 
+        const advisor = new Advisor(foundUser);
         await advisor.acceptTourApplication(eventId);
         await advisor.save();
         res.status(200).json({
           message: "Event updated successfully",
         });
       } catch (error) {
-
-        console.error(error)
+        console.error(error);
         res.status(500).json({ message: "Server error", error: error.message });
       }
     } else {
@@ -256,28 +286,96 @@ exports.assignAdvisorToTour = async (req, res) => {
 // Assign guide to an event
 exports.assignGuideToEvent = async (req, res) => {
   try {
-    const { guideID, eventID } = req.body;
+    const { userID, eventID } = req.body;
 
+    
     const event = await Event.findById(eventID);
+    
+    
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const guide = await User.findById(guideID);
-    if (!guide || guide.role !== "guide") {
+    
+    const guide = await User.findById(userID);
+    if (!guide ) {
       return res.status(400).json({ message: "Invalid guide ID" });
     }
-
-    if (!event.assignedGuides.includes(guideID)) {
-      event.assignedGuides.push(guideID);
+  
+    
+    if (!event.assignedUsers.includes(userID)) {
+      event.assignedUsers.push(userID);
     }
-
+    
     await event.save();
-
+    
+    try {
+      guide.addAssignedEvent(eventID);
+      
+    } catch (error) {
+      res
+      .status(400)
+      .json({ message: "Failed to assign guide", error: error.message });
+    }
+    await guide.save()
     res.status(200).json({ message: "Guide assigned successfully" });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Failed to assign guide", error: error.message });
+  }
+};
+
+exports.removeAssignedGuideFromEvent = async (req, res) => {
+  try {
+    const { userID, eventID } = req.body;
+
+    const event = await Event.findById(eventID);
+    const user = await User.findById(userID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    try {
+      await event.removeAssignee(userID);
+      await user.removeAssignedEvent(eventID);
+      await event.save()
+      await user.save()
+    } catch (error) {
+      return res.status(404).json({ message: error.message });
+      
+    }
+
+    // const guideIndex = event.assignedGuides.indexOf(guideID);
+    // if (guideIndex === -1) {
+    //   return res.status(400).json({ message: "Guide not assigned to this event" });
+    // }
+
+    // event.assignedGuides.splice(guideIndex, 1);
+    // await event.save();
+
+    res.status(200).json({ message: "Guide removed successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to remove guide", error: error.message });
+  }
+};
+
+exports.getEventAssignees = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const assignees = await User.find({ _id: { $in: event.assignedUsers } });
+
+    res.status(200).json(assignees);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

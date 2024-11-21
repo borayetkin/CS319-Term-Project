@@ -63,8 +63,17 @@ userSchema.methods.acceptTour = function acceptTour(tourId) {
 userSchema.methods.addAssignedEvent = function (eventId) {
   if (!this.assignedEvents.includes(eventId)) {
     this.assignedEvents.push(eventId);
+  } else{
+    return new Error("Event already assigned")
+  }
+};
+userSchema.methods.removeAssignedEvent = function (eventId) {
+  const index = this.assignedEvents.indexOf(eventId);
+  if (index > -1) {
+    this.assignedEvents.splice(index, 1);
+    return this.save();
   } else {
-    return Promise.reject(new Error("Event already assigned"));
+    return Promise.reject(new Error("Event not assigned"));
   }
 };
 userSchema.methods.completeEvent = function (eventId) {

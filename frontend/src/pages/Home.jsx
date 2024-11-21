@@ -2,24 +2,22 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
 import "../styles/UsersPage.css"
-import Events from "./Events";
+
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [sortOption, setSortOption] = useState("visitDate");
-  const [showIndividualTours, setShowIndividualTours] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchEvents(token); // Fetch events if logged in
+      checkLoggedin(token); // Fetch events if logged in
     }
   }, []);
-  const openEventPage = (eventId) => {
-    window.location.href = (`/events/${eventId}`)
+  const openEvents = () => {
+    window.location.href = (`/events`)
   }
   // Fetch events from the backend
-  const fetchEvents = async (token) => {
+  const checkLoggedin = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/events", {
         headers: {
@@ -31,114 +29,19 @@ const Home = () => {
         localStorage.clear();
       } else {
         setIsLoggedIn(true);
-        const data = await response.json();
-        setEvents(data);
       }
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   };
 
-  const sortEvents = (events, option) => {
-    return [...events].sort((a, b) => {
-      if (option === "applicant") {
-        return a.applicant.localeCompare(b.applicant);
-      } else if (option === "visitDate") {
-        return new Date(a.visitDate) - new Date(b.visitDate);
-      } else if (option === "requiredNumberOfGuides") {
-        return b.requiredNumberOfGuides - a.requiredNumberOfGuides;
-      }
-      return 0;
-    });
-  };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const filteredEvents = events.filter((event) => {
-    if (showIndividualTours) {
-      return event.__t === "IndividualTour";
-    }
-    return event.__t === "SchoolTour";
-  });
-
-  const toggleEventType = () => {
-    setShowIndividualTours(!showIndividualTours);
-  };
-
-  const sortedEvents = sortEvents(filteredEvents, sortOption);
-
-  const handleDecline = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:3000/api/events/${eventId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "rejected"
-          })
-        }
-      );
-
-      if (response.ok) {
-        window.location.reload()
-        //const response2 = await response.changeStatus("rejected")
-        //console.log(response2);
-        
-        //event.decline()
-        // Remove the event from the local state
-        //setEvents(events.filter((event) => event._id !== eventId));
-      } else {
-        console.error("Failed to decline application");
-      }
-    } catch (error) {
-      console.error("Error declining application:", error);
-    }
-  };
-  const handleAccept = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:3000/api/events/${eventId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "accepted"
-          })
-        }
-      );
-
-      if (response.ok) {
-        window.location.reload()
-        //const response2 = await response.changeStatus("rejected")
-        //console.log(response2);
-        
-        //event.decline()
-        // Remove the event from the local state
-        //setEvents(events.filter((event) => event._id !== eventId));
-      } else {
-        console.error("Failed to decline application");
-      }
-    } catch (error) {
-      console.error("Error declining application:", error);
-    }
-  };
 
   return (
     <div>
       {isLoggedIn ? (
-        
-          <Events/>
+          
+          
+          openEvents()
      
       ) : (
         <div className="home-container">

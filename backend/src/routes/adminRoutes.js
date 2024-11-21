@@ -3,7 +3,7 @@ const {
   getAllUsers,
   deleteUser,
   updateUserRole,
-} = require("../controllers/adminController");
+} = require("../controllers/UserController");
 const adminAuth = require("../middleware/adminMiddleware"); // Middleware for admin-only access
 const router = express.Router();
 

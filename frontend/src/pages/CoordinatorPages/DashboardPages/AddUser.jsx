@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/AddUser.css";
+import "../../../styles/CoordinatorPages/AddUser.css"
 
 const AddUser = () => {
   const [formData, setFormData] = useState({

@@ -57,15 +57,15 @@ eventSchema.methods.changeStatus = function (status){
     this.status = status
     return this.save()
 }
-eventSchema.methods.addAssignee = function (userId){
+eventSchema.methods.addAssignee = async function (userId){
     if(!this.assignedUsers.includes(userId)){
         this.assignedUsers.push(userId)
         return this.save()
        }else {
-        return Promise.reject(new Error('User has already been assigned'))
+        return new Error('User has already been assigned')
        }
 }
-eventSchema.methods.removeAssignee = function (userId){
+eventSchema.methods.removeAssignee = async function (userId){
     const index = this.assignedUsers.indexOf(userId);
 
   if (index > -1) {

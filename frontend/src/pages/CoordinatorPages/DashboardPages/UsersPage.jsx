@@ -1,6 +1,6 @@
 // UsersPage.js
 import React, { useEffect, useState } from "react";
-import "../../styles/UsersPage.css"; // Import CSS
+import "../../../styles/UsersPage.css"; // Import CSS
 import { Link } from "react-router-dom";
 
 

@@ -9,18 +9,18 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import Applications from "./pages/Applications";
-import Events from "./pages/Events";
-import AssignedEvents from "./pages/AssignedEvents";
-import UsersPage from "./pages/DashboardPages/UsersPage";
-import SettingsPage from "./pages/DashboardPages/SettingsPage";
-import SchoolPriorityPage from "./pages/DashboardPages/SchoolPriorityPage";
-import AdminDashboard from "./pages/AdminDashboard";
+import Applications from "./pages/AdvisorPages/Applications";
+import Events from "./pages/GuidePages/Events";
+import AssignedEvents from "./pages/GuidePages/AssignedEvents";
+import UsersPage from "./pages/CoordinatorPages/DashboardPages/UsersPage";
+import SettingsPage from "./pages/CoordinatorPages/DashboardPages/SettingsPage";
+import SchoolPriorityPage from "./pages/CoordinatorPages/DashboardPages/SchoolPriorityPage";
+import AdminDashboard from "./pages/CoordinatorPages/AdminDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import TourApplication from "./pages/TourApplication"
 import PrivateRoute from "./components/PrivateRoute";
-import AddUser from "./pages/DashboardPages/AddUser";
+import AddUser from "./pages/CoordinatorPages/DashboardPages/AddUser";
 
 function App() {
   return (
@@ -64,7 +64,7 @@ function App() {
         <Route
           path="/events"
           element={
-            <PrivateRoute allowedRoles={["admin", "advisor"]}>
+            <PrivateRoute allowedRoles={["admin", "advisor","guide"]}>
               <Events />
             </PrivateRoute>
           }
@@ -84,7 +84,7 @@ function App() {
         <Route
           path="/assigned-events"
           element={
-            <PrivateRoute allowedRoles={["admin", "guide"]}> {/*I do not think admin should see this */}
+            <PrivateRoute allowedRoles={["admin","advisor", "guide"]}> {/*I do not think admin should see this */}
               <AssignedEvents />
             </PrivateRoute>
           }

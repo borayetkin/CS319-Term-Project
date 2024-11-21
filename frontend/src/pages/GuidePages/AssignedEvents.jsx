@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import  '../../styles/GuidePages/Events.css'
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
   const [message, setMessage] = useState("");
@@ -14,7 +14,7 @@ const AssignedEvents = () => {
   const fetchAssignedEvents = async (token) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/events/assigned",
+        "http://localhost:3000/api/events/user",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -24,6 +24,8 @@ const AssignedEvents = () => {
 
       if (response.ok) {
         const data = await response.json();
+
+        
         setAssignedEvents(data);
       } else {
         setMessage("Failed to fetch assigned events.");
@@ -34,7 +36,7 @@ const AssignedEvents = () => {
   };
 
   return (
-    <div className="assigned-events-container">
+    <div className="events-container">
       <h1>Assigned Events</h1>
       {message && <p>{message}</p>}
       {assignedEvents.length > 0 ? (
@@ -44,17 +46,17 @@ const AssignedEvents = () => {
               <th>Event Name</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Location</th>
+ 
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {assignedEvents.map((event) => (
               <tr key={event._id}>
-                <td>{event.name || "N/A"}</td>
-                <td>{new Date(event.date).toLocaleDateString()}</td>
-                <td>{new Date(event.date).toLocaleTimeString()}</td>
-                <td>{event.location || "N/A"}</td>
+                <td>{event.applicant.name || "N/A"}</td>
+                <td>{new Date(event.visitDate).toLocaleDateString()}</td>
+                <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
+     
                 <td>{event.status}</td>
               </tr>
             ))}
