@@ -8,6 +8,9 @@ const AdminDashboard = () => (
       <h2>Dashboard Menu</h2>
       <ul>
         <li>
+          <Link to="/dashboard/ManageFairs">Manage Fairs</Link>
+        </li>
+        <li>
           <Link to="/dashboard/users">View Users</Link>
         </li>
         <li>
