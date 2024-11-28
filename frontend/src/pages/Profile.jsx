@@ -4,7 +4,8 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    userType: "", // Add userType to the state
+    userType: "",
+    assignedDay: "" // Add userType to the state
   });
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState(null);
@@ -25,6 +26,7 @@ const Profile = () => {
             name: data.name,
             email: data.email,
             userType: data.role,
+            assignedDay : data.assignedDay ? data.assignedDay : ""
           }); // Include userType
         } else {
           console.error(data.message);
@@ -38,6 +40,8 @@ const Profile = () => {
   }, []);
 
   const handleChange = (e) => {
+    
+    
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -54,7 +58,8 @@ const Profile = () => {
         },
         body: JSON.stringify({
           name: formData.name,
-          email: formData.email, // Only send updatable fields
+          email: formData.email,
+          assignedDay: formData.assignedDay ? formData.assignedDay : "" // Only send updatable fields
         }),
       });
 
@@ -100,6 +105,17 @@ const Profile = () => {
             onChange={handleChange}
             required
           />
+
+          { formData.userType === "advisor" && (<>
+            <label htmlFor="assignedDay">Assigned Day:</label>
+          <input
+            type="text"
+            id="assignedDay"
+            name="assignedDay"
+            value={formData.assignedDay}
+            onChange={handleChange}
+            required
+          /></>)}
 
           <label htmlFor="userType">User Type:</label>
           <input

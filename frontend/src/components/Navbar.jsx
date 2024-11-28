@@ -24,8 +24,6 @@ const Navbar = () => {
       });
    
       if (response.ok) {
-        console.log("wtf");
-        
         setIsLoggedIn(true);
         const decodedToken = JSON.parse(atob(token.split(".")[1]));
         setRole(decodedToken.role);
