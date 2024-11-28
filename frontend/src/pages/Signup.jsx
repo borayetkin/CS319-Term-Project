@@ -6,6 +6,7 @@ const Signup = () => {
     email: "",
     password: "",
     role: "guide", // Default role
+    assignedDay : ""
   });
 
   const [error, setError] = useState(null);
@@ -90,7 +91,18 @@ const Signup = () => {
           <option value="coordinator">Coordinator</option>
           <option value="advisor">Advisor</option>
         </select>
-
+        {formData.role === "advisor" && (
+          <div className="form-group">
+            <label htmlFor="assignedDay">Assigned Day:</label>
+            <input
+              type="text"
+              id="assignedDay"
+              name="assignedDay"
+              value={formData.assignedDay}
+              onChange={handleChange}
+              required
+            />
+          </div>)}
         <button type="submit">Sign Up</button>
       </form>
     </div>

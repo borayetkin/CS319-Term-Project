@@ -121,8 +121,8 @@ exports.createIndividualTour = async (req, res) => {
       status,
       typeStr: "Individual Tour",
     });
-    savedTour.addToApplicantEvents();
-    savedTour.setWeekday();
+    individualTour.addToApplicantEvents();
+    individualTour.setWeekday();
 
     const savedTour = await individualTour.save();
 
@@ -212,10 +212,18 @@ exports.updateEvent = async (req, res) => {
     if (req.body.status && req.body.status == "accepted") {
       try {
         const foundUser = await User.findById(userid);
+        if (foundUser.role !== "advisor") {
+  
+          
+          return res.status(401).json({
+            message: "Coordinators cannot accept applications",
+          });  
+                
+        }
         const advisor = new Advisor(foundUser);
         await advisor.acceptTourApplication(eventId);
         await advisor.save();
-        res.status(200).json({
+        return res.status(200).json({
           message: "Event updated successfully",
         });
       } catch (error) {

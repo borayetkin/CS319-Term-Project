@@ -18,7 +18,9 @@ const saveUser = async ({ name, email, password, role }) =>{
 }
 exports.updateUser = async (req, res) => {
   try {
-    let user = await User.findById(req.params.id);
+
+    
+    let user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
