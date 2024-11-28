@@ -66,11 +66,11 @@ const TourApplication = () => {
                 email: formData.email,
                 phoneNumber: formData.phoneNumber,
               })
-            : {
+            : JSON.stringify({
               name : formData.contactPerson,
               email: formData.email,
               phoneNumber: formData.phoneNumber
-            },
+            }),
       });
       const data = await response2.json();
 

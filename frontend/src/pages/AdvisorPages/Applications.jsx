@@ -34,7 +34,7 @@ const Applications = () => {
   };
   const fetchApplications = async (token,us) => {
     try {
-      console.log(us);
+
       
       const response = us.role === "advisor" ? await fetch(`http://localhost:3000/api/events/advisor`, {
         headers: {
@@ -49,7 +49,8 @@ const Applications = () => {
         const data = await response.json();
         setApplications(data);
       } else {
-        setMessage("Failed to fetch applications");
+
+        setMessage(`Failed to fetch applications`);
       }
     } catch (error) {
       setMessage("Error fetching applications: " + error.message);
@@ -76,7 +77,9 @@ const Applications = () => {
         setMessage(`Application ${status} successfully.`);
         fetchApplications(token,user); // Refresh applications
       } else {
-        setMessage(`Failed to ${status} application.`);
+        const errData = await response.json();
+
+        setMessage(`Failed to ${status} application: ${errData.message}`);
       }
     } catch (error) {
       setMessage("Error: " + error.message);
@@ -107,7 +110,7 @@ const Applications = () => {
       return false;
     }
     if (user && user.role === "advisor" && user.assignedDay) {
-      console.log(app.weekday);
+
       
       const visitDay = app.weekday;
       return visitDay === user.assignedDay;

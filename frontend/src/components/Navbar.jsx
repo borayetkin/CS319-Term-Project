@@ -11,11 +11,30 @@ const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      setIsLoggedIn(true);
-      setRole(decodedToken.role);
+      if (checkAuth(token)) {
+        
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        setIsLoggedIn(true);
+        setRole(decodedToken.role);
+      }
     }
   }, []);
+  const checkAuth = async (token) => {
+    try {
+      const response = await fetch("/api/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        return false
+      }
+      return true
+    } catch (error) {
+      return false
+
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
