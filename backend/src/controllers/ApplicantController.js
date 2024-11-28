@@ -6,9 +6,6 @@ exports.createApplicant = async (req, res) => {
 
         const { name, email, phoneNumber } = req.body;
 
-        
-        
-        
         // Validate input fields
         if (!name || !email || !phoneNumber) {
             return res.status(400).send("All fields are required");

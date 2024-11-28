@@ -57,6 +57,15 @@ const Home = () => {
                 Etkinliklere Göz At
               </Link>
             </div>
+            <div className="home-text-container">
+                <h1>fair application </h1>
+                <p>
+                   şimdilik test için buraya ekledim, navbara taşıyacağım.
+                </p>
+                <Link to="/invite" className="home-cta-button">
+                    fair invitation form
+                </Link>
+            </div>
           </section>
           <section className="home-info-section">
             <div className="home-info-container">
@@ -79,6 +88,7 @@ const Home = () => {
                 olarak kütüphaneyi gezeceksiniz.
               </p>
             </div>
+
           </section>
         </div>
       )}

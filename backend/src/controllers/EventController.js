@@ -142,7 +142,9 @@ exports.createIndividualTour = async (req, res) => {
 exports.createFair = async (req, res) => {
   try {
     const {
+      applicant,
       visitDate,
+      fairTime,
       location,
       additionalNotes = "",
       hoursOfWork = 3,
@@ -151,20 +153,23 @@ exports.createFair = async (req, res) => {
     } = req.body;
 
     const fair = new Fair({
-      visitDate,
+      applicant,
+      visitDate: new Date(visitDate),
       location,
       additionalNotes,
       hoursOfWork,
       requiredNumberOfGuides,
       status,
     });
-    savedFair.addToApplicantEvents();
-    savedFair.setWeekday();
-    const savedFair = await fair.save();
+    fair.addToApplicantEvents();
+    fair.setWeekday();
+    fair.setLocation();
+    fair.setStatus();
 
+    await fair.save();
     res.status(201).json({
       message: "Fair created successfully",
-      fair: savedFair,
+      fair,
     });
   } catch (error) {
     res.status(500).json({

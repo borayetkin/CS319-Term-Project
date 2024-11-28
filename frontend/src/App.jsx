@@ -22,6 +22,7 @@ import Footer from "./components/Footer";
 import TourApplication from "./pages/TourApplication"
 import PrivateRoute from "./components/PrivateRoute";
 import AddUser from "./pages/CoordinatorPages/DashboardPages/AddUser";
+import FairApplication from "./pages/FairApplication";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/apply" element={<TourApplication />} />
+        <Route path="/invite" element={<FairApplication />}/>
 
         {/* Private Routes */}
         <Route

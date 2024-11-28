@@ -14,13 +14,13 @@ const fairSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    city: {
+        type: String,
+        required: true
+    },
     additionalNotes: {
         type: String,
         default: "",
-    },
-    hoursOfWork: {
-        type: Number,
-        default: 3,
     },
 
   });
@@ -43,14 +43,6 @@ fairSchema.methods.setStatus = function (status) {
   return Promise.reject(new Error("Invalid status"));
 };
 
-fairSchema.methods.setAssignedAdvisor = function (advisorId) {
-  try {
-    this.assignedUsers[0] = advisorId;
-    return this.save();
-  } catch (error) {
-    return Promise.reject(new Error("Server Error"));
-  }
-};
 
 
 
