@@ -8,29 +8,34 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
+  useEffect( () => {
     const token = localStorage.getItem("token");
+    
     if (token) {
-      if (checkAuth(token)) {
-        
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        setIsLoggedIn(true);
-        setRole(decodedToken.role);
-      }
+      checkAuth(token)
     }
   }, []);
   const checkAuth = async (token) => {
     try {
       const response = await fetch("/api/profile", {
-        headers: {
+        headers: JSON.stringify({
           Authorization: `Bearer ${token}`,
-        },
+        }),
       });
       if (!response.ok) {
+        localStorage.clear()
+        
         return false
       }
+      setIsLoggedIn(true);
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      setRole(decodedToken.role);
+      
       return true
     } catch (error) {
+      localStorage.clear()
+
+      console.log("data");
       return false
 
     }
@@ -42,10 +47,11 @@ const Navbar = () => {
     setRole("");
     window.location.href = "/"
   };
-
+  
   const isActive = (path) => location.pathname === path;
 
   return (
+    
     <nav className="navbar">
       <div className="logo">
         <Link to="/">ATOM</Link>
