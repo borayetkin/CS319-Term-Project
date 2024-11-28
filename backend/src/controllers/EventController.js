@@ -107,6 +107,7 @@ exports.createIndividualTour = async (req, res) => {
       additionalNotes = "",
       hoursOfWork = 3,
       requiredNumberOfGuides = 1,
+      
       status = "pending",
     } = req.body;
 

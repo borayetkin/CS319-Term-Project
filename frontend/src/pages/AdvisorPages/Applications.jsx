@@ -6,6 +6,7 @@ const Applications = () => {
   const [message, setMessage] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
+  const [tourType, setTourType] = useState("all");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,6 +110,9 @@ const Applications = () => {
     if (filterStatus !== "all" && app.status !== filterStatus) {
       return false;
     }
+    if (tourType !== "all" && app.__t !== tourType) {
+      return false;
+    }
     if (user && user.role === "advisor" && user.assignedDay) {
 
       
@@ -134,15 +138,40 @@ const Applications = () => {
           <option value="rejected">Rejected</option>
         </select>
       </div>
+      <div className="tour-type-controls">
+        <button onClick={() => setTourType(tourType === "SchoolTour" ? "IndividualTour" : "SchoolTour")}>
+          {tourType === "SchoolTour" ? "Show Individual Tours" : "Show School Tours"}
+        </button>
+      </div>
       {filteredApplications.length > 0 ? (
         <table>
           <thead>
             <tr>
-              <th>Applicant</th>
-              <th>Type</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              {tourType === "SchoolTour" ? (
+                <>
+                  <th>High School Name</th>
+                  <th>City</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Student Amount</th>
+                  <th>Applicant Name</th>
+                  <th>Applicant Email</th>
+                  <th>Applicant Number</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </>
+              ) : (
+                <>
+                  <th>Applicant Name</th>
+                  <th>Student High School</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Person Email</th>
+                  <th>Person Number</th>
+                  <th>Major of Interest</th>
+                  <th>Actions</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -158,24 +187,53 @@ const Applications = () => {
 
               return (
                 <tr key={app._id} className={className}>
-                  <td>{app.applicant.name || "N/A"}</td>
-                  <td>{app.__t}</td>
-                  <td>{new Date(app.visitDate).toLocaleDateString()}</td>
-                  <td>{app.status}</td>
-                  <td>
-                    
-                      <>
-                      {app.status === "pending" && (<>
-                        <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
-                          Accept
-                        </button>
-                        <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
-                          Decline
-                        </button></>)}
-                        <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
-                      </>
-                    
-                  </td>
+                  {tourType === "SchoolTour" ? (
+                    <>
+                      <td>{app.schoolName || "N/A"}</td>
+                      <td>{app.city || "N/A"}</td>
+                      <td>{new Date(app.visitDate).toLocaleDateString()}</td>
+                      <td>{app.visitTime || "N/A"}</td>
+                      <td>{app.studentCount || "N/A"}</td>
+                      <td>{app.contactPerson || "N/A"}</td>
+                      <td>{app.email || "N/A"}</td>
+                      <td>{app.phoneNumber || "N/A"}</td>
+                      <td>{app.status}</td>
+                      <td>
+                        <>
+                          {app.status === "pending" && (<>
+                            <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
+                              Accept
+                            </button>
+                            <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
+                              Decline
+                            </button></>)}
+                          <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
+                        </>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{app.studentName || "N/A"}</td>
+                      <td>{app.studentHighSchool || "N/A"}</td>
+                      <td>{new Date(app.visitDate).toLocaleDateString()}</td>
+                      <td>{app.visitTime || "N/A"}</td>
+                      <td>{app.personEmail || "N/A"}</td>
+                      <td>{app.personNumber || "N/A"}</td>
+                      <td>{app.majorOfInterest || "N/A"}</td>
+                      <td>
+                        <>
+                          {app.status === "pending" && (<>
+                            <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
+                              Accept
+                            </button>
+                            <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
+                              Decline
+                            </button></>)}
+                          <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
+                        </>
+                      </td>
+                    </>
+                  )}
                 </tr>
               );
             })}
