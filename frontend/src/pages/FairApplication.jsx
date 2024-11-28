@@ -3,41 +3,63 @@ import "../styles/FairApplication.css";
 
 const FairApplication = () => {
   const [formData, setFormData] = useState({
-    fairName: "",
-    organizerName: "",
-    email: "",
-    phoneNumber: "",
-    fairDate: "",
+   applicantName: "",
+    schoolName: "",
     city: "",
+    visitDate: "",
+    fairTime: "",
+    location: "",
     additionalNotes: "",
   });
+
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:3000/api/fairs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
+ const handleSubmit = async (e) => {
+   e.preventDefault();
 
-      if (response.ok) {
-        setMessage("Fair invitation submitted successfully!");
-      } else {
-        setMessage("Error: " + data.message);
-      }
-    } catch (error) {
-      setMessage("An error occurred. Please try again.");
-    }
-  };
+   const { applicantName, ...fairData } = formData; // Extract applicantName
+   const fairRequestData = {
+     ...fairData,
+     applicant: { name: applicantName }, // Nest applicant name properly
+   };
+
+   try {
+     // Log payload to verify
+     console.log("Fair Request Data:", JSON.stringify(fairRequestData));
+
+     // Send POST request to backend
+     const response = await fetch("http://localhost:3000/api/events/fairs", {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+       },
+       body: JSON.stringify(fairRequestData),
+     })  .then((response) => {
+           if (!response.ok) {
+             throw new Error('Network response was not ok');
+           }
+           return response.json();
+         })
+         .then((data) => console.log(data))
+         .catch((error) => console.error('Fetch error:', error));
+
+     const data = await response.json();
+
+     if (response.ok) {
+       setMessage("Fair application submitted successfully!");
+     } else {
+       setMessage(`Error: ${data.message}`);
+     }
+   } catch (error) {
+     setMessage("An error occurred. Please try again.");
+   }
+ };
+
 
   return (
     <section className="fair-application-section">
@@ -45,64 +67,27 @@ const FairApplication = () => {
         <h1>Submit a Fair Invitation</h1>
         {message && <p className="fair-application-message">{message}</p>}
 
-        <p className="fair-application-description">
-          Please fill out the form below to invite Bilkent University to your fair.
-          We will review your invitation and respond via email based on our availability.
-        </p>
-
         <form onSubmit={handleSubmit} className="fair-application-form">
-          <label htmlFor="fairName">Fair Name:</label>
+          <label htmlFor="applicantName">Applicant Name:</label>
           <input
             type="text"
-            id="fairName"
-            name="fairName"
-            value={formData.fairName}
+            id="applicantName"
+            name="applicantName"
+            value={formData.applicantName}
             onChange={handleChange}
             required
+            placeholder="Enter your name or organization"
           />
 
-          <label htmlFor="organizerName">Organizer Name:</label>
+          <label htmlFor="schoolName">School Name:</label>
           <input
             type="text"
-            id="organizerName"
-            name="organizerName"
-            value={formData.organizerName}
+            id="schoolName"
+            name="schoolName"
+            value={formData.schoolName}
             onChange={handleChange}
             required
-          />
-
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="example@example.com"
-          />
-
-          <label htmlFor="phoneNumber">Phone Number:</label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-            placeholder="0 5XX XXX XX XX"
-            pattern="05\d{9}"
-            title="Please enter a valid Turkish phone number (e.g., 0 5XX XXX XX XX)"
-          />
-
-          <label htmlFor="fairDate">Fair Date:</label>
-          <input
-            type="date"
-            id="fairDate"
-            name="fairDate"
-            value={formData.fairDate}
-            onChange={handleChange}
-            required
+            placeholder="Enter the school name"
           />
 
           <label htmlFor="city">City:</label>
@@ -113,6 +98,38 @@ const FairApplication = () => {
             value={formData.city}
             onChange={handleChange}
             required
+            placeholder="Enter the city"
+          />
+
+          <label htmlFor="visitDate">Fair Date:</label>
+          <input
+            type="date"
+            id="visitDate"
+            name="visitDate"
+            value={formData.visitDate}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="fairTime">Fair Time:</label>
+          <input
+            type="time"
+            id="fairTime"
+            name="fairTime"
+            value={formData.fairTime}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="location">Location (Detailed Address):</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            placeholder="Enter the detailed location"
           />
 
           <label htmlFor="additionalNotes">Additional Notes:</label>
@@ -121,6 +138,7 @@ const FairApplication = () => {
             name="additionalNotes"
             value={formData.additionalNotes}
             onChange={handleChange}
+            placeholder="Add any additional information"
           />
 
           <button type="submit" className="fair-application-submit">

@@ -143,30 +143,48 @@ exports.createFair = async (req, res) => {
   try {
     const {
       applicant,
+      schoolName,
+      city,
       visitDate,
       fairTime,
       location,
       additionalNotes = "",
-      hoursOfWork = 3,
+      hoursOfWork = 6,
       requiredNumberOfGuides = 1,
       status = "pending",
     } = req.body;
 
+    // Validate required fields
+    if (!applicant || !visitDate || !fairTime || !location) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    let existingApplicant = await Applicant.findOne({ name: applicant.name });
+    if (!existingApplicant) {
+       existingApplicant = new Applicant({ name: applicant.name });
+       await existingApplicant.save();
+    }
+
     const fair = new Fair({
-      applicant,
+      applicant: existingApplicant._id,
+      schoolName,
+      city,
       visitDate: new Date(visitDate),
+      fairTime,
       location,
       additionalNotes,
       hoursOfWork,
       requiredNumberOfGuides,
       status,
     });
-    fair.addToApplicantEvents();
-    fair.setWeekday();
-    fair.setLocation();
-    fair.setStatus();
+    console.log(applicant,schoolName,city,visitDate,fairTime,location,additionalNotes);
+
+
+    fair.addToApplicantEvents(); // Ensure this method is implemented
+    fair.setWeekday();          // Set the weekday
 
     await fair.save();
+
     res.status(201).json({
       message: "Fair created successfully",
       fair,
