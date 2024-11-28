@@ -1,0 +1,49 @@
+/* EventRow.css */
+
+.event-row {
+    transition: background-color 0.3s ease;
+  }
+  
+  .event-row:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .event-row td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .event-row .view-details {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .event-row .view-details:hover {
+    text-decoration: underline;
+  }
+  
+  .event-row .assign-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .event-row .assign-button:hover {
+    background-color: #218838;
+  }
+  
+  .event-row .unassign-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .event-row .unassign-button:hover {
+    background-color: #c82333;
+  }

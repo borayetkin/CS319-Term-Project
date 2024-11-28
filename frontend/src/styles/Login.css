@@ -1,0 +1,161 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.login-left {
+  flex: 1.6;
+  background-image: url("login_background3.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 50px;
+  position: relative;
+}
+
+.login-left::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(138, 43, 226, 0.5),
+    rgba(187, 29, 150, 0.8),
+    rgba(43, 67, 226, 0.2)
+  );
+  background-size: 300% 300%;
+  animation: gradientAnimation 6s ease infinite; /* Apply animation */
+  z-index: 1;
+}
+
+/* The elements inside the .login-left container should be above the gradient layer */
+.login-left > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Keyframes for the gradient animation */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  25% {
+    background-position: 75% 30%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.login-title {
+  font-size: 0rem;
+  margin-bottom: 0;
+}
+
+.login-logo {
+  font-size: 0rem;
+  font-weight: bold;
+}
+
+.login-subtitle {
+  font-size: 0rem;
+  margin-top: 20px;
+  color: white;
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.login-box {
+  max-width: 400px;
+  width: 100%;
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.login-box h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.login-remember {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #8a2be2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out; /* Smooth transition */
+  background-size: 200% 200%; /* Set for gradient animations */
+}
+
+.login-button:hover {
+  color: #fff; /* Change text to white */
+  border-radius: 24px;
+  padding: 15px 15px;
+  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5); /* Add shadow */
+  transform: scale(1); /* Slight scale up on hover */
+  background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 220px;
+}
+
+.signup-link {
+  color: #8a2be2;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.login-forgot {
+  color: #999;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.login-forgot:hover {
+  text-decoration: underline;
+}

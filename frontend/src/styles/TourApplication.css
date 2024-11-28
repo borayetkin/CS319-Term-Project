@@ -1,0 +1,187 @@
+.tour-application-section {
+  position: relative;
+  width: 100%;
+  min-height: calc(
+    100vh - 54.5px
+  ); /* Set min-height to ensure initial full viewport coverage */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 54.5px;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.tour-application-container {
+  padding: 3rem;
+  background: linear-gradient(
+    135deg,
+    rgba(220, 217, 223, 0.7),
+    rgba(230, 224, 234, 0.7),
+    rgba(222, 214, 230, 0.7),
+    rgba(243, 241, 245, 0.7)
+  );
+  max-width: 550px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tour-application-container h1 {
+  text-align: left;
+  font-size: 2.3rem;
+  color: #2b3349;
+  margin-bottom: 25px;
+}
+
+.tour-application-description {
+  font-size: 1rem;
+  color: #2b3349;
+  margin-bottom: 45px;
+  text-align: left;
+  line-height: 1.5;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tour-application-message {
+  text-align: center;
+  color: #5a67b3;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.tour-type-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 25px;
+}
+
+.tour-type-button {
+  font-size: 1.2rem;
+  padding: 14px 32px;
+  background-color: #5a67b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  max-width: 350px;
+}
+
+.tour-type-button:hover {
+  background-color: #444e98;
+  transform: scale(1.02);
+}
+
+.tour-type-description {
+  font-size: 0.8rem;
+  color: #555;
+  text-align: center;
+  max-width: 300px;
+  margin-top: -30px;
+}
+
+.tour-application-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-application-form label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2b3349;
+  margin-top: 20px;
+}
+
+/* General input and select styling */
+.tour-application-form input[type="text"],
+.tour-application-form input[type="email"],
+.tour-application-form input[type="date"],
+.tour-application-form input[type="time"],
+.tour-application-form input[type="number"],
+.tour-application-form select,
+.tour-application-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9fb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add focus styles for input and select elements */
+.tour-application-form input:focus,
+.tour-application-form select:focus,
+.tour-application-form textarea:focus {
+  border-color: #5a67b3;
+  box-shadow: 0 0 8px rgba(90, 103, 179, 0.3);
+  outline: none;
+}
+
+/* Styling for the select dropdown */
+.tour-application-form select {
+  appearance: none; /* Remove default styling */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 20 20' fill='%235A67B3' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8l4 4 4-4H6z'/%3E%3C/svg%3E"); /* Custom dropdown arrow */
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px; /* Space for the arrow */
+}
+
+/* Style for textarea to match inputs */
+.tour-application-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Submit Button Styling */
+.tour-application-submit {
+  background-color: #5a67b3;
+  color: white;
+  padding: 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 6px 15px rgba(90, 103, 179, 0.3);
+}
+
+.tour-application-submit:hover {
+  background-color: #444e98;
+  transform: scale(1.02);
+}
+
+/* Styling for labels */
+.tour-application-form label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2b3349;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .tour-application-container {
+    padding: 1.5rem;
+  }
+
+  .tour-application-container h1 {
+    font-size: 2rem;
+  }
+
+  .tour-type-button,
+  .tour-application-submit {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}

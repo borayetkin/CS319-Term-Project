@@ -1,0 +1,96 @@
+.navbar {
+  position: sticky; /* Fixes the navbar at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Make it full-width */
+   z-index: 1000; /*Ensures the navbar stays on top of other content*/
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem; /* Reduced padding for smaller height */
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Softer, smaller shadow */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  padding-top: 0px; /* Adds space to prevent content from hiding under the navbar */
+}
+
+.logo a {
+  font-size: 1.2rem; /* Increased font size */
+  font-weight: 600;
+  color: #1c1c1e;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  border: 2px solid transparent;
+  padding: 4px 10px; /* Reduced padding */
+  border-radius: 8px; /* Rounded corners */
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out; /* Simplified transition */
+}
+
+.logo a::before {
+  content: "◐";
+  font-size: 1.2rem; /* Increased font size */
+  margin-right: 8px;
+  color: #1c1c1e;
+  transition: color 0.3s ease-in-out;
+}
+
+.logo a:hover {
+  color: #2b43e2; /* Simple color change */
+  background-color: #e8e8f5; /* Light background color */
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 1rem; /* Reduced spacing */
+}
+
+.nav-links a {
+  font-size: 1.1rem; /* Increased font size */
+  color: #1c1c1e;
+  text-decoration: none;
+  padding: 8px 12px; /* Smaller padding */
+  border-radius: 8px; /* Rounded corners */
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out; /* Simplified transition */
+}
+
+.nav-links a:hover {
+  color: #2b43e2; /* Simple color change */
+  background-color: #e8e8f5; /* Light background color */
+}
+
+.nav-links .logout-button {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem; /* Increased font size */
+  color: #1c1c1e;
+  text-decoration: none;
+  padding: 8px 12px; /* Smaller padding */
+  border-radius: 8px; /* Rounded corners */
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out; /* Simplified transition */
+  margin-left: 1rem; /* Reduced spacing */
+}
+
+.nav-links .logout-button:hover {
+  color: #2b43e2; /* Simple color change */
+  background-color: #e8e8f5; /* Light background color */
+}
+
+.nav-links a.active {
+  color: #2b43e2; /* Highlight color for active link */
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+}
