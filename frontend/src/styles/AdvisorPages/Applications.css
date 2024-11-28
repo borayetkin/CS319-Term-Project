@@ -1,69 +1,47 @@
-.applications-container {
-    padding: 20px;
-    background-color: #f9f9f9;
-    text-align: center;
-   
-}
-
-.applications-container h1 {
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-.filter-controls {
+.controls-container {
     display: flex;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 16px; /* Spacing between filter and button */
+    margin-bottom: 24px; /* Space below the controls */
 }
 
 .filter-controls label {
-    margin-right: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4a5568; /* Subtle gray for labels */
 }
 
 .filter-controls select {
-    padding: 5px;
-    font-size: 1em;
+    padding: 8px 12px; /* Comfortable padding */
+    font-size: 1rem;
+    border: 1px solid #d1d5db; /* Light gray border */
+    border-radius: 8px;
+    background-color: #ffffff; /* White background */
+    color: #2d3748; /* Dark gray text */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.filter-controls select:hover,
+.filter-controls select:focus {
+    border-color: #3b82f6; /* Primary blue for hover/focus */
+    box-shadow: 0 0 4px rgba(59, 130, 246, 0.4); /* Subtle glow */
+    outline: none; /* No default outline */
 }
 
-table th,
-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    color: black;
-    text-align: left;
-}
-tbody tr button{
-    display: inline-block;
-    width: auto;
-    margin: 0 .2rem;
-}
-tbody tr button.delete{
-    display: inline-block;
-    width: auto;
-    background-color: rgb(180, 24, 24);
-    margin: 0 .2rem;
-}
-table th {
-    background-color: #f2f2f2;
+.tour-type-controls button {
+    padding: 10px 16px; /* Slightly smaller padding for balance */
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    background-color: #3b82f6; /* Primary blue button */
+    color: #ffffff; /* White text */
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-tbody tr.accepted {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-tbody tr.rejected {
-    background-color: #f8d7da;
-    color: #fe293f;
-}
-
-tbody  tr.pending {
-    background-color: #fff3cd;
-    color: #856404;
+.tour-type-controls button:hover {
+    background-color: #2563eb; /* Slightly darker blue for hover */
+    transform: scale(1.03); /* Small scale effect */
 }
