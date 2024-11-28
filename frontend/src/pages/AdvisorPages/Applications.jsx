@@ -26,6 +26,7 @@ const Applications = () => {
         const data = await response.json();
         setUser(data);
         fetchApplications(token,data);
+
       } else {
         setMessage("Failed to fetch user profile");
       }
@@ -35,8 +36,6 @@ const Applications = () => {
   };
   const fetchApplications = async (token,us) => {
     try {
-
-      
       const response = us.role === "advisor" ? await fetch(`http://localhost:3000/api/events/advisor`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -48,6 +47,12 @@ const Applications = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        data.forEach(async (application) => {
+          console.log(application.applicant);
+          await fetchApplicant(application.applicant.applicantID).then((applicantData) => {
+            application.applicant = applicantData;
+          });
+        });
         setApplications(data);
       } else {
 
@@ -55,6 +60,25 @@ const Applications = () => {
       }
     } catch (error) {
       setMessage("Error fetching applications: " + error.message);
+    }
+  };
+
+  const fetchApplicant = async (applicantId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/applicants/${applicantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        setMessage("Failed to fetch applicant");
+      }
+    } catch (error) {
+      setMessage("Error fetching applicant: " + error.message);
     }
   };
 
@@ -125,24 +149,26 @@ const Applications = () => {
     <div className="applications-container">
       <h1>APPLICATIONS</h1>
       {message && <p>{message}</p>}
-      <div className="filter-controls">
-        <label htmlFor="filter">Filter by Status:</label>
-        <select
-          id="filter"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="pending">Pending</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
-      <div className="tour-type-controls">
-        <button onClick={() => setTourType(tourType === "SchoolTour" ? "IndividualTour" : "SchoolTour")}>
-          {tourType === "SchoolTour" ? "Show Individual Tours" : "Show School Tours"}
-        </button>
-      </div>
+      <div className="controls-container">
+  <div className="filter-controls">
+    <label htmlFor="filter">Filter by Status:</label>
+    <select
+      id="filter"
+      value={filterStatus}
+      onChange={(e) => setFilterStatus(e.target.value)}
+    >
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="accepted">Accepted</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+  <div className="tour-type-controls">
+    <button onClick={() => setTourType(tourType === "SchoolTour" ? "IndividualTour" : "SchoolTour")}>
+      {tourType === "SchoolTour" ? "Show Individual Tours" : "Show School Tours"}
+    </button>
+  </div>
+</div>
       {filteredApplications.length > 0 ? (
         <table>
           <thead>
@@ -199,16 +225,19 @@ const Applications = () => {
                       <td>{app.phoneNumber || "N/A"}</td>
                       <td>{app.status}</td>
                       <td>
-                        <>
-                          {app.status === "pending" && (<>
-                            <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
-                              Accept
-                            </button>
-                            <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
-                              Decline
-                            </button></>)}
+                        <div className="button-container">
+                          {app.status === "pending" && (
+                            <>
+                              <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
+                                Accept
+                              </button>
+                              <button className="decline" onClick={() => handleAction(app._id, "rejected")}>
+                                Decline
+                              </button>
+                            </>
+                          )}
                           <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
-                        </>
+                        </div>
                       </td>
                     </>
                   ) : (
@@ -217,20 +246,23 @@ const Applications = () => {
                       <td>{app.studentHighSchool || "N/A"}</td>
                       <td>{new Date(app.visitDate).toLocaleDateString()}</td>
                       <td>{app.visitTime || "N/A"}</td>
-                      <td>{app.personEmail || "N/A"}</td>
-                      <td>{app.personNumber || "N/A"}</td>
+                      <td>{app.applicant.email   || "N/A"}</td>
+                      <td>{app.applicant.phoneNumber || "N/A"}</td>
                       <td>{app.majorOfInterest || "N/A"}</td>
                       <td>
-                        <>
-                          {app.status === "pending" && (<>
-                            <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
-                              Accept
-                            </button>
-                            <button className= "delete" onClick={() => handleAction(app._id, "rejected")}>
-                              Decline
-                            </button></>)}
+                        <div className="button-container">
+                          {app.status === "pending" && (
+                            <>
+                              <button className="accept" onClick={() => handleAction(app._id, "accepted")}>
+                                Accept
+                              </button>
+                              <button className="decline" onClick={() => handleAction(app._id, "rejected")}>
+                                Decline
+                              </button>
+                            </>
+                          )}
                           <button className="delete" onClick={() => handleDelete(app._id)}>Delete</button>
-                        </>
+                        </div>
                       </td>
                     </>
                   )}
