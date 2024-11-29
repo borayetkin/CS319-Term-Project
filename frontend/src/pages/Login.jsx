@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "../styles/Login.css"; // Add the custom CSS file
 
-
-
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -44,6 +42,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <div className="full-page-animation"></div>
       <div className="login-left">
         <h1 className="login-title">Log Into</h1>
         <h2 className="login-logo">ATOM</h2>

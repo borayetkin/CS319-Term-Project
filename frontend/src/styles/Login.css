@@ -82,25 +82,30 @@
   justify-content: center;
   align-items: center;
   background-color: white;
+  overflow: hidden;
 }
 
 .login-box {
-  max-width: 400px;
+  max-width: 350px;
+  height: 600px;
   width: 100%;
   padding: 40px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Even spacing between elements */
 }
 
 .login-box h2 {
   font-size: 2rem;
-  margin-bottom: 10px;
+  margin: 0; /* Remove default margin to maintain even spacing */
+  text-align: center; /* Center-align the title */
 }
 
 .login-input {
   width: 100%;
   padding: 15px;
-  margin: 10px 0;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1rem;
@@ -108,9 +113,12 @@
 
 .login-remember {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.login-remember input[type="checkbox"] {
+  margin-right: 10px;
 }
 
 .login-button {
@@ -122,22 +130,21 @@
   border-radius: 5px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out; /* Smooth transition */
-  background-size: 200% 200%; /* Set for gradient animations */
+  transition: all 0.3s ease-in-out;
+  background-size: 200% 200%;
 }
 
 .login-button:hover {
-  color: #fff; /* Change text to white */
+  color: #fff;
   border-radius: 24px;
-  padding: 15px 15px;
-  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5); /* Add shadow */
-  transform: scale(1); /* Slight scale up on hover */
+  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5);
+  transform: scale(1);
   background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
 }
 
 .login-footer {
   text-align: center;
-  margin-top: 220px;
+  margin-top: 20px; /* Adjusted for better spacing */
 }
 
 .signup-link {
@@ -150,12 +157,19 @@
 }
 
 .login-forgot {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between checkbox and text */
   color: #999;
   font-size: 0.9rem;
   text-decoration: none;
-  margin-top: 2px;
+  margin-left: 10px;
 }
 
 .login-forgot:hover {
   text-decoration: underline;
+}
+
+body {
+  overflow: hidden; /* Prevent scrolling on the entire page */
 }
