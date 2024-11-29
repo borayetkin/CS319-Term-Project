@@ -18,7 +18,7 @@ const {
   getAssigneddEventsOfUser,
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
-  getFairs,
+  
 } = require("../controllers/EventController");
 
 // Routes for creating events
@@ -27,7 +27,6 @@ router.post("/individualtours",  createIndividualTour);
 router.post("/fairs",createFair);
 
 // Routes for fetching events
-router.get("/fairs", auth, getFairs);
 router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);
 router.get("/user", auth, getAssigneddEventsOfUser);
