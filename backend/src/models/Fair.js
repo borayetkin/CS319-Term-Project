@@ -30,7 +30,11 @@ const fairSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
-
+    status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected", "completed"],
+        default: "pending"
+    }
   });
 
 fairSchema.methods.setLocation = function (location) {

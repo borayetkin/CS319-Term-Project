@@ -415,3 +415,18 @@ exports.getEventAssignees = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.getFairs = async (req, res) => {
+  try {
+    console.log("Fetching fairs from database..."); // Debug log
+    const fairs = await Fair.find({ __t: "Fair" });
+    console.log("Found fairs:", fairs); // Debug log
+    res.status(200).json(fairs);
+  } catch (error) {
+    console.error("Error in getFairs:", error); // Debug log
+    res.status(500).json({ 
+      message: "Failed to fetch fairs", 
+      error: error.message 
+    });
+  }
+};
