@@ -13,6 +13,19 @@ const Applicant = require("../models/Applicant");
 exports.getAcceptedEvents = async (req, res) => {
   try {
     const acceptedEvents = await Event.find({ status: "accepted" });
+    for (let i = 0; i < acceptedEvents.length; i++) {
+      acceptedEvents[i] = acceptedEvents[i].toJSON();
+      let application = acceptedEvents[i];
+      const applicantData = await Applicant.findById(
+        application.applicant.applicantID
+      );
+      application.applicant = {
+        ...application.applicant,
+        name: applicantData.name,
+        email: applicantData.email,
+        phoneNumber: applicantData.phoneNumber,
+      };
+    }
     res.status(200).json(acceptedEvents);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -27,6 +40,19 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
       const acceptedEvents = await Event.find({
         _id: { $in: user2.assignedEvents },
       });
+      for (let i = 0; i < acceptedEvents.length; i++) {
+        acceptedEvents[i] = acceptedEvents[i].toJSON();
+        let application = acceptedEvents[i];
+        const applicantData = await Applicant.findById(
+          application.applicant.applicantID
+        );
+        application.applicant = {
+          ...application.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
       res.status(200).json(acceptedEvents);
     } else {
       const acceptedEvents = await Event.find({ status: "accepted" });
@@ -43,6 +69,20 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
     if (userparams.role === "advisor") {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({ weekday: user2.assignedDay });
+      for (let i = 0; i < acceptedEvents.length; i++) {
+        acceptedEvents[i] = acceptedEvents[i].toJSON();
+        let application = acceptedEvents[i];
+        const applicantData = await Applicant.findById(
+          application.applicant.applicantID
+        );
+        application.applicant = {
+          ...application.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
+
       res.status(200).json(acceptedEvents);
     } else {
       res.status(401).json({ error: "Access Denied" });
@@ -109,7 +149,7 @@ exports.createIndividualTour = async (req, res) => {
       additionalNotes = "",
       hoursOfWork = 3,
       requiredNumberOfGuides = 1,
-      
+
       status = "pending",
     } = req.body;
 
@@ -136,7 +176,7 @@ exports.createIndividualTour = async (req, res) => {
       tour: savedTour,
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({
       message: "Failed to create individual tour",
       error: error.message,
@@ -162,12 +202,18 @@ exports.createFair = async (req, res) => {
       status = "pending",
     } = req.body;
 
-
     console.log("applicant:", applicant);
     console.log("Received data:", req.body);
 
     // Validate required fields
-    if (!applicant || !visitDate || !fairTime || !location || !email || !phoneNumber) {
+    if (
+      !applicant ||
+      !visitDate ||
+      !fairTime ||
+      !location ||
+      !email ||
+      !phoneNumber
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -191,7 +237,7 @@ exports.createFair = async (req, res) => {
     console.log("Fair details before saving:", fair);
 
     fair.addToApplicantEvents(); // Ensure this method is implemented
-    fair.setWeekday();          // Set the weekday
+    fair.setWeekday(); // Set the weekday
 
     await fair.save();
 
@@ -241,20 +287,15 @@ exports.updateEvent = async (req, res) => {
       try {
         const foundUser = await User.findById(userid);
         if (foundUser.role !== "advisor") {
-  
-          
           return res.status(401).json({
             message: "Coordinators cannot accept applications",
-          });  
-                
+          });
         }
 
-        
         const advisor = new Advisor(foundUser);
         await advisor.acceptTourApplication(eventId);
         await advisor.save();
 
-        
         return res.status(200).json({
           message: "Event updated successfully",
         });
@@ -293,7 +334,7 @@ exports.deleteEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    await event.removeFromAssigneesEvents()
+    await event.removeFromAssigneesEvents();
     res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {
     res
@@ -333,36 +374,31 @@ exports.assignGuideToEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
 
-    
     const event = await Event.findById(eventID);
-    
-    
+
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    
     const guide = await User.findById(userID);
-    if (!guide ) {
+    if (!guide) {
       return res.status(400).json({ message: "Invalid guide ID" });
     }
-  
-    
+
     if (!event.assignedUsers.includes(userID)) {
       event.assignedUsers.push(userID);
     }
-    
+
     await event.save();
-    
+
     try {
       guide.addAssignedEvent(eventID);
-      
     } catch (error) {
       res
-      .status(400)
-      .json({ message: "Failed to assign guide", error: error.message });
+        .status(400)
+        .json({ message: "Failed to assign guide", error: error.message });
     }
-    await guide.save()
+    await guide.save();
     res.status(200).json({ message: "Guide assigned successfully" });
   } catch (error) {
     res
@@ -386,11 +422,10 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
     try {
       await event.removeAssignee(userID);
       await user.removeAssignedEvent(eventID);
-      await event.save()
-      await user.save()
+      await event.save();
+      await user.save();
     } catch (error) {
       return res.status(404).json({ message: error.message });
-      
     }
 
     // const guideIndex = event.assignedGuides.indexOf(guideID);

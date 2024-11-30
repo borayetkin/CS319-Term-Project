@@ -25,7 +25,7 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
-        await fetchApplications(token,data);
+        fetchApplications(token,data);
 
       } else {
         setMessage("Failed to fetch user profile");
@@ -47,15 +47,6 @@ const Applications = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        await data.forEach(async (application) => {
-
-          await fetchApplicant(application.applicant.applicantID).then((applicantData) => {
-            application.applicant = applicantData;
-          });
-        });
-       
-   
-        
         setApplications(data);
         
       } else {
@@ -106,8 +97,7 @@ const Applications = () => {
       
       if (response.ok) {
         setMessage(`Application ${status} successfully.`);
-        await fetchApplications(token,user); // Refresh applications
-        setTourType("SchoolTour")
+        fetchApplications(token,user); // Refresh applications
       } else {
         const errData = await response.json();
 
