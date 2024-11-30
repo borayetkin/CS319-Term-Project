@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/TourApplication.css";
 
 const TourApplication = () => {
@@ -10,13 +10,60 @@ const TourApplication = () => {
     visitDate: "",
     visitTime: "",
     city: "",
+    district: "",
+    schoolName: "",
     studentCount: "",
     additionalNotes: "",
     studentHighSchool: "",
     phoneNumber: "",
-    majorOfInterest : ""
+    majorOfInterest: "",
   });
   const [message, setMessage] = useState("");
+  const [schoolData, setSchoolData] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [schools, setSchools] = useState([]);
+
+  useEffect(() => {
+    // Fetch school data from backend
+    const fetchSchoolData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/high-schools");
+        const data = await response.json();
+        setSchoolData(data);
+      } catch (error) {
+        console.error("Error fetching school data:", error);
+      }
+    };
+
+    fetchSchoolData();
+  }, []);
+
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    setFormData({
+      ...formData,
+      city: selectedCity,
+      district: "",
+      schoolName: "",
+    });
+    const filteredDistricts = [
+      ...new Set(
+        schoolData
+          .filter((school) => school.City === selectedCity)
+          .map((school) => school.District)
+      ),
+    ];
+    setDistricts(filteredDistricts);
+  };
+
+  const handleDistrictChange = (e) => {
+    const selectedDistrict = e.target.value;
+    setFormData({ ...formData, district: selectedDistrict, schoolName: "" });
+    const filteredSchools = schoolData.filter(
+      (school) => school.District === selectedDistrict
+    );
+    setSchools(filteredSchools);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,21 +117,22 @@ const TourApplication = () => {
                 phoneNumber: formData.phoneNumber,
               })
             : JSON.stringify({
-              name : formData.contactPerson,
-              email: formData.email,
-              phoneNumber: formData.phoneNumber
-            }),
+                name: formData.contactPerson,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+              }),
       });
       const data = await response2.json();
-
-      
 
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ applicant: {applicantID : data._id, name :data.name}, ...requestData}),
+        body: JSON.stringify({
+          applicant: { applicantID: data._id, name: data.name },
+          ...requestData,
+        }),
       });
       const data2 = await response.json();
 
@@ -194,27 +242,57 @@ const TourApplication = () => {
               required
             />
 
-            <label htmlFor="city">City:</label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-
             {formData.tourType === "school" ? (
               <>
+                <label htmlFor="city">City:</label>
+                <select
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleCityChange}
+                  required
+                >
+                  <option value="">Select a city</option>
+                  {[...new Set(schoolData.map((school) => school.City))].map(
+                    (city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <label htmlFor="district">District:</label>
+                <select
+                  id="district"
+                  name="district"
+                  value={formData.district}
+                  onChange={handleDistrictChange}
+                  required
+                >
+                  <option value="">Select a district</option>
+                  {districts.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))}
+                </select>
+
                 <label htmlFor="schoolName">School Name:</label>
-                <input
-                  type="text"
+                <select
                   id="schoolName"
                   name="schoolName"
                   value={formData.schoolName}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Select a school</option>
+                  {schools.map((school) => (
+                    <option key={school.SchoolName} value={school.SchoolName}>
+                      {school.SchoolName}
+                    </option>
+                  ))}
+                </select>
 
                 <label htmlFor="studentCount">Number of Students:</label>
                 <input
@@ -237,25 +315,31 @@ const TourApplication = () => {
                   onChange={handleChange}
                   required
                 />
-             
-              <label htmlFor="majorOfInterest">Major of Interest:</label>
-              <select
-                id="majorOfInterest"
-                name="majorOfInterest"
-                value={formData.majorOfInterest}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a major</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Electrical Engineering">Electrical Engineering</option>
-                <option value="Mechanical Engineering">Mechanical Engineering</option>
-                <option value="Civil Engineering">Civil Engineering</option>
-                <option value="Business Administration">Business Administration</option>
-                <option value="Economics">Economics</option>
-                <option value="Psychology">Psychology</option>
-                <option value="Architecture">Architecture</option>
-              </select>
+
+                <label htmlFor="majorOfInterest">Major of Interest:</label>
+                <select
+                  id="majorOfInterest"
+                  name="majorOfInterest"
+                  value={formData.majorOfInterest}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select a major</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Electrical Engineering">
+                    Electrical Engineering
+                  </option>
+                  <option value="Mechanical Engineering">
+                    Mechanical Engineering
+                  </option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Business Administration">
+                    Business Administration
+                  </option>
+                  <option value="Economics">Economics</option>
+                  <option value="Psychology">Psychology</option>
+                  <option value="Architecture">Architecture</option>
+                </select>
               </>
             )}
 
