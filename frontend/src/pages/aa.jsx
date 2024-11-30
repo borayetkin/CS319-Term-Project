@@ -11,43 +11,65 @@ const TourApplication = () => {
     visitTime: "",
     city: "",
     district: "",
-    studentCount: "",
     schoolName: "",
+    studentCount: "",
     additionalNotes: "",
     studentHighSchool: "",
     phoneNumber: "",
     majorOfInterest: "",
   });
   const [message, setMessage] = useState("");
+  const [schoolData, setSchoolData] = useState([]);
+  const [districts, setDistricts] = useState([]);
   const [schools, setSchools] = useState([]);
-  const [filteredSchools, setFilteredSchools] = useState([]);
 
-  // Fetch schools from backend on component mount
   useEffect(() => {
-    const fetchSchools = async () => {
+    // Fetch school data from backend
+    const fetchSchoolData = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/high-schools");
         const data = await response.json();
-        setSchools(data);
+        setSchoolData(data);
       } catch (error) {
-        console.error("Error fetching high schools:", error);
+        console.error("Error fetching school data:", error);
       }
     };
-    fetchSchools();
+
+    fetchSchoolData();
   }, []);
 
-  // Filter schools by city and district
-  useEffect(() => {
-    if (formData.city && formData.district) {
-      const filtered = schools.filter(
-        (school) =>
-          school.City === formData.city && school.District === formData.district
-      );
-      setFilteredSchools(filtered);
-    } else {
-      setFilteredSchools([]);
-    }
-  }, [formData.city, formData.district, schools]);
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    setFormData({
+      ...formData,
+      city: selectedCity,
+      district: "",
+      schoolName: "",
+      studentHighSchool: "",
+    });
+    const filteredDistricts = [
+      ...new Set(
+        schoolData
+          .filter((school) => school.City === selectedCity)
+          .map((school) => school.District)
+      ),
+    ];
+    setDistricts(filteredDistricts);
+  };
+
+  const handleDistrictChange = (e) => {
+    const selectedDistrict = e.target.value;
+    setFormData({
+      ...formData,
+      district: selectedDistrict,
+      schoolName: "",
+      studentHighSchool: "",
+    });
+    const filteredSchools = schoolData.filter(
+      (school) => school.District === selectedDistrict
+    );
+    setSchools(filteredSchools);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -202,6 +224,8 @@ const TourApplication = () => {
               onChange={handleChange}
               required
               placeholder="0 5XX XXX XX XX"
+              pattern="05\d{9}"
+              title="Please enter a valid Turkish phone number (e.g., 0 5XX XXX XX XX)"
             />
 
             <label htmlFor="visitDate">Visit Date:</label>
@@ -229,11 +253,11 @@ const TourApplication = () => {
               id="city"
               name="city"
               value={formData.city}
-              onChange={handleChange}
+              onChange={handleCityChange}
               required
             >
               <option value="">Select a city</option>
-              {[...new Set(schools.map((school) => school.City))].map(
+              {[...new Set(schoolData.map((school) => school.City))].map(
                 (city) => (
                   <option key={city} value={city}>
                     {city}
@@ -247,17 +271,11 @@ const TourApplication = () => {
               id="district"
               name="district"
               value={formData.district}
-              onChange={handleChange}
+              onChange={handleDistrictChange}
               required
             >
               <option value="">Select a district</option>
-              {[
-                ...new Set(
-                  schools
-                    .filter((school) => school.City === formData.city)
-                    .map((school) => school.District)
-                ),
-              ].map((district) => (
+              {districts.map((district) => (
                 <option key={district} value={district}>
                   {district}
                 </option>
@@ -289,11 +307,8 @@ const TourApplication = () => {
               required
             >
               <option value="">Select a school</option>
-              {filteredSchools.map((school, index) => (
-                <option
-                  key={`${school.SchoolName}-${school.District}-${index}`}
-                  value={school.SchoolName}
-                >
+              {schools.map((school) => (
+                <option key={school.SchoolName} value={school.SchoolName}>
                   {school.SchoolName}
                 </option>
               ))}
