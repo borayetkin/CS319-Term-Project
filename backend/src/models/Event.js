@@ -51,6 +51,9 @@ const eventSchema = new mongoose.Schema({
         default: "Monday",
         enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     }
+    ,
+    assignedAdvisor: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+
 });
 
 eventSchema.methods.changeDate =  function (date ){
