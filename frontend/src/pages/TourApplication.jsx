@@ -40,28 +40,15 @@ const TourApplication = () => {
 
   const handleCityChange = (e) => {
     const selectedCity = e.target.value;
-    setFormData({
-      ...formData,
-      city: selectedCity,
-      district: "",
-      schoolName: "",
-    });
-    const filteredDistricts = [
-      ...new Set(
-        schoolData
-          .filter((school) => school.City === selectedCity)
-          .map((school) => school.District)
-      ),
-    ];
+    setFormData({ ...formData, city: selectedCity, district: "", schoolName: "", studentHighSchool: "" });
+    const filteredDistricts = [...new Set(schoolData.filter((school) => school.City === selectedCity).map((school) => school.District))];
     setDistricts(filteredDistricts);
   };
 
   const handleDistrictChange = (e) => {
     const selectedDistrict = e.target.value;
-    setFormData({ ...formData, district: selectedDistrict, schoolName: "" });
-    const filteredSchools = schoolData.filter(
-      (school) => school.District === selectedDistrict
-    );
+    setFormData({ ...formData, district: selectedDistrict, schoolName: "", studentHighSchool: "" });
+    const filteredSchools = schoolData.filter((school) => school.District === selectedDistrict);
     setSchools(filteredSchools);
   };
 
@@ -242,58 +229,62 @@ const TourApplication = () => {
               required
             />
 
-            {formData.tourType === "school" ? (
+            <label htmlFor="city">City:</label>
+            <select
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleCityChange}
+              required
+            >
+              <option value="">Select a city</option>
+              {[...new Set(schoolData.map((school) => school.City))].map(
+                (city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                )
+              )}
+            </select>
+
+            <label htmlFor="district">District:</label>
+            <select
+              id="district"
+              name="district"
+              value={formData.district}
+              onChange={handleDistrictChange}
+              required
+            >
+              <option value="">Select a district</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="schoolName">
+              {formData.tourType === "individual"
+                ? "High School:"
+                : "School Name:"}
+            </label>
+            <select
+              id={formData.tourType === "individual" ? "studentHighSchool" : "schoolName"}
+              name={formData.tourType === "individual" ? "studentHighSchool" : "schoolName"}
+              value={formData.tourType === "individual" ? formData.studentHighSchool : formData.schoolName}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a school</option>
+              {schools.map((school) => (
+                <option key={school.SchoolName} value={school.SchoolName}>
+                  {school.SchoolName}
+                </option>
+              ))}
+            </select>
+
+            {formData.tourType === "school" && (
               <>
-                <label htmlFor="city">City:</label>
-                <select
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleCityChange}
-                  required
-                >
-                  <option value="">Select a city</option>
-                  {[...new Set(schoolData.map((school) => school.City))].map(
-                    (city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    )
-                  )}
-                </select>
-
-                <label htmlFor="district">District:</label>
-                <select
-                  id="district"
-                  name="district"
-                  value={formData.district}
-                  onChange={handleDistrictChange}
-                  required
-                >
-                  <option value="">Select a district</option>
-                  {districts.map((district) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))}
-                </select>
-
-                <label htmlFor="schoolName">School Name:</label>
-                <select
-                  id="schoolName"
-                  name="schoolName"
-                  value={formData.schoolName}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a school</option>
-                  {schools.map((school) => (
-                    <option key={school.SchoolName} value={school.SchoolName}>
-                      {school.SchoolName}
-                    </option>
-                  ))}
-                </select>
-
                 <label htmlFor="studentCount">Number of Students:</label>
                 <input
                   type="number"
@@ -304,20 +295,10 @@ const TourApplication = () => {
                   required
                 />
               </>
-            ) : (
-              <>
-                <label htmlFor="studentHighSchool">High School:</label>
-                <input
-                  type="text"
-                  id="studentHighSchool"
-                  name="studentHighSchool"
-                  value={formData.studentHighSchool}
-                  onChange={handleChange}
-                  required
-                />
+            )}
 
-                <label htmlFor="majorOfInterest">Major of Interest:</label>
-                <select
+            {formData.tourType === "individual" && (
+              <><label htmlFor="majorOfInterest">Major of Interest:</label><select
                   id="majorOfInterest"
                   name="majorOfInterest"
                   value={formData.majorOfInterest}
@@ -339,8 +320,7 @@ const TourApplication = () => {
                   <option value="Economics">Economics</option>
                   <option value="Psychology">Psychology</option>
                   <option value="Architecture">Architecture</option>
-                </select>
-              </>
+                </select></>
             )}
 
             <label htmlFor="additionalNotes">Additional Notes:</label>
