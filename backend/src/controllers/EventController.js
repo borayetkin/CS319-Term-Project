@@ -257,7 +257,19 @@ exports.createFair = async (req, res) => {
 exports.getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
-
+    for (let i = 0; i < events.length; i++) {
+      events[i] = events[i].toJSON();
+      let application = events[i];
+      const applicantData = await Applicant.findById(
+        application.applicant.applicantID
+      );
+      application.applicant = {
+        ...application.applicant,
+        name: applicantData.name,
+        email: applicantData.email,
+        phoneNumber: applicantData.phoneNumber,
+      };
+    }
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
