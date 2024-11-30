@@ -19,7 +19,7 @@ const Home = () => {
   // Fetch events from the backend
   const checkLoggedin = async (token) => {
     try {
-      const response = await fetch("http://localhost:3000/api/events", {
+      const response = await fetch("http://localhost:3000/api/auth/check", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

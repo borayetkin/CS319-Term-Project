@@ -75,7 +75,7 @@ const Event = () => {
       <p>Additional Notes : {event.additionalNotes}</p>
       {event.__t === "IndividualTour" && <p>School: {event.studentHighSchool}</p>}
       {event.__t === "SchoolTour" && <p>High School: {event.schoolName}</p>}
-      {event.__t === "SchoolTour" &&  <p>Advisor: {event.assignedAdvisor}</p>}
+      {event.__t  &&  <p>Advisor: {event.assignedAdvisor.name}</p>}
       {event.__t === "SchoolTour" && assignedUsers.map((user, index) => (
         <p key={index}>Assigned Guide: {user.name}</p>
       ))}

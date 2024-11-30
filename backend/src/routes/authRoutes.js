@@ -18,7 +18,7 @@ router.post("/signup", signupUser);
 
 // Get user profile (protected route)
 router.get("/profile", auth, getProfile);
-
+router.get("/check",auth)
 // Update user profile (protected route)
 router.put("/profile", auth, updateUser);
 

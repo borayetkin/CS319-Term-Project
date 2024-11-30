@@ -17,26 +17,28 @@ const Navbar = () => {
   }, []);
   const checkAuth = async (token) => {
     try {
-      const response = await fetch("/api/profile", {
+      const response = await fetch("/api/auth/check", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
    
-      if (response.ok) {
+      if (response.status === 401) {
+        localStorage.clear()
+
+
+      }else{
         setIsLoggedIn(true);
         const decodedToken = JSON.parse(atob(token.split(".")[1]));
         setRole(decodedToken.role);
-      }else{
-        localStorage.clear()
       }
 
       
       return true
     } catch (error) {
-     
+      console.error(error);
+
  
-      console.log(error);
       return false
 
     }
