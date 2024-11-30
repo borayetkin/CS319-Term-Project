@@ -23,7 +23,7 @@ const Event = () => {
           throw new Error("Failed to fetch event");
         }
 
-        const data = await response.json();
+        const eventData = await response.json();
         const assigneesRes = await  fetch(`http://localhost:3000/api/events/${id}/assignees`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,11 +32,15 @@ const Event = () => {
         if (!response.ok) {
           throw new Error("Failed to fetch event");
         }
+
         const assignees = await assigneesRes.json()
 
         
         setAssignedUsers(assignees)
-        setEvent(data);
+
+        setEvent(eventData);
+
+        
         setIsLoading(false);
       } catch (error) {
         setError(error.message);
@@ -45,7 +49,7 @@ const Event = () => {
 
     };
     
-
+   
     const token = localStorage.getItem("token");
     if (token) {
       fetchEvent(token); // Fetch events if logged in
@@ -63,7 +67,7 @@ const Event = () => {
   return (
     <div className="event-container">
       <h1>{event.name}</h1>
-      <p>Date: {new Date(event.visitDate).toLocaleDateString()}</p>
+      <p>Date and Time: {new Date(event.visitDate).toLocaleDateString()} {event.visitTime}</p>
       <p>Required Number Of Guides: {event.requiredNumberOfGuides}</p>
       <p>Status :  {event.status}</p>
       <p>Application Date: {new Date(event.applicationDate).toLocaleDateString()}</p>
@@ -71,8 +75,9 @@ const Event = () => {
       <p>Additional Notes : {event.additionalNotes}</p>
       {event.__t === "IndividualTour" && <p>School: {event.studentHighSchool}</p>}
       {event.__t === "SchoolTour" && <p>High School: {event.schoolName}</p>}
+      {event.__t === "SchoolTour" &&  <p>Advisor: {event.assignedAdvisor}</p>}
       {event.__t === "SchoolTour" && assignedUsers.map((user, index) => (
-        index !== 0 ?<p key={index}>Assigned Guide: {user.name}</p>: <p key={index}>Advisor: {user.name}</p>
+        <p key={index}>Assigned Guide: {user.name}</p>
       ))}
     </div>
   );

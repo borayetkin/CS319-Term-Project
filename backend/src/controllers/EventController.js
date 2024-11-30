@@ -102,8 +102,10 @@ exports.createIndividualTour = async (req, res) => {
     const {
       applicant,
       visitDate,
+      visitTime,
       studentHighSchool,
       studentName,
+      majorOfInterest,
       additionalNotes = "",
       hoursOfWork = 3,
       requiredNumberOfGuides = 1,
@@ -114,7 +116,9 @@ exports.createIndividualTour = async (req, res) => {
     const individualTour = new IndividualTour({
       applicant,
       visitDate,
+      visitTime,
       studentHighSchool,
+      majorOfInterest,
       studentName,
       additionalNotes,
       hoursOfWork,
@@ -132,6 +136,7 @@ exports.createIndividualTour = async (req, res) => {
       tour: savedTour,
     });
   } catch (error) {
+    console.error(error)
     res.status(500).json({
       message: "Failed to create individual tour",
       error: error.message,
@@ -243,9 +248,13 @@ exports.updateEvent = async (req, res) => {
           });  
                 
         }
+
+        
         const advisor = new Advisor(foundUser);
         await advisor.acceptTourApplication(eventId);
         await advisor.save();
+
+        
         return res.status(200).json({
           message: "Event updated successfully",
         });
@@ -284,7 +293,7 @@ exports.deleteEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-
+    await event.removeFromAssigneesEvents()
     res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {
     res

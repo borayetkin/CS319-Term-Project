@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("./User");
 const Event = require("./Event");
+const SchoolTour = require("./SchoolTour");
 
 const advisorSchema = new mongoose.Schema({
   assignedDay: {
@@ -26,10 +27,10 @@ advisorSchema.methods.updateAssignedDay = function (day) {
 }
 advisorSchema.methods.acceptTourApplication = async function (eventID) {
   try {
-    this.addAssignedEvent(eventID);
+  
     this.dayApplications.push(eventID);
-    
-    return Event.findByIdAndUpdate(eventID, {status: "accepted" , $push : {assignedUsers : this._id}});
+
+    return Event.findByIdAndUpdate(eventID, {status: "accepted" , assignedAdvisor: this._id});
     
   } catch (error) {
     

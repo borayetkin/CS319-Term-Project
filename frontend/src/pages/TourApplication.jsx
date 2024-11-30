@@ -14,6 +14,7 @@ const TourApplication = () => {
     additionalNotes: "",
     studentHighSchool: "",
     phoneNumber: "",
+    majorOfInterest : ""
   });
   const [message, setMessage] = useState("");
 
@@ -45,12 +46,14 @@ const TourApplication = () => {
           }
         : {
             visitDate: dateTime,
+            visitTime: formData.visitTime,
             studentName: formData.contactPerson,
             studentHighSchool: formData.studentHighSchool,
             email: formData.email,
             phoneNumber: formData.phoneNumber,
             city: formData.city,
             additionalNotes: formData.additionalNotes,
+            majorOfInterest: formData.majorOfInterest,
             typeStr: "Individual Tour",
           };
     try {
@@ -74,7 +77,7 @@ const TourApplication = () => {
       });
       const data = await response2.json();
 
-
+      
 
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
@@ -234,6 +237,25 @@ const TourApplication = () => {
                   onChange={handleChange}
                   required
                 />
+             
+              <label htmlFor="majorOfInterest">Major of Interest:</label>
+              <select
+                id="majorOfInterest"
+                name="majorOfInterest"
+                value={formData.majorOfInterest}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select a major</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Electrical Engineering">Electrical Engineering</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Business Administration">Business Administration</option>
+                <option value="Economics">Economics</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Architecture">Architecture</option>
+              </select>
               </>
             )}
 

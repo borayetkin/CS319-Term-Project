@@ -94,14 +94,21 @@ const Signup = () => {
         {formData.role === "advisor" && (
           <div className="form-group">
             <label htmlFor="assignedDay">Assigned Day:</label>
-            <input
-              type="text"
-              id="assignedDay"
-              name="assignedDay"
-              value={formData.assignedDay}
-              onChange={handleChange}
-              required
-            />
+           
+          <select
+            id="assignedDay"
+            name="assignedDay"
+            value={formData.assignedDay}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select a day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+          </select>
           </div>)}
         <button type="submit">Sign Up</button>
       </form>

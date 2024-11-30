@@ -6,12 +6,12 @@ const Applications = () => {
   const [message, setMessage] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
-  const [tourType, setTourType] = useState("all");
+  const [tourType, setTourType] = useState("SchoolTour");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchUserProfile(token);
+      fetchUserProfile(token)
       
     }
   }, []);
@@ -25,7 +25,7 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
-        fetchApplications(token,data);
+        await fetchApplications(token,data);
 
       } else {
         setMessage("Failed to fetch user profile");
@@ -47,13 +47,17 @@ const Applications = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        data.forEach(async (application) => {
-          console.log(application.applicant);
+        await data.forEach(async (application) => {
+
           await fetchApplicant(application.applicant.applicantID).then((applicantData) => {
             application.applicant = applicantData;
           });
         });
+       
+   
+        
         setApplications(data);
+        
       } else {
 
         setMessage(`Failed to fetch applications`);
@@ -98,9 +102,12 @@ const Applications = () => {
           body: JSON.stringify({ status }),
         }
       );
+
+      
       if (response.ok) {
         setMessage(`Application ${status} successfully.`);
-        fetchApplications(token,user); // Refresh applications
+        await fetchApplications(token,user); // Refresh applications
+        setTourType("SchoolTour")
       } else {
         const errData = await response.json();
 
@@ -121,7 +128,7 @@ const Applications = () => {
       });
       if (response.ok) {
         setMessage("Application deleted successfully.");
-        fetchApplications(token,user); // Refresh applications
+        await fetchApplications(token,user); // Refresh applications
       } else {
         setMessage("Failed to delete application.");
       }
@@ -201,7 +208,8 @@ const Applications = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredApplications.map((app) => {
+            {
+            filteredApplications.map((app) => {
               let className = "";
               if (app.status === "accepted") {
                 className = "accepted";
@@ -210,7 +218,9 @@ const Applications = () => {
               } else {
                 className = "pending";
               }
+              
 
+   
               return (
                 <tr key={app._id} className={className}>
                   {tourType === "SchoolTour" ? (

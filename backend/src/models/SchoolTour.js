@@ -14,10 +14,6 @@ const schoolTourSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    visitTime: {
-        type: String,
-        required: true
-    },
     city: {
         type: String,
         required: true
@@ -33,17 +29,14 @@ const schoolTourSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         required: true
-    }
+    },
+    assignedAdvisor: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+      
 
 });
 
 schoolTourSchema.methods.setAssignedAdvisor = function (advisorId){
-    try {
-        this.assignedAdvisor = advisorId
-        return this.save()
-    } catch (error) {
-        return Promise.reject(new Error("Server Error"))
-    }
+    this.assignedAdvisor = advisorId
 }
 schoolTourSchema.methods.setRequiredNumberOfGuides = function (){
     this.requiredNumberOfGuides = parseInt((this.studentCount / 60),10);

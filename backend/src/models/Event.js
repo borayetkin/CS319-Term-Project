@@ -3,7 +3,7 @@ const User = require('./User');
 const Applicant = require('./Applicant');
 const eventSchema = new mongoose.Schema({
   applicant: {
-    applicantID : [{type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'}],
+    applicantID : {type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'},
     name:{
       type: String,
       required: true,
@@ -12,6 +12,10 @@ const eventSchema = new mongoose.Schema({
   },
   visitDate : {
     type: Date,
+    required : true
+  },
+  visitTime : {
+    type: String,
     required : true
   },
   assignedUsers: [{
@@ -86,7 +90,16 @@ eventSchema.methods.removeAssignee = async function (userId){
 eventSchema.methods.getAssignees = function () {
     return this.assignedUsers
 }
-
+eventSchema.methods.removeFromAssigneesEvents = async function () {
+  const promises = this.assignedUsers.map((userId) => {
+    return User.findByIdAndUpdate(
+      userId,
+      { $pull: { assignedEvents: this._id } },
+      { new: true }
+    );
+  });
+  return Promise.all(promises);
+}
 /**Returns the Applicant name for now*/
 eventSchema.methods.getApplicant = function () {
     return this.applicant
