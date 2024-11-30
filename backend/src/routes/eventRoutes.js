@@ -18,14 +18,15 @@ const {
   getAssigneddEventsOfUser,
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
-  
+  getFairs,
 } = require("../controllers/EventController");
+const adminAuth = require("../middleware/adminMiddleware");
 
 // Routes for creating events
 router.post("/schooltours", createSchoolTour);
 router.post("/individualtours",  createIndividualTour);
 router.post("/fairs",createFair);
-
+router.get('/fairs',adminAuth, getFairs)
 // Routes for fetching events
 router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);

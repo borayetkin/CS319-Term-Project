@@ -19,15 +19,19 @@ exports.getAcceptedEvents = async (req, res) => {
       const applicantData = await Applicant.findById(
         application.applicant.applicantID
       );
-      application.applicant = {
-        ...application.applicant,
-        name: applicantData.name,
-        email: applicantData.email,
-        phoneNumber: applicantData.phoneNumber,
-      };
+      if (applicantData) {
+        application.applicant = {
+          ...application.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
     }
     res.status(200).json(acceptedEvents);
   } catch (error) {
+   console.error(error)
+    
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -46,12 +50,14 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
         const applicantData = await Applicant.findById(
           application.applicant.applicantID
         );
-        application.applicant = {
-          ...application.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
+        if (applicantData) {
+          application.applicant = {
+            ...application.applicant,
+            name: applicantData.name,
+            email: applicantData.email,
+            phoneNumber: applicantData.phoneNumber,
+          };
+        }
       }
       res.status(200).json(acceptedEvents);
     } else {
@@ -75,12 +81,14 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
         const applicantData = await Applicant.findById(
           application.applicant.applicantID
         );
-        application.applicant = {
-          ...application.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
+        if (applicantData) {
+          application.applicant = {
+            ...application.applicant,
+            name: applicantData.name,
+            email: applicantData.email,
+            phoneNumber: applicantData.phoneNumber,
+          };
+        }
       }
 
       res.status(200).json(acceptedEvents);
@@ -202,9 +210,6 @@ exports.createFair = async (req, res) => {
       status = "pending",
     } = req.body;
 
-    console.log("applicant:", applicant);
-    console.log("Received data:", req.body);
-
     // Validate required fields
     if (
       !applicant ||
@@ -217,7 +222,6 @@ exports.createFair = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    console.log("Received data:", req.body);
 
     const fair = new Fair({
       applicant,
@@ -226,6 +230,7 @@ exports.createFair = async (req, res) => {
       phoneNumber,
       city,
       visitDate: new Date(visitDate),
+      visitTime: fairTime,
       fairTime,
       location,
       additionalNotes,
@@ -234,7 +239,6 @@ exports.createFair = async (req, res) => {
       status,
     });
 
-    console.log("Fair details before saving:", fair);
 
     fair.addToApplicantEvents(); // Ensure this method is implemented
     fair.setWeekday(); // Set the weekday
@@ -246,13 +250,38 @@ exports.createFair = async (req, res) => {
       fair,
     });
   } catch (error) {
+    console.error(error);
+    
     res.status(500).json({
       message: "Failed to create fair",
       error: error.message,
     });
   }
 };
-
+// Get all fairs
+exports.getFairs = async (req, res) => {
+  try {
+    const fairs = await Fair.find();
+    for (let i = 0; i < fairs.length; i++) {
+      fairs[i] = fairs[i].toJSON();
+      let application = fairs[i];
+      const applicantData = await Applicant.findById(
+        application.applicant.applicantID
+      );
+      if (applicantData) {
+        application.applicant = {
+          ...application.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
+    }
+    res.status(200).json(fairs);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {
@@ -263,12 +292,14 @@ exports.getAllEvents = async (req, res) => {
       const applicantData = await Applicant.findById(
         application.applicant.applicantID
       );
-      application.applicant = {
-        ...application.applicant,
-        name: applicantData.name,
-        email: applicantData.email,
-        phoneNumber: applicantData.phoneNumber,
-      };
+      if (applicantData) {
+        application.applicant = {
+          ...application.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
     }
     res.status(200).json(events);
   } catch (error) {
