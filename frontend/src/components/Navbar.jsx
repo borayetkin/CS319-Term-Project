@@ -5,16 +5,19 @@ import "../styles/Navbar.css";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState("");
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect( () => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
-    
     if (token) {
-      checkAuth(token)
+      checkAuth(token);
+    } else {
+      setIsLoading(false); // No token means no authentication check needed
     }
   }, []);
+
   const checkAuth = async (token) => {
     try {
       const response = await fetch("/api/auth/check", {
@@ -22,25 +25,21 @@ const Navbar = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-   
-      if (response.status === 401) {
-        localStorage.clear()
 
-
-      }else{
-        setIsLoggedIn(true);
+      if (response.ok) {
         const decodedToken = JSON.parse(atob(token.split(".")[1]));
         setRole(decodedToken.role);
+        setIsLoggedIn(true);
+      } else {
+        localStorage.removeItem("token"); // Ensure invalid token is cleared
+        setIsLoggedIn(false);
       }
-
-      
-      return true
     } catch (error) {
-      console.error(error);
-
- 
-      return false
-
+      console.error("Error checking authentication:", error);
+      localStorage.removeItem("token"); // Clear token on error
+      setIsLoggedIn(false);
+    } finally {
+      setIsLoading(false); // Authentication check complete
     }
   };
 
@@ -48,13 +47,17 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setRole("");
-    window.location.href = "/"
+    navigate("/"); // Use navigate for better SPA behavior
   };
-  
+
   const isActive = (path) => location.pathname === path;
 
+  if (isLoading) {
+    // Optionally show a loading spinner or placeholder
+    return <div className="navbar-loading">Loading...</div>;
+  }
+
   return (
-    
     <nav className="navbar">
       <div className="logo">
         <Link to="/">ATOM</Link>
@@ -100,7 +103,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {["admin","advisor", "guide"].includes(role) && (
+            {["admin", "advisor", "guide"].includes(role) && (
               <li>
                 <Link
                   to="/assigned-events"
