@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/TourApplication.css";
 
 const TourApplication = () => {
@@ -21,6 +22,7 @@ const TourApplication = () => {
   const [message, setMessage] = useState("");
   const [schools, setSchools] = useState([]);
   const [filteredSchools, setFilteredSchools] = useState([]);
+  const navigate = useNavigate();
 
   // Fetch schools from backend on component mount
   useEffect(() => {
@@ -129,6 +131,22 @@ const TourApplication = () => {
       setMessage("An error occurred. Please try again.");
     }
   };
+
+  if (message === "Tour application submitted successfully!") {
+    return (
+      <section className="tour-application-section">
+        <div className="tour-application-container">
+          <h1>{message}</h1>
+          <button
+            onClick={() => navigate("/")}
+            className="tour-application-submit"
+          >
+            Return Home
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="tour-application-section">
