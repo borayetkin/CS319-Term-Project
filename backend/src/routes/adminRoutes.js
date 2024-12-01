@@ -3,6 +3,7 @@ const {
   getAllUsers,
   deleteUser,
   updateUserRole,
+  getUserStats,
 } = require("../controllers/UserController");
 const adminAuth = require("../middleware/adminMiddleware"); // Middleware for admin-only access
 const router = express.Router();
@@ -16,5 +17,7 @@ router.delete("/admin/users/:id", adminAuth, deleteUser);
 // Admin route to update a user's role
 router.put("/admin/users/:id/role", adminAuth, updateUserRole);
 
+// Route for user statistics
+router.get("/users/stats", adminAuth, getUserStats);
+
 module.exports = router;
- 

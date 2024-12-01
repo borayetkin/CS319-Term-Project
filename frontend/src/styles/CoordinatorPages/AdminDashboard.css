@@ -14,13 +14,12 @@
   flex-direction: column;
   overflow-y: auto;
   height: 100vh; /* Full height of viewport */
-  top: 0;
-  left: 0;
 }
 
 .sidebar h2 {
   font-size: 20px;
   margin-bottom: 20px;
+  text-align: center; /* Center align the text */
 }
 
 .sidebar ul {
@@ -36,10 +35,15 @@
 .sidebar ul li a {
   color: #ffffff;
   text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: block;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .sidebar ul li a:hover {
   color: #63b3ed;
+  background-color: #1a202c;
 }
 
 /* Main content styling */
@@ -49,4 +53,41 @@
   flex: 1; /* Takes up remaining space */
   overflow-y: auto;
   box-sizing: border-box;
+}
+
+.user-stats-container {
+  margin-top: 20px;
+}
+
+.user-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.user-stats-table th,
+.user-stats-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.user-stats-table th {
+  background-color: #2d3748;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.user-stats-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.user-stats-table tr:hover {
+  background-color: #eaeaea;
+}
+
+.user-stats-table td {
+  font-size: 14px;
 }
