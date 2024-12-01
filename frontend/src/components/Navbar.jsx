@@ -114,9 +114,13 @@ const Navbar = () => {
               </li>
             )}
             <li>
-              <button className="logout-button" onClick={handleLogout}>
+              <Link
+                to="/"
+                onClick={handleLogout}
+                className={isActive("/logout") ? "active" : ""}
+              >
                 Logout
-              </button>
+              </Link>
             </li>
           </>
         ) : (
