@@ -113,6 +113,16 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+            {["advisor"].includes(role) && (
+                <li>
+                    <Link
+                        to="/manage-guides"
+                        className ={isActive("/manage-guides") ? "active" : ""}
+                    >
+                        Manage Guides
+                    </Link>
+                </li>
+            )}
             <li>
               <Link
                 to="/"

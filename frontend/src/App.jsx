@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Applications from "./pages/AdvisorPages/Applications";
+import ManageGuides from "./pages/AdvisorPages/ManageGuides";
 import ApplicationDetails from "./pages/AdvisorPages/ApplicationDetails";
 import Events from "./pages/GuidePages/Events";
 import AssignedEvents from "./pages/GuidePages/AssignedEvents";
@@ -86,6 +87,15 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/manage-guides"
+          element={
+            <PrivateRoute allowedRoles={[ "advisor"]}>
+              <ManageGuides />
+            </PrivateRoute>
+          }
+        />
+
         {/* Application Details Route (Admin, Coordinator, Advisor) */}
         <Route
           path="/application/:id"
