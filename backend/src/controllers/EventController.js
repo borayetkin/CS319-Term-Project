@@ -30,8 +30,8 @@ exports.getAcceptedEvents = async (req, res) => {
     }
     res.status(200).json(acceptedEvents);
   } catch (error) {
-   console.error(error)
-    
+    console.error(error);
+
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -222,7 +222,6 @@ exports.createFair = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-
     const fair = new Fair({
       applicant,
       schoolName,
@@ -239,7 +238,6 @@ exports.createFair = async (req, res) => {
       status,
     });
 
-
     fair.addToApplicantEvents(); // Ensure this method is implemented
     fair.setWeekday(); // Set the weekday
 
@@ -251,7 +249,7 @@ exports.createFair = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    
+
     res.status(500).json({
       message: "Failed to create fair",
       error: error.message,
@@ -311,20 +309,43 @@ exports.getAllEvents = async (req, res) => {
 exports.getEvent = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Fetch the event by ID
     let event = await Event.findById(id);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-   
-    event = event.toJSON()
 
-    let advisor = await User.findById(event.assignedAdvisor)
-    advisor = advisor.toJSON()
-    event.assignedAdvisor= advisor
+    event = event.toJSON();
+
+    // Fetch the assigned advisor (if available)
+    if (event.assignedAdvisor) {
+      const advisor = await User.findById(event.assignedAdvisor);
+      event.assignedAdvisor = advisor
+        ? advisor.toJSON()
+        : { name: "N/A", email: "N/A" };
+    }
+
+    // Fetch the applicant details (if available)
+    const applicantData = await Applicant.findById(event.applicant.applicantID);
+    if (applicantData) {
+      event.applicant = {
+        ...event.applicant,
+        name: applicantData.name,
+        email: applicantData.email,
+        phoneNumber: applicantData.phoneNumber,
+      };
+    } else {
+      event.applicant = {
+        name: "N/A",
+        email: "N/A",
+        phoneNumber: "N/A",
+      };
+    }
 
     res.status(200).json(event);
   } catch (error) {
-    console.error(error)
+    console.error("Error in getEvent:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
