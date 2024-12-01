@@ -1,29 +1,31 @@
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); 
 const jwt = require("jsonwebtoken");
 const Advisor = require("../models/Advisor");
 
-const saveUser = async ({ name, email, password, role }) => {
-  // Create new user with conditional role
-  const user = new User({ name, email, password, role });
-  await user.save();
-  // Generate JWT
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-  return token;
-};
 
+const saveUser = async ({ name, email, password, role }) =>{
+    // Create new user with conditional role
+    const user = new User({ name, email, password, role });
+    await user.save();
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    return token;
+}
 exports.updateUser = async (req, res) => {
   try {
+
+    
     let user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     // Update fields
-    Object.keys(req.body).forEach((key) => {
+    Object.keys(req.body).forEach(key => {
       user[key] = req.body[key] || user[key];
     });
     await user.save();
@@ -32,8 +34,7 @@ exports.updateUser = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-};
-
+}
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -51,7 +52,6 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 exports.updateUserRole = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -78,7 +78,6 @@ exports.updateUserRole = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 // Register a new user
 exports.signupUser = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -93,7 +92,7 @@ exports.signupUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User already exists." });
     }
-
+    
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -104,23 +103,25 @@ exports.signupUser = async (req, res) => {
 
     // Save the new user
     let newUser;
-    if (userRole === "advisor") {
-      const { assignedDay } = req.body;
-      newUser = await new Advisor({
+    if (userRole === 'advisor') {
+
+      const {assignedDay} = req.body;
+       newUser = await new Advisor({
         name,
         email,
         password: hashedPassword,
         role: userRole,
-        assignedDay: assignedDay,
+        assignedDay: assignedDay
       });
-      newUser.save();
-    } else {
-      newUser = await saveUser({
+      newUser.save()
+    }else {
+       newUser = await saveUser({
         name,
         email,
         password: hashedPassword,
         role: userRole,
       });
+
     }
     // Generate token
     const token = jwt.sign(
@@ -185,6 +186,7 @@ exports.getProfile = async (req, res) => {
 
 // Update the user's profile
 
+
 // Get all users (admin-only functionality)
 exports.getAllUsers = async (req, res) => {
   try {
@@ -196,27 +198,15 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserStats = async (req, res) => {
+exports.getAllGuides = async (req,res) => {
   try {
-    const stats = await User.aggregate([
-      {
-        $group: {
-          _id: "$role", // Group by user role
-          count: { $sum: 1 }, // Count the number of users in each group
-        },
-      },
-      {
-        $project: {
-          type: "$_id", // Rename _id to type
-          count: 1, // Keep the count field
-          _id: 0, // Remove the _id field
-        },
-      },
-    ]);
-
-    res.status(200).json(stats);
-  } catch (error) {
-    console.error("Error fetching user statistics:", error);
-    res.status(500).json({ message: "Failed to fetch user statistics." });
+    const guides = await User.find({ role: "guide" }).select("-password");
+    console.log("Fetched guides:", guides);
+    res.status(200).json(guides);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch guides", error: error.message });
   }
 };
+
+
