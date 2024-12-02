@@ -5,16 +5,17 @@ import "../styles/Navbar.css";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      checkAuth(token);
+      checkAuth(token); // Validate the token with the server
     } else {
-      setIsLoading(false); // No token means no authentication check needed
+      setIsLoggedIn(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -31,15 +32,16 @@ const Navbar = () => {
         setRole(decodedToken.role);
         setIsLoggedIn(true);
       } else {
-        localStorage.removeItem("token"); // Ensure invalid token is cleared
+        // If the token is invalid or expired, clear localStorage
+        localStorage.removeItem("token");
         setIsLoggedIn(false);
       }
     } catch (error) {
       console.error("Error checking authentication:", error);
-      localStorage.removeItem("token"); // Clear token on error
+      localStorage.removeItem("token"); // Ensure the token is cleared
       setIsLoggedIn(false);
     } finally {
-      setIsLoading(false); // Authentication check complete
+      setIsLoading(false); // Mark the loading as complete
     }
   };
 
@@ -47,13 +49,12 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setRole("");
-    navigate("/"); // Use navigate for better SPA behavior
+    navigate("/"); // Redirect to the home page
   };
 
   const isActive = (path) => location.pathname === path;
 
   if (isLoading) {
-    // Optionally show a loading spinner or placeholder
     return <div className="navbar-loading">Loading...</div>;
   }
 
@@ -114,14 +115,14 @@ const Navbar = () => {
               </li>
             )}
             {["advisor"].includes(role) && (
-                <li>
-                    <Link
-                        to="/manage-guides"
-                        className ={isActive("/manage-guides") ? "active" : ""}
-                    >
-                        Manage Guides
-                    </Link>
-                </li>
+              <li>
+                <Link
+                  to="/manage-guides"
+                  className={isActive("/manage-guides") ? "active" : ""}
+                >
+                  Manage Guides
+                </Link>
+              </li>
             )}
             <li>
               <Link
