@@ -115,6 +115,9 @@ exports.createSchoolTour = async (req, res) => {
       phoneNumber,
     } = req.body;
 
+    if (!applicant || !schoolName || !contactPerson || !email || !visitDate || !visitTime || !city || !studentCount || !phoneNumber) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
     const schoolTour = new SchoolTour({
       applicant,
       schoolName,
@@ -127,6 +130,7 @@ exports.createSchoolTour = async (req, res) => {
       additionalNotes,
       phoneNumber,
     });
+    
     schoolTour.setRequiredNumberOfGuides();
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
@@ -527,6 +531,32 @@ exports.getEventAssignees = async (req, res) => {
     const assignees = await User.find({ _id: { $in: event.assignedUsers } });
 
     res.status(200).json(assignees);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+exports.getSchoolTourCountsByMonth = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const schoolTours = await SchoolTour.find({
+      visitDate: { $gte: startDate, $lte: endDate },
+    });
+
+  const tourCounts = {};
+
+  schoolTours.forEach(tour => {
+    const dateKey = tour.visitDate.toISOString().split('T')[0] + `-${tour.visitTime}`;
+    if (!tourCounts[dateKey]) {
+    tourCounts[dateKey] = 0;
+    }
+    tourCounts[dateKey]++;
+  });
+
+  res.status(200).json(tourCounts);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

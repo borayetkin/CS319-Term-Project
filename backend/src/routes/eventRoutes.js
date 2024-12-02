@@ -19,6 +19,7 @@ const {
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
   getFairs,
+  getSchoolTourCountsByMonth
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -47,5 +48,6 @@ router.post("/assign-advisor", auth, assignAdvisorToTour);
 router.post("/assign-guide", auth, assignGuideToEvent);
 router.post("/remove-guide", auth, removeAssignedGuideFromEvent);
 
-
+// Route for fetching application counts on the date&time
+router.get("/shcooltours/dates",getSchoolTourCountsByMonth)
 module.exports = router;

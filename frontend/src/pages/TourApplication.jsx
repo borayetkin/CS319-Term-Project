@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TourApplication.css";
+import CustomDateTimePicker from "../components/SchoolTourDatePicker";
 
 const TourApplication = () => {
   const [step, setStep] = useState(1);
@@ -52,6 +53,8 @@ const TourApplication = () => {
   }, [formData.city, formData.district, schools]);
 
   const handleChange = (e) => {
+    console.log(formData);
+    
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -222,7 +225,8 @@ const TourApplication = () => {
               placeholder="0 5XX XXX XX XX"
             />
 
-            <label htmlFor="visitDate">Visit Date:</label>
+            {formData.tourType === "individual" ? (<>
+              <label htmlFor="visitDate">Visit Date:</label>
             <input
               type="date"
               id="visitDate"
@@ -231,6 +235,7 @@ const TourApplication = () => {
               onChange={handleChange}
               required
             />
+            
 
             <label htmlFor="visitTime">Visit Time:</label>
             <input
@@ -241,6 +246,9 @@ const TourApplication = () => {
               onChange={handleChange}
               required
             />
+            </>) : 
+            // Custom Date Picker Here!
+            (<CustomDateTimePicker handleChange = {handleChange}/>)}
 
             <label htmlFor="city">City:</label>
             <select
@@ -328,6 +336,7 @@ const TourApplication = () => {
                   onChange={handleChange}
                   required
                 />
+              
               </>
             )}
 
