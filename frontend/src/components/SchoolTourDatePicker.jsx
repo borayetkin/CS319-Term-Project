@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
 import "../styles/CustomDatePicker.css"
 import "../styles/TourApplication.css";
 import DatePicker2 from "./DatePicker2";
