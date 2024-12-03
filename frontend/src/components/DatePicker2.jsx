@@ -48,7 +48,8 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   };
 
   const handleDateSelect = (date) => {
-    
+    if (isDisabled(date)) return;
+
     const previousMonth = selectedDate ? selectedDate.getMonth() : null;
     if (previousMonth !== null && previousMonth !== date.getMonth()) {
       onMonthChange(date);
