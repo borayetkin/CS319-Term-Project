@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -47,13 +48,18 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   };
 
   const handleDateSelect = (date) => {
-    if (isDisabled(date)) return;
+    
+    const previousMonth = selectedDate ? selectedDate.getMonth() : null;
+    if (previousMonth !== null && previousMonth !== date.getMonth()) {
+      onMonthChange(date);
+    }
     setSelectedDate(date);
     setIsOpen(false);
     onDateChange && onDateChange({target : {name : "visitDate", value : formatLocalDate(date)}});
   };
 
   const changeMonth = (offset) => {
+
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
     setCurrentDate(newDate);
     onMonthChange && onMonthChange(newDate);
