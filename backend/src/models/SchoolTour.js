@@ -38,7 +38,8 @@ schoolTourSchema.methods.setAssignedAdvisor = function (advisorId){
     this.assignedAdvisor = advisorId
 }
 schoolTourSchema.methods.setRequiredNumberOfGuides = function (){
-    this.requiredNumberOfGuides = parseInt((this.studentCount / 60),10);
+
+    this.requiredNumberOfGuides = parseInt(((this.studentCount / 60)+1),10);
     
 }
 

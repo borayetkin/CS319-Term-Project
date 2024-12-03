@@ -4,12 +4,11 @@ const ManageGuides = () => {
   const [events, setEvents] = useState([]);
   const [guides, setGuides] = useState([]);
   const [updatedAssignments, setUpdatedAssignments] = useState({});
+  const [updatedRemovals, setUpdatedRemovals] = useState({});
   const [message, setMessage] = useState("");
 
-  // Replace this with your actual token retrieval mechanism
   const token = localStorage.getItem("token");
 
-  // Fetch all events and guides when the component loads
   useEffect(() => {
     fetchEvents();
     fetchGuides();
@@ -18,13 +17,28 @@ const ManageGuides = () => {
   const fetchEvents = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/events", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       if (response.ok) {
-        const data = await response.json();
-        setEvents(data);
+        const eventsData = await response.json();
+
+        const eventsWithAssignees = await Promise.all(
+          eventsData.map(async (event) => {
+            const assigneesResponse = await fetch(
+              `http://localhost:3000/api/events/${event._id}/assignees`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            const assignees = assigneesResponse.ok
+              ? await assigneesResponse.json()
+              : [];
+            return { ...event, assignedGuides: assignees };
+          })
+        );
+
+        setEvents(eventsWithAssignees);
       } else {
         setMessage("Failed to fetch events.");
       }
@@ -36,55 +50,72 @@ const ManageGuides = () => {
   const fetchGuides = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/guides", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
         const data = await response.json();
         setGuides(data);
       } else {
-        setMessage("Failed to fetch guides (react).");
+        setMessage("Failed to fetch guides.");
       }
     } catch (error) {
       setMessage("Error fetching guides: " + error.message);
     }
   };
 
-  const handleGuideChange = (eventId, guideId) => {
-    setUpdatedAssignments((prev) => ({
-      ...prev,
-      [eventId]: guideId,
-    }));
-  };
-
   const saveChanges = async (eventId) => {
-    const guideId = updatedAssignments[eventId];
-    if (!guideId) {
-      setMessage("Please select a guide before saving.");
-      return;
-    }
+    const guideToAssign = updatedAssignments[eventId];
+    const guideToRemove = updatedRemovals[eventId];
 
     try {
-      const response = await fetch("http://localhost:3000/api/events/assign-guide", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          userID: guideId,
-          eventID: eventId,
-        }),
-      });
+      // Assign new guide
+      if (guideToAssign) {
+        const assignResponse = await fetch(
+          "http://localhost:3000/api/events/assign-guide",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userID: guideToAssign,
+              eventID: eventId,
+            }),
+          }
+        );
 
-      if (response.ok) {
-        setMessage("Guide assigned successfully!");
-        fetchEvents(); // Refresh the events list
-      } else {
-        const errorData = await response.json();
-        setMessage(`Failed to assign guide: ${errorData.message}`);
+        if (!assignResponse.ok) {
+          const errorData = await assignResponse.json();
+          throw new Error(errorData.message || "Failed to assign guide");
+        }
       }
+
+      // Remove selected guide
+      if (guideToRemove) {
+        const removeResponse = await fetch(
+          "http://localhost:3000/api/events/remove-guide",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userID: guideToRemove,
+              eventID: eventId,
+            }),
+          }
+        );
+
+        if (!removeResponse.ok) {
+          const errorData = await removeResponse.json();
+          throw new Error(errorData.message || "Failed to remove guide");
+        }
+      }
+
+      setMessage("Changes saved successfully!");
+      fetchEvents(); // Refresh the events list
     } catch (error) {
       setMessage("Error saving changes: " + error.message);
     }
@@ -92,7 +123,7 @@ const ManageGuides = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Event Guide Assignment</h1>
+      <h1>Event Guide Management</h1>
       {message && <p>{message}</p>}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
         <thead>
@@ -102,11 +133,10 @@ const ManageGuides = () => {
             <th>City</th>
             <th>Date</th>
             <th>Time</th>
-            <th>Student No</th>
-            <th>Assigned Person</th>
-            <th>Person Number</th>
-            <th>Assigned Person Email</th>
-            <th>Choose Guide</th>
+            <th>number of visitors</th>
+            <th>Assigned Guides</th>
+            <th>Assign New Guide</th>
+            <th>Remove Guide</th>
             <th>Save Changes</th>
           </tr>
         </thead>
@@ -118,19 +148,53 @@ const ManageGuides = () => {
               <td>{event.city}</td>
               <td>{new Date(event.date).toLocaleDateString()}</td>
               <td>{event.time}</td>
-              <td>{event.studentNo}</td>
-              <td>{event.assignedGuide?.name || "None"}</td>
-              <td>{event.assignedGuide?.phone || "N/A"}</td>
-              <td>{event.assignedGuide?.email || "N/A"}</td>
+              <th>{event.studentCount}</th>
+              <td>
+                {event.assignedGuides.map((guide) => (
+                  <div key={guide._id}>{guide.name}</div>
+                ))}
+              </td>
               <td>
                 <select
-                  onChange={(e) => handleGuideChange(event._id, e.target.value)}
-                  defaultValue={event.assignedGuide?._id || ""}
+                  onChange={(e) =>
+                    setUpdatedAssignments((prev) => ({
+                      ...prev,
+                      [event._id]: e.target.value,
+                    }))
+                  }
+                  defaultValue=""
                 >
                   <option value="" disabled>
-                    Choose Guide
+                    Select Guide
                   </option>
-                  {guides.map((guide) => (
+                  {guides
+                    .filter(
+                      (guide) =>
+                        !event.assignedGuides.some(
+                          (assigned) => assigned._id === guide._id
+                        )
+                    )
+                    .map((guide) => (
+                      <option key={guide._id} value={guide._id}>
+                        {guide.name}
+                      </option>
+                    ))}
+                </select>
+              </td>
+              <td>
+                <select
+                  onChange={(e) =>
+                    setUpdatedRemovals((prev) => ({
+                      ...prev,
+                      [event._id]: e.target.value,
+                    }))
+                  }
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select Guide
+                  </option>
+                  {event.assignedGuides.map((guide) => (
                     <option key={guide._id} value={guide._id}>
                       {guide.name}
                     </option>
