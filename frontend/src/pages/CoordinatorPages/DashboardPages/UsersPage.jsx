@@ -93,6 +93,11 @@ const UsersPage = () => {
             </tr>
           </thead>
           <tbody>
+          <tr>
+              <td colSpan="4" className="add-user-link">
+                <Link to="/dashboard/adduser">Add User</Link>
+              </td>
+            </tr>
             {users.map((user) => (
               <tr key={user._id}>
                 <td>{user.name}</td>
@@ -113,11 +118,7 @@ const UsersPage = () => {
                 </td>
               </tr>
             ))}
-            <tr>
-              <td colSpan="4" className="add-user-link">
-                <Link to="/dashboard/adduser">Add User</Link>
-              </td>
-            </tr>
+           
           </tbody>
         </table>
       ) : (
