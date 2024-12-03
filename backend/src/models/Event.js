@@ -27,7 +27,7 @@ const eventSchema = new mongoose.Schema({
   },
   status : {
     type: String,
-    enum : ["pending", "accepted", "rejected"],
+    enum : ["pending", "accepted", "rejected","canceled-non-verified","canceled-verified","completed-non-verified","completed-verified"],
     default: "pending"
   },
   hoursOfWork : {
@@ -123,6 +123,29 @@ eventSchema.methods.addToApplicantEvents = function () {
 eventSchema.methods.setWeekday = function () {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   this.weekday = daysOfWeek[this.visitDate.getDay()];
+}
+eventSchema.methods.takeBackAction = function () {
+  if(this.status === "completed-non-verified"){
+    this.status = "accepted"
+  }else if(this.status === "canceled-non-verified"){
+    this.status = "accepted"
+  } else {
+    return new Error("Event is not eligible for action")
+  }
+  return this.save()
+}
+eventSchema.methods.markVerified = function (){
+  if(this.status === "completed-non-verified"){
+    this.status = "completed-verified"
+  }else if(this.status === "canceled-non-verified"){
+    this.status = "canceled-verified"
+  } else {
+    return new Error("Event is not eligible for verification")
+  }
+  return this.save()
+}
+eventSchema.methods.isUserAssigned = function (userId){
+  return this.assignedUsers.includes(userId)
 }
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;

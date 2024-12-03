@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import  '../../styles/GuidePages/Events.css'
+import { Link } from "react-router-dom";
+
+import '../../styles/GuidePages/Events.css'
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
   const [message, setMessage] = useState("");
@@ -24,9 +26,9 @@ const AssignedEvents = () => {
 
       if (response.ok) {
         const data = await response.json();
-
-        
-        setAssignedEvents(data);
+        const currentDate = new Date();
+        const futureEvents = data.filter(event => new Date(event.visitDate) > currentDate);
+        setAssignedEvents(futureEvents);
       } else {
         setMessage("Failed to fetch assigned events.");
       }
@@ -37,7 +39,17 @@ const AssignedEvents = () => {
 
   return (
     <div className="events-container">
-      <h1>Assigned Events</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <h1>Assigned Future Events</h1>
+        
+        <Link style={{textDecoration : "none", color : "inherit"}} to={`/past-events`} className="view-details">
+        <button style={{ width: "auto" }} onClick={() =>{}}>
+          View Past Events
+          </button>
+        </Link>
+        
+      </div>
+      
       {message && <p>{message}</p>}
       {assignedEvents.length > 0 ? (
         <table>
@@ -46,7 +58,7 @@ const AssignedEvents = () => {
               <th>Event Name</th>
               <th>Date</th>
               <th>Time</th>
- 
+
               <th>Status</th>
             </tr>
           </thead>
@@ -56,7 +68,7 @@ const AssignedEvents = () => {
                 <td>{event.applicant.name || "N/A"}</td>
                 <td>{new Date(event.visitDate).toLocaleDateString()}</td>
                 <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
-     
+
                 <td>{event.status}</td>
               </tr>
             ))}

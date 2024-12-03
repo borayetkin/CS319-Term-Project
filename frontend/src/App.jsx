@@ -14,6 +14,7 @@ import ManageGuides from "./pages/AdvisorPages/ManageGuides";
 import ApplicationDetails from "./pages/AdvisorPages/ApplicationDetails";
 import Events from "./pages/GuidePages/Events";
 import AssignedEvents from "./pages/GuidePages/AssignedEvents";
+import CompletedEvents from "./pages/GuidePages/PastEvents";
 import UsersPage from "./pages/CoordinatorPages/DashboardPages/UsersPage";
 import SettingsPage from "./pages/CoordinatorPages/DashboardPages/SettingsPage";
 import ManageFairs from "./pages/CoordinatorPages/DashboardPages/ManageFairs";
@@ -113,6 +114,16 @@ function App() {
               {" "}
               {/*I do not think admin should see this */}
               <AssignedEvents />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/past-events"
+          element={
+            <PrivateRoute allowedRoles={["admin", "advisor", "guide"]}>
+              {" "}
+              {/*I do not think admin should see this */}
+              <CompletedEvents />
             </PrivateRoute>
           }
         />

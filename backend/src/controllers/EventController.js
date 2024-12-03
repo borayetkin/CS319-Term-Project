@@ -130,7 +130,7 @@ exports.createSchoolTour = async (req, res) => {
       additionalNotes,
       phoneNumber,
     });
-    
+
     schoolTour.setRequiredNumberOfGuides();
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
@@ -554,7 +554,7 @@ exports.getEventAssignees = async (req, res) => {
 exports.getSchoolTourCountsByMonth = async (req, res) => {
   try {
     const { month, year } = req.query;
-    
+
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
 
@@ -562,18 +562,100 @@ exports.getSchoolTourCountsByMonth = async (req, res) => {
       visitDate: { $gte: startDate, $lte: endDate },
     });
 
-  const tourCounts = {};
+    const tourCounts = {};
 
-  schoolTours.forEach(tour => {
-    const dateKey = tour.visitDate.toISOString().split('T')[0] + `-${tour.visitTime}`;
-    if (!tourCounts[dateKey]) {
-    tourCounts[dateKey] = 0;
-    }
-    tourCounts[dateKey]++;
-  });
+    schoolTours.forEach(tour => {
+      const dateKey = tour.visitDate.toISOString().split('T')[0] + `-${tour.visitTime}`;
+      if (!tourCounts[dateKey]) {
+        tourCounts[dateKey] = 0;
+      }
+      tourCounts[dateKey]++;
+    });
 
-  res.status(200).json(tourCounts);
+    res.status(200).json(tourCounts);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+exports.markEventAsCancelled = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (!(event.isUserAssigned(userId))) {
+      return res.status(403).json({ message: "User not assigned to this event" });
+    }
+
+    await Event.findByIdAndUpdate(eventId, { status: "canceled-non-verified" });
+    res.status(200).json({ message: "Event cancelled successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to cancel event", error: error.message });
+  }
+}
+exports.markEventAsCompleted = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+    const event = await Event.findById(eventId);
+    if (!event) { 
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (!(event.isUserAssigned(userId))) {
+      return res.status(403).json({ message: "User not assigned to this event" });
+    }
+
+    await Event.findByIdAndUpdate(eventId, { status: "completed-non-verified" });
+    res.status(200).json({ message: "Event completed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to complete event", error: error.message });
+  }
+}
+exports.takeBackEventAction = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+    const event = await Event.findById(eventId);
+    if (!(event.isUserAssigned(userId))) {
+      return res.status(403).json({ message: "User not assigned to this event" });
+    }
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    try {
+        await event.takeBackAction();
+    } catch (error) {
+      res.status(400).json({ message: "Event status not eligible for action" });
+    }
+    res.status(200).json({ message: "Event status set to accepted" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to take back event", error: error.message });
+  }
+}
+
+exports.confirmEventAction = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (!event.assignedAdvisor === userId) {
+      return res.status(403).json({ message: "Advisor not assigned to this event" });
+    }
+    try {
+      await event.markVerified();
+      res.status(200).json({ message: "Event completion/cancellation confirmed" });
+
+    } catch (error) {
+      res.status(400).json({ message: "Event status not eligible for confirmation" });
+      
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to confirm event completion", error: error.message });
+  }
+}
