@@ -2,7 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/EventRow.css"; // Import the CSS file
 
-const EventRow = ({ event, user, addToAssignedEvents, removeAssignedEvent }) => {
+const EventRow = ({
+  event,
+  user,
+  addToAssignedEvents,
+  removeAssignedEvent,
+  assignGuide,
+}) => {
   return (
     <tr key={event._id} className="event-row">
       <td>{event.applicant.name}</td>
@@ -14,13 +20,25 @@ const EventRow = ({ event, user, addToAssignedEvents, removeAssignedEvent }) => 
         <Link to={`/events/${event._id}`} className="view-details">
           View Details
         </Link>
+        <button
+          className="assign-guide-button"
+          onClick={() => assignGuide(event._id)}
+        >
+          Assign Guide
+        </button>
         {user && !user.assignedEvents.includes(event._id) && (
-          <button className="assign-button" onClick={() => addToAssignedEvents(event._id)}>
-            Assign to Event
+          <button
+            className="join-button"
+            onClick={() => addToAssignedEvents(event._id)}
+          >
+            Join Event
           </button>
         )}
         {user && user.assignedEvents.includes(event._id) && (
-          <button className="unassign-button" onClick={() => removeAssignedEvent(event._id)}>
+          <button
+            className="unassign-button"
+            onClick={() => removeAssignedEvent(event._id)}
+          >
             Unassign from Event
           </button>
         )}

@@ -197,3 +197,16 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching users." });
   }
 };
+
+exports.getAllGuides = async (req,res) => {
+  try {
+    const guides = await User.find({ role: "guide" }).select("-password");
+    console.log("Fetched guides:", guides);
+    res.status(200).json(guides);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch guides", error: error.message });
+  }
+};
+
+

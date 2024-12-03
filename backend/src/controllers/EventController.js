@@ -115,6 +115,9 @@ exports.createSchoolTour = async (req, res) => {
       phoneNumber,
     } = req.body;
 
+    if (!applicant || !schoolName || !contactPerson || !email || !visitDate || !visitTime || !city || !studentCount || !phoneNumber) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
     const schoolTour = new SchoolTour({
       applicant,
       schoolName,
@@ -127,6 +130,7 @@ exports.createSchoolTour = async (req, res) => {
       additionalNotes,
       phoneNumber,
     });
+    
     schoolTour.setRequiredNumberOfGuides();
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
@@ -446,31 +450,46 @@ exports.assignGuideToEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
 
+    // Find the event
     const event = await Event.findById(eventID);
-
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
+    // Check if the guide ID is valid
     const guide = await User.findById(userID);
     if (!guide) {
       return res.status(400).json({ message: "Invalid guide ID" });
     }
 
-    if (!event.assignedUsers.includes(userID)) {
-      event.assignedUsers.push(userID);
+    // Check if the number of assigned guides exceeds the limit
+    if (event.assignedUsers.length >= event.requiredNumberOfGuides) {
+      return res.status(400).json({
+        message: `Cannot assign more than ${event.requiredNumberOfGuides} guide(s) to this event.`,
+      });
     }
 
+    // Check if the guide is already assigned
+    if (event.assignedUsers.includes(userID)) {
+      return res
+        .status(400)
+        .json({ message: "Guide is already assigned to this event." });
+    }
+
+    // Assign the guide to the event
+    event.assignedUsers.push(userID);
     await event.save();
 
+    // Add the event to the guide's list of assigned events
     try {
-      guide.addAssignedEvent(eventID);
+      await guide.addAssignedEvent(eventID); // Assuming this method exists in your User model
+      await guide.save();
     } catch (error) {
-      res
+      return res
         .status(400)
         .json({ message: "Failed to assign guide", error: error.message });
     }
-    await guide.save();
+
     res.status(200).json({ message: "Guide assigned successfully" });
   } catch (error) {
     res
@@ -478,6 +497,7 @@ exports.assignGuideToEvent = async (req, res) => {
       .json({ message: "Failed to assign guide", error: error.message });
   }
 };
+
 
 exports.removeAssignedGuideFromEvent = async (req, res) => {
   try {
@@ -527,6 +547,32 @@ exports.getEventAssignees = async (req, res) => {
     const assignees = await User.find({ _id: { $in: event.assignedUsers } });
 
     res.status(200).json(assignees);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+exports.getSchoolTourCountsByMonth = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const schoolTours = await SchoolTour.find({
+      visitDate: { $gte: startDate, $lte: endDate },
+    });
+
+  const tourCounts = {};
+
+  schoolTours.forEach(tour => {
+    const dateKey = tour.visitDate.toISOString().split('T')[0] + `-${tour.visitTime}`;
+    if (!tourCounts[dateKey]) {
+    tourCounts[dateKey] = 0;
+    }
+    tourCounts[dateKey]++;
+  });
+
+  res.status(200).json(tourCounts);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
