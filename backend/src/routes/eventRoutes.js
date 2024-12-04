@@ -19,7 +19,11 @@ const {
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
   getFairs,
-  getSchoolTourCountsByMonth
+  getSchoolTourCountsByMonth,
+  markEventAsCancelled,
+  markEventAsCompleted,
+  takeBackEventAction,
+  confirmEventAction
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -43,6 +47,10 @@ router.get("/:id/assignees", auth, getEventAssignees);
 router.put("/:eventId", advisorAuth, updateEvent);
 router.delete("/:eventId", advisorAuth, deleteEvent);
 
+router.post("/:eventId/cancel", auth,  markEventAsCancelled);
+router.post("/:eventId/complete", auth, markEventAsCompleted);
+router.post("/:eventId/take-back", auth, takeBackEventAction);
+router.post("/:eventId/confirm-action", advisorAuth, confirmEventAction);
 // Routes for assigning roles
 router.post("/assign-advisor", auth, assignAdvisorToTour);
 router.post("/assign-guide", auth, assignGuideToEvent);
