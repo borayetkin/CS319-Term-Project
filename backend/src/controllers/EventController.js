@@ -338,7 +338,48 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+exports.getAllEventsWithAssignees = async (req, res) => {
+  try {
+    const events = await Event.find();
+    const users = await User.find();
 
+    const userMap = users.reduce((map, user) => {
+      map[user._id] = user;
+      return map;
+    }, {});
+    const applicants = await Applicant.find();
+    const applicantMap = applicants.reduce((map, applicant) => {
+      map[applicant._id] = applicant;
+      return map;
+    }, {});
+    for (let i = 0; i < events.length; i++) {
+      events[i] = events[i].toJSON();
+      let event = events[i];
+      const applicantData = applicantMap[event.applicant.applicantID];
+      if (applicantData) {
+        event.applicant = {
+          ...event.applicant,
+          name: applicantData.name,
+          email: applicantData.email,
+          phoneNumber: applicantData.phoneNumber,
+        };
+      }
+      event.assignedUsers = event.assignedUsers.map((userId) => {
+        const userData = userMap[userId];
+        return userData
+          ? {
+              name: userData.name,
+              email: userData.email,
+              phoneNumber: userData.phoneNumber,
+            }
+          : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
+      });
+    }
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 //gets completed events
 exports.getCompletedNonVerifiedEvents = async (req, res) => {
   try {
@@ -346,7 +387,9 @@ exports.getCompletedNonVerifiedEvents = async (req, res) => {
     //console.log(events);
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch events", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch events", error: error.message });
   }
 };
 

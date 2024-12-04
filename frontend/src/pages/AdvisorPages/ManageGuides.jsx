@@ -20,29 +20,13 @@ const ManageGuides = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/events", {
+      const response = await fetch("http://localhost:3000/api/events/with-assignees", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
         const eventsData = await response.json();
-
-        const eventsWithAssignees = await Promise.all(
-          eventsData.map(async (event) => {
-            const assigneesResponse = await fetch(
-              `http://localhost:3000/api/events/${event._id}/assignees`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
-            const assignees = assigneesResponse.ok
-              ? await assigneesResponse.json()
-              : [];
-            return { ...event, assignedGuides: assignees };
-          })
-        );
-
-        setEvents(eventsWithAssignees);
+        setEvents(eventsData);  
       } else {
         setMessage("Failed to fetch events.");
       }
@@ -138,7 +122,7 @@ const ManageGuides = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>High School</th>
+            <th>High School/Applicant</th>
             <th>City</th>
             <th>Date</th>
             <th>Time</th>
@@ -153,13 +137,13 @@ const ManageGuides = () => {
           {events.map((event, index) => (
             <tr key={event._id}>
               <td>{index + 1}</td>
-              <td>{event.highSchool}</td>
+              <td>{event.applicant.name}</td>
               <td>{event.city}</td>
-              <td>{new Date(event.date).toLocaleDateString()}</td>
+              <td>{new Date(event.visitDate).toLocaleDateString()}</td>
               <td>{event.time}</td>
               <th>{event.studentCount}</th>
               <td>
-                {event.assignedGuides.map((guide) => (
+                {event.assignedUsers.map((guide) => (
                   <div key={guide._id}>{guide.name}</div>
                 ))}
               </td>
@@ -179,7 +163,7 @@ const ManageGuides = () => {
                   {guides
                     .filter(
                       (guide) =>
-                        !event.assignedGuides.some(
+                        !event.assignedUsers.some(
                           (assigned) => assigned._id === guide._id
                         )
                     )
@@ -203,7 +187,7 @@ const ManageGuides = () => {
                   <option value="" disabled>
                     Select Guide
                   </option>
-                  {event.assignedGuides.map((guide) => (
+                  {event.assignedUsers.map((guide) => (
                     <option key={guide._id} value={guide._id}>
                       {guide.name}
                     </option>

@@ -190,8 +190,21 @@ exports.getProfile = async (req, res) => {
 // Get all users (admin-only functionality)
 exports.getAllUsers = async (req, res) => {
   try {
+    const idsParam = req.query.ids;
+    
+    
+
+    if (idsParam) {
+          // Split `ids` into an array
+      const idsArray = idsParam.split(",");
+
+      // Query the database
+      const users = await User.find({ _id: { $in: idsArray } }).select("-password");
+      res.status(200).json(users);
+    }else{
+
     const users = await User.find().select("-password");
-    res.status(200).json(users);
+    res.status(200).json(users)};
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error while fetching users." });
