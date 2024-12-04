@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../../styles/AdvisorPages/ManageGuides.css";
 
 const ManageGuides = () => {
   const [events, setEvents] = useState([]);
@@ -8,6 +10,8 @@ const ManageGuides = () => {
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchEvents();
@@ -123,7 +127,12 @@ const ManageGuides = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Event Guide Management</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>Event Guide Management</h1>
+        <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" }}>
+          View Completed Tours
+        </button>
+      </div>
       {message && <p>{message}</p>}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
         <thead>
