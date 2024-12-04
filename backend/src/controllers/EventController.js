@@ -13,12 +13,16 @@ const Applicant = require("../models/Applicant");
 exports.getAcceptedEvents = async (req, res) => {
   try {
     const acceptedEvents = await Event.find({ status: "accepted" });
+    const applicants = await Applicant.find();
+    const applicantMap = applicants.reduce((map, applicant) => {
+      map[applicant._id] = applicant;
+      return map;
+    }, {});
+
     for (let i = 0; i < acceptedEvents.length; i++) {
       acceptedEvents[i] = acceptedEvents[i].toJSON();
       let application = acceptedEvents[i];
-      const applicantData = await Applicant.findById(
-        application.applicant.applicantID
-      );
+      const applicantData = applicantMap[application.applicant.applicantID];
       if (applicantData) {
         application.applicant = {
           ...application.applicant,
@@ -44,12 +48,16 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
       const acceptedEvents = await Event.find({
         _id: { $in: user2.assignedEvents },
       });
+      const applicants = await Applicant.find();
+      const applicantMap = applicants.reduce((map, applicant) => {
+        map[applicant._id] = applicant;
+        return map;
+      }, {});
+
       for (let i = 0; i < acceptedEvents.length; i++) {
         acceptedEvents[i] = acceptedEvents[i].toJSON();
         let application = acceptedEvents[i];
-        const applicantData = await Applicant.findById(
-          application.applicant.applicantID
-        );
+        const applicantData = applicantMap[application.applicant.applicantID];
         if (applicantData) {
           application.applicant = {
             ...application.applicant,
@@ -75,12 +83,16 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
     if (userparams.role === "advisor") {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({ weekday: user2.assignedDay });
+      const applicants = await Applicant.find();
+      const applicantMap = applicants.reduce((map, applicant) => {
+        map[applicant._id] = applicant;
+        return map;
+      }, {});
+
       for (let i = 0; i < acceptedEvents.length; i++) {
         acceptedEvents[i] = acceptedEvents[i].toJSON();
         let application = acceptedEvents[i];
-        const applicantData = await Applicant.findById(
-          application.applicant.applicantID
-        );
+        const applicantData = applicantMap[application.applicant.applicantID];
         if (applicantData) {
           application.applicant = {
             ...application.applicant,
@@ -115,7 +127,17 @@ exports.createSchoolTour = async (req, res) => {
       phoneNumber,
     } = req.body;
 
-    if (!applicant || !schoolName || !contactPerson || !email || !visitDate || !visitTime || !city || !studentCount || !phoneNumber) {
+    if (
+      !applicant ||
+      !schoolName ||
+      !contactPerson ||
+      !email ||
+      !visitDate ||
+      !visitTime ||
+      !city ||
+      !studentCount ||
+      !phoneNumber
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const schoolTour = new SchoolTour({
@@ -264,12 +286,16 @@ exports.createFair = async (req, res) => {
 exports.getFairs = async (req, res) => {
   try {
     const fairs = await Fair.find();
+    const applicants = await Applicant.find();
+    const applicantMap = applicants.reduce((map, applicant) => {
+      map[applicant._id] = applicant;
+      return map;
+    }, {});
+
     for (let i = 0; i < fairs.length; i++) {
       fairs[i] = fairs[i].toJSON();
       let application = fairs[i];
-      const applicantData = await Applicant.findById(
-        application.applicant.applicantID
-      );
+      const applicantData = applicantMap[application.applicant.applicantID];
       if (applicantData) {
         application.applicant = {
           ...application.applicant,
@@ -288,12 +314,16 @@ exports.getFairs = async (req, res) => {
 exports.getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
+    const applicants = await Applicant.find();
+    const applicantMap = applicants.reduce((map, applicant) => {
+      map[applicant._id] = applicant;
+      return map;
+    }, {});
+
     for (let i = 0; i < events.length; i++) {
       events[i] = events[i].toJSON();
       let application = events[i];
-      const applicantData = await Applicant.findById(
-        application.applicant.applicantID
-      );
+      const applicantData = applicantMap[application.applicant.applicantID];
       if (applicantData) {
         application.applicant = {
           ...application.applicant,
@@ -509,7 +539,6 @@ exports.assignGuideToEvent = async (req, res) => {
   }
 };
 
-
 exports.removeAssignedGuideFromEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
@@ -575,8 +604,9 @@ exports.getSchoolTourCountsByMonth = async (req, res) => {
 
     const tourCounts = {};
 
-    schoolTours.forEach(tour => {
-      const dateKey = tour.visitDate.toISOString().split('T')[0] + `-${tour.visitTime}`;
+    schoolTours.forEach((tour) => {
+      const dateKey =
+        tour.visitDate.toISOString().split("T")[0] + `-${tour.visitTime}`;
       if (!tourCounts[dateKey]) {
         tourCounts[dateKey] = 0;
       }
@@ -596,58 +626,69 @@ exports.markEventAsCancelled = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    if (!(event.isUserAssigned(userId))) {
-      return res.status(403).json({ message: "User not assigned to this event" });
+    if (!event.isUserAssigned(userId)) {
+      return res
+        .status(403)
+        .json({ message: "User not assigned to this event" });
     }
 
     await Event.findByIdAndUpdate(eventId, { status: "canceled-non-verified" });
     res.status(200).json({ message: "Event cancelled successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to cancel event", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to cancel event", error: error.message });
   }
-}
+};
 exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
     const event = await Event.findById(eventId);
-    if (!event) { 
+    if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    if (!(event.isUserAssigned(userId))) {
-      return res.status(403).json({ message: "User not assigned to this event" });
+    if (!event.isUserAssigned(userId)) {
+      return res
+        .status(403)
+        .json({ message: "User not assigned to this event" });
     }
 
-    await Event.findByIdAndUpdate(eventId, { status: "completed-non-verified" });
+    await Event.findByIdAndUpdate(eventId, {
+      status: "completed-non-verified",
+    });
     res.status(200).json({ message: "Event completed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to complete event", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to complete event", error: error.message });
   }
-}
-
-
-
+};
 exports.takeBackEventAction = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
     const event = await Event.findById(eventId);
-    if (!(event.isUserAssigned(userId))) {
-      return res.status(403).json({ message: "User not assigned to this event" });
+    if (!event.isUserAssigned(userId)) {
+      return res
+        .status(403)
+        .json({ message: "User not assigned to this event" });
     }
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
     try {
-        await event.takeBackAction();
+      await event.takeBackAction();
     } catch (error) {
       res.status(400).json({ message: "Event status not eligible for action" });
     }
     res.status(200).json({ message: "Event status set to accepted" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to take back event", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to take back event", error: error.message });
   }
-}
+};
 
 exports.confirmEventAction = async (req, res) => {
   try {
@@ -659,17 +700,24 @@ exports.confirmEventAction = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
     if (!event.assignedAdvisor === userId) {
-      return res.status(403).json({ message: "Advisor not assigned to this event" });
+      return res
+        .status(403)
+        .json({ message: "Advisor not assigned to this event" });
     }
     try {
       await event.markVerified();
-      res.status(200).json({ message: "Event completion/cancellation confirmed" });
-
+      res
+        .status(200)
+        .json({ message: "Event completion/cancellation confirmed" });
     } catch (error) {
-      res.status(400).json({ message: "Event status not eligible for confirmation" });
-      
+      res
+        .status(400)
+        .json({ message: "Event status not eligible for confirmation" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Failed to confirm event completion", error: error.message });
+    res.status(500).json({
+      message: "Failed to confirm event completion",
+      error: error.message,
+    });
   }
-}
+};
