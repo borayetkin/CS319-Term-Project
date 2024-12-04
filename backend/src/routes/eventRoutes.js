@@ -9,6 +9,7 @@ const {
   createIndividualTour,
   createFair,
   getAllEvents,
+  getCompletedNonVerifiedEvents,
   getEvent,
   updateEvent,
   deleteEvent,
@@ -37,6 +38,7 @@ router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);
 router.get("/user", auth, getAssigneddEventsOfUser);
 router.get("/advisor", auth, getApplicationsOfAdvisor);
+router.get("/completed",auth,getCompletedNonVerifiedEvents);
 router.get("/:id", auth, getEvent);
 
 // Add this route to fetch event details by ID
@@ -50,7 +52,7 @@ router.delete("/:eventId", advisorAuth, deleteEvent);
 router.post("/:eventId/cancel", auth,  markEventAsCancelled);
 router.post("/:eventId/complete", auth, markEventAsCompleted);
 router.post("/:eventId/take-back", auth, takeBackEventAction);
-router.post("/:eventId/confirm-action", advisorAuth, confirmEventAction);
+router.post("/confirm-action/:eventId", advisorAuth, confirmEventAction);
 // Routes for assigning roles
 router.post("/assign-advisor", auth, assignAdvisorToTour);
 router.post("/assign-guide", auth, assignGuideToEvent);

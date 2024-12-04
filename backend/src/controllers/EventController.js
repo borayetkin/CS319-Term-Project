@@ -309,6 +309,17 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
+//gets completed events
+exports.getCompletedNonVerifiedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ status: "completed-non-verified" });
+    //console.log(events);
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch events", error: error.message });
+  }
+};
+
 // Get a specific event
 exports.getEvent = async (req, res) => {
   try {
@@ -613,6 +624,9 @@ exports.markEventAsCompleted = async (req, res) => {
     res.status(500).json({ message: "Failed to complete event", error: error.message });
   }
 }
+
+
+
 exports.takeBackEventAction = async (req, res) => {
   try {
     const { eventId } = req.params;
