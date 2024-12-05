@@ -19,7 +19,7 @@ const eventSchema = new mongoose.Schema({
     required : true
   },
   assignedUsers: [{
-    type: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}], default: []
+    type: mongoose.Schema.Types.ObjectId, ref: 'User', default: []
   }],
   requiredNumberOfGuides : {
     type: Number,

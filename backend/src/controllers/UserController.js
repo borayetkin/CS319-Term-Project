@@ -222,4 +222,32 @@ exports.getAllGuides = async (req,res) => {
   }
 };
 
+exports.searchUsers = async (req, res) => {
+  try {
+    
+    const { type, query, numOfUsers } = req.query;
+    const userType = type
+    if (!userType && !query && !numOfUsers) {
+      return res.status(400).json({ message: "Please provide at least one search parameter." });
+    }
 
+    // Build the search criteria
+    const searchCriteria = {};
+    if (userType) searchCriteria.role = userType;
+    if (query) {
+      searchCriteria.$or = [
+        { name: { $regex: query, $options: "i" } },
+        // Sonradan major eklenecek
+      ];
+    }
+
+    // Find users based on criteria and limit the number of results
+    const users = await User.find(searchCriteria).limit(parseInt(numOfUsers) || 0).select("-password");
+
+    
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while searching users." });
+  }
+};

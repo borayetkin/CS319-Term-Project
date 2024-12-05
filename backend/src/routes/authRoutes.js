@@ -6,6 +6,7 @@ const {
   updateUser,
   getAllUsers,
   getAllGuides,
+  searchUsers,
 } = require("../controllers/UserController");
 const auth = require("../middleware/authMiddleware"); // Middleware for protecting routes
 const adminAuth = require("../middleware/adminMiddleware"); // Middleware for admin-specific routes
@@ -28,4 +29,5 @@ router.put("/profile", auth, updateUser);
 router.get("/users", [auth, adminAuth], getAllUsers);
 router.get("/guides", auth, getAllGuides);
 
+router.get("/user-search",auth,searchUsers)
 module.exports = router;

@@ -389,6 +389,7 @@ exports.getAllEventsWithAssignees = async (req, res) => {
         const userData = userMap[userId];
         return userData
           ? {
+              _id: userId,
               name: userData.name,
               email: userData.email,
               phoneNumber: userData.phoneNumber,
@@ -405,7 +406,7 @@ exports.getAllEventsWithAssignees = async (req, res) => {
 exports.getCompletedNonVerifiedEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "completed-non-verified" });
-    //console.log(events);
+
     res.status(200).json(events);
   } catch (error) {
     res
@@ -417,6 +418,7 @@ exports.getCompletedNonVerifiedEvents = async (req, res) => {
 // Get a specific event
 exports.getEvent = async (req, res) => {
   try {
+
     const { id } = req.params;
 
     // Fetch the event by ID
@@ -452,6 +454,7 @@ exports.getEvent = async (req, res) => {
       };
     }
 
+    
     res.status(200).json(event);
   } catch (error) {
     console.error("Error in getEvent:", error.message);
@@ -573,7 +576,6 @@ exports.assignGuideToEvent = async (req, res) => {
         message: `Cannot assign more than ${event.requiredNumberOfGuides} guide(s) to this event.`,
       });
     }
-
     // Check if the guide is already assigned
     if (event.assignedUsers.includes(userID)) {
       return res
@@ -606,7 +608,8 @@ exports.assignGuideToEvent = async (req, res) => {
 exports.removeAssignedGuideFromEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
-
+    console.log(userID);
+    
     const event = await Event.findById(eventID);
     const user = await User.findById(userID);
     if (!event) {
@@ -634,6 +637,7 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
 
     res.status(200).json({ message: "Guide removed successfully" });
   } catch (error) {
+    console.error(error)
     res
       .status(500)
       .json({ message: "Failed to remove guide", error: error.message });

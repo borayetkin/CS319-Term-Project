@@ -121,7 +121,11 @@ const AssignedEvents = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {completedEvents.map((event) => (
+                        {completedEvents.map((event) => {
+                            const eventIsConfirmed = event.status.includes("verified");
+                            console.log(eventIsConfirmed);
+                            
+                            return (
                             <tr key={event._id}>
                                 <td>{event.applicant.name || "N/A"}</td>
                                 <td>{new Date(event.visitDate).toLocaleDateString()}</td>
@@ -131,17 +135,18 @@ const AssignedEvents = () => {
 
 
                                 <td>
-                                    { (event.status === 'accepted') ? ( <>
+                                    {!eventIsConfirmed ? ((event.status === 'accepted') ? ( <>
                                         <button onClick={() => handleMarkCompleted(event._id)}>Mark Completed</button>
                                         <button onClick={() => handleMarkCanceled(event._id)}>Mark Canceled</button>
                                         </>
                                     ) : (
                                         <button onClick={() => takeBackAction(event._id)}>Cancel Mark</button>
                                        )
-                                    }
+                        ): <div style={{color : 'gray'}}>Event Is Confirmed</div>}
                                 </td>
                             </tr>
-                        ))}
+                            );
+                        })}
                     </tbody>
                 </table>
             ) : (

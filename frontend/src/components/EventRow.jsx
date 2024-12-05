@@ -7,13 +7,17 @@ const EventRow = ({
   user,
   addToAssignedEvents,
   removeAssignedEvent,
-  assignGuide,
 }) => {
+
   const personIconUrl =
   "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const eventIsFull = event.assignedUsers.length >= event.requiredNumberOfGuides
-  
+  const assignGuide = (eventID) => {
+    window.location.href = `/events/${eventID}?assignGuide=true`;
+    
+  };
   return (
+
     <tr key={event._id} className="event-row">
       <td>{event.applicant.name}</td>
       <td>{event.__t.replace(/([a-z])([A-Z])/g, "$1 $2")}</td>
@@ -66,12 +70,14 @@ const EventRow = ({
         <Link to={`/events/${event._id}`} className="view-details">
           View Details
         </Link>
+        {user && user.role === "advisor" && !eventIsFull && event.assignedAdvisor === user._id &&(
         <button
           className="assign-guide-button"
           onClick={() => assignGuide(event._id)}
         >
           Assign Guide
         </button>
+      )}
         {user && !user.assignedEvents.includes(event._id) && !eventIsFull&& (
           <button
             className="join-button"

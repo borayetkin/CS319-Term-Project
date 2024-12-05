@@ -53,6 +53,8 @@ const ManageGuides = () => {
 
   const saveChanges = async (eventId) => {
     const guideToAssign = updatedAssignments[eventId];
+
+    
     const guideToRemove = updatedRemovals[eventId];
 
     try {
@@ -177,7 +179,9 @@ const ManageGuides = () => {
               <td>
                 <select
                   onChange={(e) =>
-                    setUpdatedRemovals((prev) => ({
+                    setUpdatedRemovals((prev) => 
+                      ({
+                      
                       ...prev,
                       [event._id]: e.target.value,
                     }))
@@ -187,7 +191,8 @@ const ManageGuides = () => {
                   <option value="" disabled>
                     Select Guide
                   </option>
-                  {event.assignedUsers.map((guide) => (
+                  {event.assignedUsers.map((guide) => 
+                    (
                     <option key={guide._id} value={guide._id}>
                       {guide.name}
                     </option>
