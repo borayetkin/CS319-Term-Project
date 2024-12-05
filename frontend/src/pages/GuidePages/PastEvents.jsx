@@ -122,9 +122,7 @@ const AssignedEvents = () => {
                     </thead>
                     <tbody>
                         {completedEvents.map((event) => {
-                            const eventIsConfirmed = event.status.includes("verified");
-                            console.log(eventIsConfirmed);
-                            
+                            const eventIsConfirmed = !event.status.includes("non-verified")&& event.status !== "accepted";
                             return (
                             <tr key={event._id}>
                                 <td>{event.applicant.name || "N/A"}</td>

@@ -52,13 +52,12 @@ const Event = ({assignGuideOpened = false}) => {
         const assignees = await assigneesRes.json();
 
         setAssignedUsers(assignees);
-        console.log(eventData);
+ 
         
         setEvent(eventData);
-        console.log("fetching bb");
-        
+
         setIsLoading(false);
-        console.log("fetching aa");
+
         
       } catch (error) {
         setError(error.message);

@@ -295,26 +295,40 @@ exports.getFairs = async (req, res) => {
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {
+    const { id,role } = req.user;
+
+    const {accepted, advisor} = req.query;
+    
+    if ( advisor && role === "advisor" &&advisor === "true" && advisor && accepted === "true") {
+      const advisor = await Advisor.findById(id);
+      const events = await Event.find({ weekday: advisor.assignedDay , status: "accepted" });
+      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+      return res.status(200).json(eventsWithApplicantData);
+    } else if (accepted && accepted === "true") {
+      const events = await Event.find({ status: "accepted" });
+      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+      return res.status(200).json(eventsWithApplicantData);
+    } else if (advisor && role === "advisor" && advisor === "true") {
+      const advisor = await Advisor.findById(id);
+
+      const events = await Event.find({ weekday: advisor.assignedDay });
+      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+      return res.status(200).json(eventsWithApplicantData);
+    }
     const events = await Event.find();
     const eventsWithApplicantData = await setEventsWithApplicantData(events);
     res.status(200).json(eventsWithApplicantData);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-exports.getAllEventsWithAssignees = async (req, res) => {
-  try {
-    const events = await Event.find({status: "accepted"});
-    const eventsWithData = await setEventsWithApplicantDataAndUser(events);
-    res.status(200).json(eventsWithData);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+
 //gets completed events
-exports.getCompletedNonVerifiedEvents = async (req, res) => {
+exports.getCompletedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: "completed-non-verified" });
+    const events = await Event.find({ status: { $in: ["completed-non-verified", "completed-verified","canceled-verified","canceled-non-verified"] } });
+      
     const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
     res.status(200).json(eventsWithApplicantData);
   } catch (error) {

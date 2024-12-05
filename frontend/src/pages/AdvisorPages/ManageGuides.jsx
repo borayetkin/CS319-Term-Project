@@ -10,7 +10,8 @@ const ManageGuides = () => {
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
-
+  const personIconUrl =
+  "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const ManageGuides = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/events/with-assignees?accepted=true&advisor=true", {
+      const response = await fetch("http://localhost:3000/api/events?accepted=true&advisor=true", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,7 +116,7 @@ const ManageGuides = () => {
     <div style={{ padding: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>Event Guide Management</h1>
-        <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" }}>
+        <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" , width :"auto" }}>
           View Completed Tours
         </button>
       </div>
@@ -142,11 +143,18 @@ const ManageGuides = () => {
               <td>{event.applicant.name}</td>
               <td>{event.city}</td>
               <td>{new Date(event.visitDate).toLocaleDateString()}</td>
-              <td>{event.time}</td>
+              <td>{event.visitTime}</td>
               <th>{event.studentCount}</th>
               <td>
                 {event.assignedUsers.map((guide) => (
-                  <div key={guide._id}>{guide.name}</div>
+                  <div key={guide._id} style={{display : "flex", alignItems : "center",gap : "5px"}}>
+                    <img
+                        src={personIconUrl}
+                        alt={guide.name}
+                        title={guide.name}
+                        style={{ width: "20px", height: "20px",cursor: "pointer" }}
+                      />
+                    {guide.name}</div>
                 ))}
               </td>
               <td>

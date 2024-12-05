@@ -26,7 +26,7 @@ const EventRow = ({
                 <div style={{ display: "flex", gap: "5px" }}>
                   {event.assignedUsers.map((assignee) => (
                     <div
-                      key={assignee.id}
+                      key={assignee._id}
                       style={{
                         position: "relative",
                         display: "inline-block",

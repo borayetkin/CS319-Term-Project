@@ -9,7 +9,7 @@ const {
   createIndividualTour,
   createFair,
   getAllEvents,
-  getCompletedNonVerifiedEvents,
+  getCompletedEvents: getCompletedNonVerifiedEvents,
   getEvent,
   updateEvent,
   deleteEvent,
@@ -25,7 +25,7 @@ const {
   markEventAsCompleted,
   takeBackEventAction,
   confirmEventAction,
-  getAllEventsWithAssignees
+
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -36,7 +36,6 @@ router.post("/fairs",createFair);
 router.get('/fairs',adminAuth, getFairs)
 // Routes for fetching events
 router.get("/", advisorAuth, getAllEvents);
-router.get("/with-assignees", advisorAuth, getAllEventsWithAssignees);
 router.get("/accepted", auth, getAcceptedEvents);
 router.get("/user", auth, getAssigneddEventsOfUser);
 router.get("/advisor", auth, getApplicationsOfAdvisor);

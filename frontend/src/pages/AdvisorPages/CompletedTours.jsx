@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CompletedTours = () => {
   const [completedTours, setCompletedTours] = useState([]);
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchCompletedTours();
   }, []);
-
+  const personIconUrl =
+  "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const fetchCompletedTours = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/events/completed", {
@@ -53,11 +55,15 @@ const CompletedTours = () => {
     }
   };
 
-  console.log("completed tours:",completedTours );
-
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Completed Tours</h1>
+     
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>Completed Tours</h1>
+        <button onClick={() => navigate("/manage-guides")} style={{ padding: "10px 20px" , width :"auto" }}>
+          View Event Guide Management
+        </button>
+      </div>
       {message && <p style={{ color: "red" }}>{message}</p>}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
         <thead>
@@ -68,12 +74,17 @@ const CompletedTours = () => {
             <th>Date</th>
             <th>Time</th>
             <th>Assigned Guides</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {completedTours.length > 0 ? (
-            completedTours.map((tour, index) => (
+            completedTours.map((tour, index) => {
+              const eventIsConfirmed = !tour.status.includes("non-verified") && tour.status !== "accepted";
+              
+              return (
+              
               <tr key={tour._id}>
                 <td>{index + 1}</td>
                 <td>{tour.applicant?.name || "N/A"}</td>
@@ -81,19 +92,26 @@ const CompletedTours = () => {
                 <td>{tour.visitDate ? new Date(tour.visitDate).toLocaleDateString() : "N/A"}</td>
                 <td>{tour.visitTime || "N/A"}</td>
                 <td>
-                  {tour.assignedGuides?.length > 0 ? (
-                    tour.assignedGuides.map((guide) => (
-                      <div key={guide._id}>{guide.name}</div>
-                    ))
-                  ) : (
-                    <div>No guides assigned</div>
-                  )}
+                {tour.assignedUsers.map((guide) => (
+                  <div key={guide._id} style={{display : "flex", alignItems : "center",gap : "5px"}}>
+                    <img
+                        src={personIconUrl}
+                        alt={guide.name}
+                        title={guide.name}
+                        style={{ width: "20px", height: "20px",cursor: "pointer" }}
+                      />
+                    {guide.name}</div>
+                ))}
                 </td>
                 <td>
-                  <button onClick={() => confirmTour(tour._id)}>Confirm</button>
+                  {tour.status.replace(/-/g, ' ')}
+                </td>
+                <td>
+                {!eventIsConfirmed ? <button onClick={() => confirmTour(tour._id)}>Confirm</button>:
+                        <div style={{color : 'gray'}}>Event Is Confirmed</div>}
                 </td>
               </tr>
-            ))
+            )})
           ) : (
             <tr>
               <td colSpan="7" style={{ textAlign: "center" }}>
