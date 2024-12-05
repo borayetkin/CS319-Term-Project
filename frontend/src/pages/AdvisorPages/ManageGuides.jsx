@@ -20,7 +20,7 @@ const ManageGuides = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/events/with-assignees", {
+      const response = await fetch("http://localhost:3000/api/events/with-assignees?accepted=true&advisor=true", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

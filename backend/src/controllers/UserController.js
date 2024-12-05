@@ -16,14 +16,28 @@ const saveUser = async ({ name, email, password, role }) =>{
     );
     return token;
 }
+const changeAdvisorToUser = async (advisor) => {
+  const {_id, name, email, password, role} = advisor;
+  const user = new User({_id,name, email, password, role});
+  await user.save();
+  return user;
+}
+const changeUserToAdvisor = async (user,assignedDay) => {
+  const {_id, name, email, password, role} = user;
+  if (!assignedDay) {
+    assignedDay = "Monday";
+  }
+  const advisor = new Advisor({_id, name, email, password, role,assignedDay});
+  await advisor.save();
+  return advisor;
+}
 exports.updateUser = async (req, res) => {
   try {
-
-    
     let user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    
     // Update fields
     Object.keys(req.body).forEach(key => {
       user[key] = req.body[key] || user[key];
@@ -35,13 +49,23 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 }
+deleteUserFromEvents = async (userId) => {
+  const events = await Event.find();
+  events.forEach(async (event) => {
+    const index = event.participants.indexOf(userId);
+    if (index !== -1) {
+      event.participants.splice(index, 1);
+      await event.save();
+    }
+  });
+}
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
     // Find the user by ID and delete
     const user = await User.findByIdAndDelete(userId);
-
+    deleteUserFromEvents(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -56,22 +80,23 @@ exports.updateUserRole = async (req, res) => {
   try {
     const userId = req.params.id;
     const { role } = req.body;
-
-    // Validate the role
     if (!["guide", "coordinator", "advisor", "admin"].includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
-
-    // Find the user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Update the user's role
+   
+    if (user.role === "advisor" && req.body.role !== "advisor") {
+      user = await changeAdvisorToUser(user);
+      return res.status(200).json({ message: "User role updated successfully", user });
+    } else if (user.role !== "advisor" && req.body.role === "advisor") {
+      user = await changeUserToAdvisor(user,req.body.assignedDay);
+      return res.status(200).json({ message: "User role updated successfully", user });
+    }
     user.role = role;
     await user.save();
-
     res.status(200).json({ message: "User role updated successfully" });
   } catch (error) {
     console.error(error);
@@ -191,18 +216,11 @@ exports.getProfile = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const idsParam = req.query.ids;
-    
-    
-
     if (idsParam) {
-          // Split `ids` into an array
       const idsArray = idsParam.split(",");
-
-      // Query the database
       const users = await User.find({ _id: { $in: idsArray } }).select("-password");
       res.status(200).json(users);
     }else{
-
     const users = await User.find().select("-password");
     res.status(200).json(users)};
   } catch (err) {

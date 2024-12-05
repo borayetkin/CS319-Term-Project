@@ -1,4 +1,6 @@
 const Applicant = require('../models/Applicant');
+const {deleteEvent} = require('./EventController');
+const Event = require('../models/Event');
 // Create a new applicant
 exports.createApplicant = async (req, res) => {
 
@@ -78,6 +80,14 @@ exports.updateApplicant = async (req, res) => {
     res.status(400).send("Server error");
   }
 };
+const deleteApplicantApplications = async (applicantId) => {
+  const events = await Event.find();
+  events.forEach(async (event) => {
+    if (event.applicant === applicantId) {
+      deleteEvent({eventId : event._id});
+    }
+  });
+}
 // Delete an applicant by ID
 exports.deleteApplicant = async (req, res) => {
   try {
@@ -85,6 +95,7 @@ exports.deleteApplicant = async (req, res) => {
     if (!applicant) {
       return res.status(404).send();
     }
+    deleteApplicantApplications(req.params.id);
     res.status(200).send(applicant);
   } catch (error) {
     console.error(error)

@@ -24,6 +24,8 @@ const TourApplication = () => {
   const [schools, setSchools] = useState([]);
   const [filteredSchools, setFilteredSchools] = useState([]);
   const navigate = useNavigate();
+ 
+
 
   // Fetch schools from backend on component mount
   useEffect(() => {
@@ -384,6 +386,92 @@ const TourApplication = () => {
       </div>
     </section>
   );
+};
+const postRandomEvents = async () => {
+  const tourTypes = ["school", "individual"];
+  const hours = ["09:00", "12:00", "15:00"];
+  const today = new Date();
+  const oneWeekFromNow = new Date(today);
+  oneWeekFromNow.setDate(today.getDate() -5);
+
+  const usedEmails = new Set();
+
+  for (let i = 0; i < 1; i++) {
+    const randomTourType = tourTypes[Math.floor(Math.random() * tourTypes.length)];
+    const randomDate = new Date(today.getTime() + Math.random() * (oneWeekFromNow.getTime() - today.getTime()));
+    const randomHour = hours[Math.floor(Math.random() * hours.length)];
+    const dateTime = new Date(`${randomDate.toISOString().split('T')[0]}T${randomHour}`);
+
+    let email;
+    do {
+    email = `user${Math.floor(Math.random() * 100000000)}@example${Math.floor(Math.random() * 100000000)}.${Math.floor(Math.random() * 100000000)}com`;
+    } while (usedEmails.has(email));
+    usedEmails.add(email);
+
+    const formData = {
+    tourType: randomTourType,
+    contactPerson: `Person ${Math.floor(Math.random() * 1000)}`,
+    email: email,
+    visitDate: dateTime.toISOString().split('T')[0],
+    visitTime: randomHour,
+    city: `City ${Math.floor(Math.random() * 100)}`,
+    district: `District ${Math.floor(Math.random() * 100)}`,
+    studentCount: parseInt(Math.floor(Math.random() * 100 +20)),
+    schoolName: "Random Lisesi",
+    additionalNotes: `Note ${Math.floor(Math.random() * 1000)}`,
+    studentHighSchool: "Random Lisesi",
+    phoneNumber: `0 5${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)} ${Math.floor(Math.random() * 1000)} ${Math.floor(Math.random() * 1000)}`,
+    majorOfInterest: randomTourType === "individual" ? `Major ${Math.floor(Math.random() * 100)}` : "",
+    };
+
+    const { tourType, ...tourData } = formData;
+    const endpoint = tourType === "school" ? "/api/events/schooltours" : "/api/events/individualtours";
+
+    const requestData = tourType === "school" ? {
+    ...tourData,
+    visitDate: dateTime,
+    typeStr: "School Tour",
+    } : {
+    visitDate: dateTime,
+    visitTime: formData.visitTime,
+    studentName: formData.contactPerson,
+    studentHighSchool: formData.studentHighSchool,
+    email: formData.email,
+    phoneNumber: formData.phoneNumber,
+    city: formData.city,
+    additionalNotes: formData.additionalNotes,
+    majorOfInterest: formData.majorOfInterest,
+    typeStr: "Individual Tour",
+    };
+
+    try {
+    const response2 = await fetch(`http://localhost:3000/api/applicants`, {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+      name: formData.contactPerson,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      }),
+    });
+    const data = await response2.json();
+
+    await fetch(`http://localhost:3000${endpoint}`, {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+      applicant: { applicantID: data._id, name: data.name },
+      ...requestData,
+      }),
+    });
+    } catch (error) {
+    console.error("An error occurred while posting random events:", error);
+    }
+  }
 };
 
 export default TourApplication;

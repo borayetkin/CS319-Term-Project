@@ -4,55 +4,72 @@ const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Fair = require("../models/Fair");
-const mongoose = require("mongoose");
-
-const ApplicantController = require("./ApplicantController");
 const Applicant = require("../models/Applicant");
 // Get events with status "accepted"
+const setEventsWithApplicantData = async (events) => {
+  const applicants = await Applicant.find();
+  const applicantMap = applicants.reduce((map, applicant) => {
+    map[applicant._id] = applicant;
+    return map;
+  }, {});
 
+  for (let i = 0; i < events.length; i++) {
+    events[i] = events[i].toJSON();
+    let application = events[i];
+    const applicantData = applicantMap[application.applicant.applicantID];
+    if (applicantData) {
+      application.applicant = {
+        ...application.applicant,
+        name: applicantData.name,
+        email: applicantData.email,
+        phoneNumber: applicantData.phoneNumber,
+      };
+    }
+  }
+  return events;
+};
+const setEventsWithApplicantDataAndUser = async (events) => {
+  const users = await User.find();
+  const userMap = users.reduce((map, user) => {
+    map[user._id] = user;
+    return map;
+  }, {});
+  const applicants = await Applicant.find();
+  const applicantMap = applicants.reduce((map, applicant) => {
+    map[applicant._id] = applicant;
+    return map;
+  }, {});
+
+  for (let i = 0; i < events.length; i++) {
+    events[i] = events[i].toJSON();
+    let application = events[i];
+    const applicantData = applicantMap[application.applicant.applicantID];
+    if (applicantData) {
+      application.applicant = {
+        ...application.applicant,
+        name: applicantData.name,
+        email: applicantData.email,
+        phoneNumber: applicantData.phoneNumber,
+      };
+    }
+    application.assignedUsers = application.assignedUsers.map((userId) => {
+      const userData = userMap[userId];
+      return userData
+        ? {
+            _id: userId,
+            name: userData.name,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
+          }
+        : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
+    });
+  }
+  return events;
+}
 exports.getAcceptedEvents = async (req, res) => {
   try {
     const acceptedEvents = await Event.find({ status: "accepted" });
-    const applicants = await Applicant.find();
-    const applicantMap = applicants.reduce((map, applicant) => {
-      map[applicant._id] = applicant;
-      return map;
-    }, {});
-
-    for (let i = 0; i < acceptedEvents.length; i++) {
-      acceptedEvents[i] = acceptedEvents[i].toJSON();
-      let application = acceptedEvents[i];
-      const applicantData = applicantMap[application.applicant.applicantID];
-      if (applicantData) {
-        application.applicant = {
-          ...application.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
-      }
-
-    }
-    const users = await User.find();
-    const userMap = users.reduce((map, user) => {
-      map[user._id] = user;
-      return map;
-    }, {});
-
-    for (let i = 0; i < acceptedEvents.length; i++) {
-      let event = acceptedEvents[i];
-      event.assignedUsers = event.assignedUsers.map((userId) => {
-        const userData = userMap[userId];
-        return userData
-          ? {
-              id: userId,
-              name: userData.name,
-              email: userData.email,
-              phoneNumber: userData.phoneNumber,
-            }
-          : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
-      });
-    }
+    const events = await setEventsWithApplicantDataAndUser(acceptedEvents);
     res.status(200).json(acceptedEvents);
   } catch (error) {
     console.error(error);
@@ -69,29 +86,10 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
       const acceptedEvents = await Event.find({
         _id: { $in: user2.assignedEvents },
       });
-      const applicants = await Applicant.find();
-      const applicantMap = applicants.reduce((map, applicant) => {
-        map[applicant._id] = applicant;
-        return map;
-      }, {});
-
-      for (let i = 0; i < acceptedEvents.length; i++) {
-        acceptedEvents[i] = acceptedEvents[i].toJSON();
-        let application = acceptedEvents[i];
-        const applicantData = applicantMap[application.applicant.applicantID];
-        if (applicantData) {
-          application.applicant = {
-            ...application.applicant,
-            name: applicantData.name,
-            email: applicantData.email,
-            phoneNumber: applicantData.phoneNumber,
-          };
-        }
-      }
-      res.status(200).json(acceptedEvents);
+      const events = await setEventsWithApplicantData(acceptedEvents);
+      res.status(200).json(events);
     } else {
-      const acceptedEvents = await Event.find({ status: "accepted" });
-      res.status(200).json(acceptedEvents);
+      res.status(400).json({ message: "Access Forbidden" });
     }
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -104,27 +102,8 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
     if (userparams.role === "advisor") {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({ weekday: user2.assignedDay });
-      const applicants = await Applicant.find();
-      const applicantMap = applicants.reduce((map, applicant) => {
-        map[applicant._id] = applicant;
-        return map;
-      }, {});
-
-      for (let i = 0; i < acceptedEvents.length; i++) {
-        acceptedEvents[i] = acceptedEvents[i].toJSON();
-        let application = acceptedEvents[i];
-        const applicantData = applicantMap[application.applicant.applicantID];
-        if (applicantData) {
-          application.applicant = {
-            ...application.applicant,
-            name: applicantData.name,
-            email: applicantData.email,
-            phoneNumber: applicantData.phoneNumber,
-          };
-        }
-      }
-
-      res.status(200).json(acceptedEvents);
+      const events = await setEventsWithApplicantData(acceptedEvents);
+      res.status(200).json(events);
     } else {
       res.status(401).json({ error: "Access Denied" });
     }
@@ -307,26 +286,8 @@ exports.createFair = async (req, res) => {
 exports.getFairs = async (req, res) => {
   try {
     const fairs = await Fair.find();
-    const applicants = await Applicant.find();
-    const applicantMap = applicants.reduce((map, applicant) => {
-      map[applicant._id] = applicant;
-      return map;
-    }, {});
-
-    for (let i = 0; i < fairs.length; i++) {
-      fairs[i] = fairs[i].toJSON();
-      let application = fairs[i];
-      const applicantData = applicantMap[application.applicant.applicantID];
-      if (applicantData) {
-        application.applicant = {
-          ...application.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
-      }
-    }
-    res.status(200).json(fairs);
+    const fairsWithApplicantData = await setEventsWithApplicantData(fairs);
+    res.status(200).json(fairsWithApplicantData);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -335,69 +296,17 @@ exports.getFairs = async (req, res) => {
 exports.getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
-    const applicants = await Applicant.find();
-    const applicantMap = applicants.reduce((map, applicant) => {
-      map[applicant._id] = applicant;
-      return map;
-    }, {});
-
-    for (let i = 0; i < events.length; i++) {
-      events[i] = events[i].toJSON();
-      let application = events[i];
-      const applicantData = applicantMap[application.applicant.applicantID];
-      if (applicantData) {
-        application.applicant = {
-          ...application.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
-      }
-    }
-    res.status(200).json(events);
+    const eventsWithApplicantData = await setEventsWithApplicantData(events);
+    res.status(200).json(eventsWithApplicantData);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 exports.getAllEventsWithAssignees = async (req, res) => {
   try {
-    const events = await Event.find();
-    const users = await User.find();
-
-    const userMap = users.reduce((map, user) => {
-      map[user._id] = user;
-      return map;
-    }, {});
-    const applicants = await Applicant.find();
-    const applicantMap = applicants.reduce((map, applicant) => {
-      map[applicant._id] = applicant;
-      return map;
-    }, {});
-    for (let i = 0; i < events.length; i++) {
-      events[i] = events[i].toJSON();
-      let event = events[i];
-      const applicantData = applicantMap[event.applicant.applicantID];
-      if (applicantData) {
-        event.applicant = {
-          ...event.applicant,
-          name: applicantData.name,
-          email: applicantData.email,
-          phoneNumber: applicantData.phoneNumber,
-        };
-      }
-      event.assignedUsers = event.assignedUsers.map((userId) => {
-        const userData = userMap[userId];
-        return userData
-          ? {
-              _id: userId,
-              name: userData.name,
-              email: userData.email,
-              phoneNumber: userData.phoneNumber,
-            }
-          : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
-      });
-    }
-    res.status(200).json(events);
+    const events = await Event.find({status: "accepted"});
+    const eventsWithData = await setEventsWithApplicantDataAndUser(events);
+    res.status(200).json(eventsWithData);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -406,8 +315,8 @@ exports.getAllEventsWithAssignees = async (req, res) => {
 exports.getCompletedNonVerifiedEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "completed-non-verified" });
-
-    res.status(200).json(events);
+    const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+    res.status(200).json(eventsWithApplicantData);
   } catch (error) {
     res
       .status(500)
@@ -461,32 +370,32 @@ exports.getEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+const acceptTourApplication = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { userrole, userid } = req.headers;
+    if (userrole !== "advisor") {
+      return res.status(401).json({
+        message: "Only advisors can accept tour applications",
+      });
+    }
 
+    const advisor = await Advisor.findById(userid);
+    await advisor.acceptTourApplication(eventId);
+    await advisor.save();
+
+    res.status(200).json({ message: "Tour application accepted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
 // Update an event
 exports.updateEvent = async (req, res) => {
   try {
     const { userrole, userid } = req.headers;
     const { eventId } = req.params;
     if (req.body.status && req.body.status == "accepted") {
-      try {
-        const foundUser = await User.findById(userid);
-        if (foundUser.role !== "advisor") {
-          return res.status(401).json({
-            message: "Coordinators cannot accept applications",
-          });
-        }
-
-        const advisor = new Advisor(foundUser);
-        await advisor.acceptTourApplication(eventId);
-        await advisor.save();
-
-        return res.status(200).json({
-          message: "Event updated successfully",
-        });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error", error: error.message });
-      }
+      acceptTourApplication(req, res);
     } else {
       const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
         new: true,
@@ -505,16 +414,32 @@ exports.updateEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+const deleteEventFromUsers = async (eventId) => {
+  const users = await User.find();
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    if (user.assignedEvents.includes(eventId)) {
+      const eventIndex = user.assignedEvents.indexOf(eventId);
+      user.assignedEvents.splice(eventIndex, 1);
+      await user.save();
+    }
+  }
+}
+
 
 // Delete an event
 exports.deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     const event = await Event.findByIdAndDelete(eventId);
-    const applicant = await Applicant.findByIdAndDelete(
-      event.applicant.applicantID
-    );
-
+    try {
+      const applicant = await Applicant.findByIdAndDelete(
+        event.applicant.applicantID
+      );
+      await deleteEventFromUsers(eventId);
+    } catch (error) {
+      console.error(error);
+    }
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -608,7 +533,6 @@ exports.assignGuideToEvent = async (req, res) => {
 exports.removeAssignedGuideFromEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
-    console.log(userID);
     
     const event = await Event.findById(eventID);
     const user = await User.findById(userID);
@@ -626,15 +550,6 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
     } catch (error) {
       return res.status(404).json({ message: error.message });
     }
-
-    // const guideIndex = event.assignedGuides.indexOf(guideID);
-    // if (guideIndex === -1) {
-    //   return res.status(400).json({ message: "Guide not assigned to this event" });
-    // }
-
-    // event.assignedGuides.splice(guideIndex, 1);
-    // await event.save();
-
     res.status(200).json({ message: "Guide removed successfully" });
   } catch (error) {
     console.error(error)
@@ -701,7 +616,7 @@ exports.markEventAsCancelled = async (req, res) => {
     }
 
     await Event.findByIdAndUpdate(eventId, { status: "canceled-non-verified" });
-    res.status(200).json({ message: "Event cancelled successfully" });
+    res.status(200).json({ message: "Event marked as cancelled successfully" });
   } catch (error) {
     res
       .status(500)
@@ -725,7 +640,7 @@ exports.markEventAsCompleted = async (req, res) => {
     await Event.findByIdAndUpdate(eventId, {
       status: "completed-non-verified",
     });
-    res.status(200).json({ message: "Event completed successfully" });
+    res.status(200).json({ message: "Event marked as completed successfully" });
   } catch (error) {
     res
       .status(500)
@@ -750,7 +665,7 @@ exports.takeBackEventAction = async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: "Event status not eligible for action" });
     }
-    res.status(200).json({ message: "Event status set to accepted" });
+    res.status(200).json({ message: "Event status set back to accepted" });
   } catch (error) {
     res
       .status(500)
