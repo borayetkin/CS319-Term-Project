@@ -31,6 +31,27 @@ exports.getAcceptedEvents = async (req, res) => {
           phoneNumber: applicantData.phoneNumber,
         };
       }
+
+    }
+    const users = await User.find();
+    const userMap = users.reduce((map, user) => {
+      map[user._id] = user;
+      return map;
+    }, {});
+
+    for (let i = 0; i < acceptedEvents.length; i++) {
+      let event = acceptedEvents[i];
+      event.assignedUsers = event.assignedUsers.map((userId) => {
+        const userData = userMap[userId];
+        return userData
+          ? {
+              id: userId,
+              name: userData.name,
+              email: userData.email,
+              phoneNumber: userData.phoneNumber,
+            }
+          : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
+      });
     }
     res.status(200).json(acceptedEvents);
   } catch (error) {

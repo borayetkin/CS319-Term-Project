@@ -148,7 +148,7 @@ const Events = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
+ 
   return (
     <div className="events-container">
       <h1>CONFIRMED EVENTS</h1>
@@ -188,6 +188,7 @@ const Events = () => {
               <th>Name</th>
               <th>Type</th>
               <th>Date</th>
+              <th>Current Guides</th>
               <th>Required Guides</th>
               <th>Status</th>
               <th>Actions</th>
