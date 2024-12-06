@@ -295,34 +295,49 @@ exports.getFairs = async (req, res) => {
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {
-    const { id,role } = req.user;
+    const { id, role } = req.user; // Extract user information
+    const { accepted, advisor } = req.query; // Extract query parameters
 
-    const {accepted, advisor} = req.query;
-    
-    if ( advisor && role === "advisor" &&advisor === "true" && advisor && accepted === "true") {
-      const advisor = await Advisor.findById(id);
-      const events = await Event.find({ weekday: advisor.assignedDay , status: "accepted" });
-      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
-      return res.status(200).json(eventsWithApplicantData);
-    } else if (accepted && accepted === "true") {
-      const events = await Event.find({ status: "accepted" });
-      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
-      return res.status(200).json(eventsWithApplicantData);
-    } else if (advisor && role === "advisor" && advisor === "true") {
-      const advisor = await Advisor.findById(id);
+    // If the user is an advisor requesting their assigned events
+    if (advisor === "true" && role === "advisor") {
+      const foundAdvisor = await Advisor.findById(id);
 
-      const events = await Event.find({ weekday: advisor.assignedDay });
+      // Handle missing advisor
+      if (!foundAdvisor) {
+        return res.status(404).json({ message: "Advisor not found" });
+      }
+
+      // Build the query for advisor's assigned events
+      const query = { weekday: foundAdvisor.assignedDay };
+      if (accepted === "true") {
+        query.status = "accepted";
+      }
+
+      const events = await Event.find(query);
       const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+
       return res.status(200).json(eventsWithApplicantData);
     }
+
+    // If accepted events are requested
+    if (accepted === "true") {
+      const events = await Event.find({ status: "accepted" });
+      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+
+      return res.status(200).json(eventsWithApplicantData);
+    }
+
+    // Default case: Fetch all events
     const events = await Event.find();
     const eventsWithApplicantData = await setEventsWithApplicantData(events);
-    res.status(200).json(eventsWithApplicantData);
+
+    return res.status(200).json(eventsWithApplicantData);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error in getAllEvents:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 //gets completed events
 exports.getCompletedEvents = async (req, res) => {
