@@ -99,7 +99,11 @@ const DashboardHome = () => {
   };
 
   if (isLoading) {
-    return <div className="dashboard-home">Loading dashboard data...</div>;
+    return (
+      <div className="loading-spinner">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   if (error) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../styles/CoordinatorPages/SchoolPriorityPage.css";
+import { RiSearchLine } from 'react-icons/ri';
 
 const SchoolPriorityPage = () => {
   const [schools, setSchools] = useState([]); // State to store all high schools
@@ -140,7 +141,7 @@ const SchoolPriorityPage = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", color: "#4CAF50" }}>High Schools List</h1>
+      <h1 style={{ textAlign: "center", color: "#4CAF50" }}>List of High Schools</h1>
 
       {/* Add Stats Cards */}
       <div className="stats-container">
@@ -193,67 +194,51 @@ const SchoolPriorityPage = () => {
       )}
 
       {/* Search, Filters, and Sorting */}
-      <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-        <input
-          type="text"
-          placeholder="Search by name, city, or district..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "10px",
-            flex: "1",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <select
-          value={cityFilter}
-          onChange={(e) => setCityFilter(e.target.value)}
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="">All Cities</option>
-          {[...new Set(schools.map((school) => school.City))].map((city, index) => (
-            <option key={index} value={city}>
-              {city}
-            </option>
-          ))}
-        </select>
-        <select
-          value={districtFilter}
-          onChange={(e) => setDistrictFilter(e.target.value)}
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="">All Districts</option>
-          {[...new Set(schools.map((school) => school.District))].map((district, index) => (
-            <option key={index} value={district}>
-              {district}
-            </option>
-          ))}
-        </select>
-        <select
-          value={sortOption}
-          onChange={(e) => {
-            setSortOption(e.target.value);
-          }}
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <option value="SchoolName">Sort by Name</option>
-          <option value="City">Sort by City</option>
-          <option value="District">Sort by District</option>
-          <option value="Priority">Sort by Priority</option>
-        </select>
+      <div className="search-filter-container">
+        <div className="search-box">
+          <RiSearchLine className="search-icon" size={20} />
+          <input
+            type="text"
+            placeholder="Search by name, city, or district..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        <div className="filter-options">
+          <select
+            className="filter-select"
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+          >
+            <option value="">All Cities</option>
+            {[...new Set(schools.map((school) => school.City))].map((city, index) => (
+              <option key={index} value={city}>{city}</option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={districtFilter}
+            onChange={(e) => setDistrictFilter(e.target.value)}
+          >
+            <option value="">All Districts</option>
+            {[...new Set(schools.map((school) => school.District))].map((district, index) => (
+              <option key={index} value={district}>{district}</option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="SchoolName">Sort by Name</option>
+            <option value="City">Sort by City</option>
+            <option value="District">Sort by District</option>
+            <option value="Priority">Sort by Priority</option>
+          </select>
+        </div>
       </div>
 
       {/* Error Handling */}

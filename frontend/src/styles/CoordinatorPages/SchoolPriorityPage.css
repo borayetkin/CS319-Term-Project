@@ -32,6 +32,8 @@ td {
   padding: 12px 16px;
   border-bottom: 1px solid #edf2f7;
   color: #4a5568;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 /* Row hover effect */
@@ -273,4 +275,115 @@ tbody tr:nth-child(even) {
 .stat-card.focus:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Add these styles for column width control */
+th:nth-child(1), /* City column */
+td:nth-child(1) {
+  width: 2%;
+}
+
+th:nth-child(2), /* District column */
+td:nth-child(2) {
+  width: 15%;
+}
+
+th:nth-child(3), /* Priority column */
+td:nth-child(3) {
+  width: 12%;
+}
+
+th:nth-child(4), /* School Name column */
+td:nth-child(4) {
+  width: 58%; /* Takes remaining space */
+}
+
+/* Update select in Priority column to fit better */
+td:nth-child(3) select {
+  width: 100%;
+  min-width: 100px;
+  max-width: 120px;
+}
+
+/* Search and Filter Container */
+.search-filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* Search Box Container */
+.search-box {
+  width: 100%;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 16px 24px;
+  padding-left: 48px; /* Space for icon */
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.search-box input::placeholder {
+  color: #a0aec0;
+}
+
+/* Search Icon */
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+}
+
+/* Filter Options Container */
+.filter-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Select Styling */
+.filter-select {
+  flex: 1;
+  min-width: 180px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #4a5568;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234A5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.filter-select:hover {
+  border-color: #cbd5e0;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
