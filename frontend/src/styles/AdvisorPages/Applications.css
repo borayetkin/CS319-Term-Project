@@ -1,9 +1,29 @@
 .controls-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Space between filter and tour type */
     align-items: center;
-    gap: 16px; /* Spacing between filter and button */
-    margin-bottom: 24px; /* Space below the controls */
+    margin-bottom: 24px;
+}
+
+.filter-controls {
+    flex: 0 1 auto; /* Allow the section to be as wide as its content */
+    display: flex;
+    justify-content: flex-start; /* Align to the left */
+}
+
+.tour-type-controls {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; /* Align items vertically */
+}
+
+.tour-type-heading {
+    min-width: 200px; /* Increase minimum width to prevent text wrapping */
+    max-width: 250px; /* Set a maximum width to control wrapping */
+    text-align: center; /* Center the text */
+    margin-right: 10px; /* Add some space between the text and the button */
+    white-space: normal; /* Allow text to wrap within the set width */
 }
 
 .filter-controls label {
@@ -44,4 +64,206 @@
 .tour-type-controls button:hover {
     background-color: #2563eb; /* Slightly darker blue for hover */
     transform: scale(1.03); /* Small scale effect */
+}
+
+/* Add these new table-related styles */
+.applications-container {
+    padding: 20px;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px 12px;
+    text-align: center; /* Center text */
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    white-space: normal;
+    vertical-align: middle; /* Center content vertically */
+    max-width: 200px;
+    overflow-wrap: break-word;
+}
+
+/* Make certain columns narrower */
+th:nth-child(n+8), 
+td:nth-child(n+8) {
+    max-width: 120px; /* Narrower width for less important columns */
+}
+
+/* Make the actions column narrower */
+th:last-child,
+td:last-child {
+    width: 140px;
+    min-width: 140px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 8px;
+    width: 100%;
+}
+
+.button-container button {
+    width: 36px; /* Adjust width */
+    height: 36px; /* Adjust height */
+    padding: 0;
+    border-radius: 4px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Individual button styles */
+.view-details {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.accept {
+    background-color: #10b981;
+    color: white;
+}
+
+.decline {
+    background-color: #ef4444;
+    color: white;
+}
+
+.delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+/* Hover effects */
+.button-container button:hover {
+    transform: translateY(-1px);
+    filter: brightness(110%);
+}
+
+/* Optional: Add tooltip styles */
+.button-container button[title] {
+    position: relative;
+}
+
+.button-container button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background-color: #1f2937;
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+/* Add ellipsis for very long text */
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Make email columns slightly wider */
+td:nth-child(7) {
+    max-width: 180px;
+}
+
+/* Status-based row colors */
+tr.accepted {
+    background-color: rgba(72, 187, 120, 0.1);
+}
+
+tr.rejected {
+    background-color: rgba(245, 101, 101, 0.1);
+}
+
+tr.pending {
+    background-color: rgba(236, 201, 75, 0.1);
+}
+
+td[title] {
+    cursor: help;
+}
+
+/* Make the "Student Amount" column narrower */
+th:nth-child(5), 
+td:nth-child(5) {
+    max-width: 100px; /* Adjusted width for Student Amount column */
+}
+
+.slider-box {
+    background: linear-gradient(135deg, #a78bfa, #7c3aed); /* Purple-ish gradient */
+    border-radius: 12px;
+    padding: 20px; /* Increase padding for a bit longer appearance */
+    margin: 20px auto; /* Center the box horizontally */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white; /* Ensure text is readable on gradient */
+    position: relative; /* For positioning arrows */
+    font-weight: 600; /* Increase font boldness for better UI */
+    width: 80%; /* Set a specific width */
+    max-width: 500px; /* Ensure it doesn't exceed a certain width */
+}
+
+.slider-box:hover {
+    background-color: #6d28d9; /* Slightly darker on hover */
+}
+
+.slider-box::before, .slider-box::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    transform: translateY(-50%);
+}
+
+.slider-box::before {
+    left: 10px;
+    border-width: 8px 10px 8px 0;
+    border-color: transparent white transparent transparent;
+}
+
+.slider-box::after {
+    right: 10px;
+    border-width: 8px 0 8px 10px;
+    border-color: transparent transparent transparent white;
+}
+
+/* Alternate row colors */
+tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f7f7f7; /* Light gray for even rows */
+}
+
+.status.accepted {
+    color: #48bb78; /* Green for accepted */
+    font-weight: bold;
+}
+
+.status.rejected {
+    color: #f56565; /* Red for rejected */
+    font-weight: bold;
+}
+
+.status.pending {
+    color: #ecc94b; /* Yellow for pending */
+    font-weight: bold;
 }

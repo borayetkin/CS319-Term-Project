@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "../../styles/AdvisorPages/Applications.css";
+import { FaEye, FaCheck, FaTimes, FaTrash } from 'react-icons/fa'; // Import icons
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -8,6 +9,7 @@ const Applications = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
   const [tourType, setTourType] = useState("SchoolTour");
+  const [slideIndex, setSlideIndex] = useState(0); // New state for slider
 
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -132,9 +134,27 @@ const Applications = () => {
     navigate(`/application/${appId}`); // Redirect to the details page
   };
 
+  // Calculate counts for the slider
+  const pendingApplicationsCount = applications.filter(app => app.status === "pending").length;
+  const pendingSchoolToursCount = applications.filter(app => app.status === "pending" && app.__t === "SchoolTour").length;
+  const pendingIndividualToursCount = applications.filter(app => app.status === "pending" && app.__t === "IndividualTour").length;
+
+  const sliderContent = [
+    `Pending Applications: ${pendingApplicationsCount}`,
+    `Pending School Tours: ${pendingSchoolToursCount}`,
+    `Pending Individual Tours: ${pendingIndividualToursCount}`
+  ];
+
+  const handleSlide = () => {
+    setSlideIndex((prevIndex) => (prevIndex + 1) % sliderContent.length);
+  };
+
   return (
     <div className="applications-container">
       <h1>APPLICATIONS</h1>
+      <div className="slider-box" onClick={handleSlide}>
+        {sliderContent[slideIndex]}
+      </div>
       {message && <p>{message}</p>}
       <div className="controls-container">
         <div className="filter-controls">
@@ -151,6 +171,9 @@ const Applications = () => {
           </select>
         </div>
         <div className="tour-type-controls">
+          <h2 className="tour-type-heading">
+            Showing {tourType === "SchoolTour" ? "School" : "Individual"} Tours
+          </h2>
           <button
             onClick={() =>
               setTourType(
@@ -190,6 +213,7 @@ const Applications = () => {
                   <th>Person Email</th>
                   <th>Person Number</th>
                   <th>Major of Interest</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </>
               )}
@@ -216,16 +240,17 @@ const Applications = () => {
                       <td>{app.visitTime || "N/A"}</td>
                       <td>{app.studentCount || "N/A"}</td>
                       <td>{app.contactPerson || "N/A"}</td>
-                      <td>{app.email || "N/A"}</td>
+                      <td title={app.email}>{app.email || "N/A"}</td>
                       <td>{app.phoneNumber || "N/A"}</td>
-                      <td>{app.status}</td>
+                      <td className={`status ${app.status}`}>{app.status}</td>
                       <td>
                         <div className="button-container">
                           <button
                             onClick={() => handleViewDetails(app._id)}
                             className="view-details"
+                            title="View Details"
                           >
-                            View Details
+                            <FaEye />
                           </button>
                           {app.status === "pending" && (
                             <>
@@ -234,24 +259,27 @@ const Applications = () => {
                                 onClick={() =>
                                   handleAction(app._id, "accepted")
                                 }
+                                title="Accept"
                               >
-                                Accept
+                                <FaCheck />
                               </button>
                               <button
                                 className="decline"
                                 onClick={() =>
                                   handleAction(app._id, "rejected")
                                 }
+                                title="Decline"
                               >
-                                Decline
+                                <FaTimes />
                               </button>
                             </>
                           )}
                           <button
                             className="delete"
                             onClick={() => handleDelete(app._id)}
+                            title="Delete"
                           >
-                            Delete
+                            <FaTrash />
                           </button>
                         </div>
                       </td>
@@ -265,13 +293,15 @@ const Applications = () => {
                       <td>{app.applicant.email || "N/A"}</td>
                       <td>{app.applicant.phoneNumber || "N/A"}</td>
                       <td>{app.majorOfInterest || "N/A"}</td>
+                      <td className={`status ${app.status}`}>{app.status}</td>
                       <td>
                         <div className="button-container">
                           <button
                             onClick={() => handleViewDetails(app._id)}
                             className="view-details"
+                            title="View Details"
                           >
-                            View Details
+                            <FaEye />
                           </button>
                           {app.status === "pending" && (
                             <>
@@ -280,24 +310,27 @@ const Applications = () => {
                                 onClick={() =>
                                   handleAction(app._id, "accepted")
                                 }
+                                title="Accept"
                               >
-                                Accept
+                                <FaCheck />
                               </button>
                               <button
                                 className="decline"
                                 onClick={() =>
                                   handleAction(app._id, "rejected")
                                 }
+                                title="Decline"
                               >
-                                Decline
+                                <FaTimes />
                               </button>
                             </>
                           )}
                           <button
                             className="delete"
                             onClick={() => handleDelete(app._id)}
+                            title="Delete"
                           >
-                            Delete
+                            <FaTrash />
                           </button>
                         </div>
                       </td>

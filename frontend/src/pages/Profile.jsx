@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import '../styles/Profile.css';
 
 const Profile = () => {
   const [formData, setFormData] = useState({
@@ -73,40 +74,56 @@ const Profile = () => {
   };
 
   return (
-    <div className="container">
+    <div className="profile-container">
       <h1>Profile</h1>
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form className="profile-form" onSubmit={handleSubmit}>
           {message && (
-            <p style={{ color: message.includes("error") ? "red" : "green" }}>
+            <div className={`message ${message.includes("error") ? "error" : "success"}`}>
               {message}
-            </p>
+            </div>
           )}
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+          
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="userType">User Type</label>
+            <input
+              type="text"
+              id="userType"
+              name="userType"
+              value={formData.userType}
+              readOnly
+            />
+          </div>
 
           {formData.userType === "advisor" && (
-            <>
-              <label htmlFor="assignedDay">Assigned Day:</label>
+            <div className="form-group">
+              <label htmlFor="assignedDay">Assigned Day</label>
               <select
                 id="assignedDay"
                 name="assignedDay"
@@ -114,6 +131,7 @@ const Profile = () => {
                 onChange={handleChange}
                 required
               >
+                <option value="">Select a day</option>
                 <option value="Monday">Monday</option>
                 <option value="Tuesday">Tuesday</option>
                 <option value="Wednesday">Wednesday</option>
@@ -122,19 +140,12 @@ const Profile = () => {
                 <option value="Saturday">Saturday</option>
                 <option value="Sunday">Sunday</option>
               </select>
-            </>
+            </div>
           )}
 
-          <label htmlFor="userType">User Type:</label>
-          <input
-            type="text"
-            id="userType"
-            name="userType"
-            value={formData.userType} // Display userType
-            readOnly // Make the field read-only
-          />
-
-          <button type="submit">Update Profile</button>
+          <button type="submit" className="submit-button">
+            Update Profile
+          </button>
         </form>
       )}
     </div>

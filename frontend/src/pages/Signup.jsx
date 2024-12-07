@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../styles/Signup.css";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -45,73 +46,79 @@ const Signup = () => {
 
   return (
     <div className="container">
-      <h1>Sign Up</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+      <div className="signup-left">
+        {/* Left side content if needed */}
+      </div>
+      <div className="signup-right">
+        <form onSubmit={handleSubmit}>
+          <h1>Sign Up</h1>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {success && <p style={{ color: "green" }}>{success}</p>}
+          
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
 
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-        <label htmlFor="role">Role:</label>
-        <select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          required
-        >
-          <option value="guide">Guide</option>
-          <option value="coordinator">Coordinator</option>
-          <option value="advisor">Advisor</option>
-        </select>
-        {formData.role === "advisor" && (
-          <div className="form-group">
-            <label htmlFor="assignedDay">Assigned Day:</label>
-           
+          <label htmlFor="role">Role:</label>
           <select
-            id="assignedDay"
-            name="assignedDay"
-            value={formData.assignedDay}
+            id="role"
+            name="role"
+            value={formData.role}
             onChange={handleChange}
             required
           >
-            <option value="">Select a day</option>
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
+            <option value="guide">Guide</option>
+            <option value="coordinator">Coordinator</option>
+            <option value="advisor">Advisor</option>
           </select>
-          </div>)}
-        <button type="submit">Sign Up</button>
-      </form>
+          {formData.role === "advisor" && (
+            <div className="form-group">
+              <label htmlFor="assignedDay">Assigned Day:</label>
+             
+            <select
+              id="assignedDay"
+              name="assignedDay"
+              value={formData.assignedDay}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a day</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+            </select>
+            </div>)}
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
     </div>
   );
 };
