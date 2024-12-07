@@ -4246,7 +4246,7 @@
     "District": "ÇANKAYA",
     "SchoolName": "50. Yıl Şehit Uhud Kadir Işık Mesleki ve Teknik Anadolu Lisesi",
     "id": 607,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "ANKARA",
@@ -4519,7 +4519,7 @@
     "District": "ÇANKAYA",
     "SchoolName": "75. Yıl Anadolu Lisesi",
     "id": 646,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "ANKARA",
@@ -4673,7 +4673,7 @@
     "District": "ÇANKAYA",
     "SchoolName": "50. Yıl Şehit Uhud Kadir Işık Anadolu Lisesi",
     "id": 668,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "ANKARA",
@@ -53918,7 +53918,7 @@
     "District": "EREĞLİ",
     "SchoolName": "15 TEMMUZ ŞEHİTLERİ ANADOLU İMAM HATİP LİSESİ",
     "id": 7703,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "ZONGULDAK",

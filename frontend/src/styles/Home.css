@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 .main-wrapper {
   background: #f8fafc;
   min-height: 100vh;
@@ -23,22 +26,76 @@
   max-width: 1200px;
   text-align: center;
   padding: 2rem;
-  color: white;
-  animation: fadeIn 1s ease-out;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.hero-title-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  animation: backgroundPulse 3s ease-in-out infinite;
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 1.1;
+  letter-spacing: 2px;
+  color: white;
+  margin: 0;
+  position: relative;
+  text-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.1),
+    -2px -2px 0 rgba(255, 255, 255, 0.1);
+  animation: titleReveal 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.hero-title::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    white 20%,
+    white 80%,
+    transparent 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 3s infinite;
+  animation-delay: 1.5s;
 }
 
 .hero-subtitle {
   font-size: clamp(1.2rem, 2vw, 1.8rem);
-  margin-bottom: 3rem;
-  opacity: 0.9;
+  margin-top: 1.5rem;
+  opacity: 0;
+  color: white;
+  font-weight: 300;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 1s;
 }
 
 .hero-buttons {
@@ -646,5 +703,53 @@
   background: #2563eb;
   transform-origin: right;
   z-index: 1000;
+}
+
+@keyframes backgroundPulse {
+  0%, 100% {
+    transform: scale(1);
+    backdrop-filter: blur(12px);
+  }
+  50% {
+    transform: scale(1.02);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes titleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes titleReveal {
+  0% {
+    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    letter-spacing: 1px;
+  }
 }
 

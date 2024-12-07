@@ -89,7 +89,14 @@ const Home = () => {
         <>
           <section className="hero-section">
             <div className="hero-content">
-              <h1 className="hero-title">Bilkent Üniversitesi'ne Hoş Geldiniz</h1>
+              <div className="hero-title-container">
+                <h1 
+                  className="hero-title"
+                  data-text="Bilkent Üniversitesi'ne Hoş Geldiniz"
+                >
+                  Bilkent Üniversitesi'ne Hoş Geldiniz
+                </h1>
+              </div>
               <p className="hero-subtitle">Geleceğinizi Şekillendirin</p>
               <div className="hero-buttons">
                 <Link to="/admissions" className="hero-cta">Başvuru Yap</Link>
