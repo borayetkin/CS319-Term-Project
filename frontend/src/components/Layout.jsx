@@ -6,9 +6,12 @@ const Layout = ({ children }) => {
 
   return (
     <AnimatePresence mode="wait">
-      {children}
+      {/* Wrap the children in a div with a unique key */}
+      <div key={location.key}>
+        {children}
+      </div>
     </AnimatePresence>
   );
 };
 
-export default Layout; 
+export default Layout;
