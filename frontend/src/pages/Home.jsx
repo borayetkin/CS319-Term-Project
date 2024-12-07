@@ -1,11 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import "../styles/UsersPage.css"
+import { motion } from "framer-motion";
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [stats, setStats] = useState({
+    studentCount: "15,000+",
+    facultyCount: "1,000+",
+    researchCount: "500+",
+    internationalStudents: "2,000+",
+    globalRanking: "Top 500",
+    researchPublications: "1,200+"
+  });
 
+  const navigate = useNavigate();
+
+  const pageTransition = {
+    hidden: {
+      opacity: 0,
+      y: 20
+    },
+    visible: {
+      opacity: 1,
+      y: 0
+    },
+    exit: {
+      opacity: 0,
+      y: -20
+    }
+  };
+
+  const handleNavigation = (path, e) => {
+    e.preventDefault();
+    
+    // First animate the button
+    const button = e.currentTarget;
+    button.classList.add('button-clicked');
+    
+    // Then animate the page transition
+    setTimeout(() => {
+      navigate(path);
+    }, 300);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,62 +75,174 @@ const Home = () => {
 
 
   return (
-    <div>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      variants={pageTransition}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="main-wrapper"
+    >
       {isLoggedIn ? (
-          
-          
-          openEvents()
-     
+        openEvents()
       ) : (
-        <div className="home-container">
-          <section className="home-welcome-section">
-            <div className="home-text-container">
-              <h1>Bilkent Üniversitesi Etkinlikleri</h1>
-              <p>
-                Kampüs ziyaretiniz boyunca etkinliklerimizden haberdar olabilir,
-                üniversitenin sunduğu fırsatları ve etkinlikleri yerinde
-                görebilirsiniz.
-              </p>
-              <Link to="/apply" className="home-cta-button">
-                Etkinliklere Göz At
+        <>
+          <section className="hero-section">
+            <div className="hero-content">
+              <h1 className="hero-title">Bilkent Üniversitesi'ne Hoş Geldiniz</h1>
+              <p className="hero-subtitle">Geleceğinizi Şekillendirin</p>
+              <div className="hero-buttons">
+                <Link to="/admissions" className="hero-cta">Başvuru Yap</Link>
+                <Link to="/virtual-tour" className="hero-secondary">Sanal Tur</Link>
+              </div>
+            </div>
+          </section>
+
+          <section className="action-cards-section">
+            <div className="action-cards-container">
+              <div className="action-card">
+                <h2>Kampüs Ziyareti</h2>
+                <p>
+                  Kampüs ziyaretiniz boyunca etkinliklerimizden haberdar olabilir,
+                  üniversitenin sunduğu fırsatları ve etkinlikleri yerinde
+                  görebilirsiniz.
+                </p>
+                <div className="action-buttons">
+                  <button 
+                    className="action-button primary"
+                    onClick={(e) => handleNavigation('/apply', e)}
+                  >
+                    <span className="button-text">Ziyaret Başvurusu</span>
+                    <span className="button-icon">→</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="action-card">
+                <h2>Kariyer Fuarı</h2>
+                <p>
+                  Bilkent Kariyer Fuarı'nda şirketlerle tanışın, staj ve iş 
+                  fırsatlarını keşfedin. Başvurunuzu hemen yapın!
+                </p>
+                <button 
+                  className="action-button primary"
+                  onClick={(e) => handleNavigation('/invite', e)}
+                >
+                  <span className="button-text">Fuar Başvurusu</span>
+                  <span className="button-icon">→</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="stats-section">
+            <div className="stats-container">
+              {Object.entries(stats).map(([key, value]) => (
+                <div className="stat-card" key={key}>
+                  <span className="stat-number">{value}</span>
+                  <span className="stat-label">
+                    {key === "studentCount" && "Öğrenci"}
+                    {key === "facultyCount" && "Akademik Personel"}
+                    {key === "researchCount" && "Araştırma Projesi"}
+                    {key === "internationalStudents" && "Uluslararası Öğrenci"}
+                    {key === "globalRanking" && "Dünya Sıralaması"}
+                    {key === "researchPublications" && "Yıllık Yayın"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="featured-section">
+            <div className="featured-container">
+              <div className="featured-card">
+                <h2>Akademik Mükemmeliyet</h2>
+                <p>Türkiye'nin en iyi üniversitelerinden biri olarak, öğrencilerimize dünya standartlarında eğitim sunuyoruz.</p>
+                <Link to="/academics" className="featured-link">Programları Keşfet →</Link>
+              </div>
+              <div className="featured-card">
+                <h2>Araştırma ve İnovasyon</h2>
+                <p>Cutting-edge araştırmalarımız ve inovasyon merkezlerimizle geleceği şekillendiriyoruz.</p>
+                <Link to="/research" className="featured-link">Araştırmalarımız →</Link>
+              </div>
+              <div className="featured-card">
+                <h2>Uluslararası İşbirlikleri</h2>
+                <p>Dünya çapında 100+ üniversite ile değişim programları ve işbirlikleri.</p>
+                <Link to="/international" className="featured-link">Detaylı Bilgi →</Link>
+              </div>
+            </div>
+          </section>
+
+          <section className="events-section">
+            <div className="section-header">
+              <h2>Yaklaşan Etkinlikler</h2>
+              <Link to="/events" className="view-all">Tüm Etkinlikler →</Link>
+            </div>
+            <div className="events-grid">
+              <div className="event-card">
+                <div className="event-date">
+                  <span className="day">15</span>
+                  <span className="month">MAR</span>
+                </div>
+                <div className="event-content">
+                  <h3>Bilkent TTO Teknoloji Günleri</h3>
+                  <p>Yenilikçi projelerin sergilendiği teknoloji günleri başlıyor.</p>
+                  <Link to="/events/tech-days" className="event-link">Detaylar →</Link>
+                </div>
+              </div>
+              {/* Add more event cards */}
+            </div>
+          </section>
+
+          <section className="news-section">
+            <div className="section-header">
+              <h2>Haberler ve Duyurular</h2>
+              <Link to="/news" className="view-all">Tüm Haberler →</Link>
+            </div>
+            <div className="news-grid">
+              <article className="news-card">
+                <img src="/images/news1.jpg" alt="News" className="news-image" />
+                <div className="news-content">
+                  <span className="news-date">15 Mart 2024</span>
+                  <h3>Bilkent Üniversitesi'nden Yeni Araştırma Merkezi</h3>
+                  <p>Yapay Zeka ve Robotik alanında yeni araştırma merkezi açıldı.</p>
+                  <Link to="/news/1" className="news-link">Devamını Oku →</Link>
+                </div>
+              </article>
+              {/* Add more news cards */}
+            </div>
+          </section>
+
+          <section className="campus-life-section">
+            <div className="section-header">
+              <h2>Kampüs Yaşamı</h2>
+            </div>
+            <div className="campus-grid">
+              <Link to="/student-clubs" className="campus-card">
+                <i className="fas fa-users"></i>
+                <h3>Öğrenci Kulüpleri</h3>
+                <p>100+ aktif öğrenci kulübü</p>
+              </Link>
+              <Link to="/sports" className="campus-card">
+                <i className="fas fa-running"></i>
+                <h3>Spor Tesisleri</h3>
+                <p>Modern spor kompleksleri</p>
+              </Link>
+              <Link to="/accommodation" className="campus-card">
+                <i className="fas fa-home"></i>
+                <h3>Yurt Olanakları</h3>
+                <p>Konforlu yaşam alanları</p>
+              </Link>
+              <Link to="/culture-arts" className="campus-card">
+                <i className="fas fa-theater-masks"></i>
+                <h3>Kültür & Sanat</h3>
+                <p>Etkinlik ve gösteriler</p>
               </Link>
             </div>
-            <div className="home-text-container">
-                <h1>fair application </h1>
-                <p>
-                   şimdilik test için buraya ekledim, navbara taşıyacağım.
-                </p>
-                <Link to="/invite" className="home-cta-button">
-                    fair invitation form
-                </Link>
-            </div>
           </section>
-          <section className="home-info-section">
-            <div className="home-info-container">
-              <h2>Kampüs Ziyaretinizde Sizi Neler Bekliyor:</h2>
-              <p>
-                Kampüs ziyaretinize İktisadi, İdari ve Sosyal Bilimler Fakültesi
-                önündeki tanıtımı alanında başlayacaksınız. Sizleri rehber
-                öğrenciler karşılayacak. Hedeflediğiniz bölümlere ilişkin
-                sorularınızı rehberlerimize yöneltebilecek, ilgi alanlarınızla
-                eşleşebilecek başka eğitim programlarını da tanıma fırsatı elde
-                edeceksiniz.
-              </p>
-              <p>
-                Bu ziyaretlerin önemli bir özelliği de eğitimin yanı sıra
-                üniversitenin diğer olanaklarına yönelik fikir edinebilmeniz
-                olacak. Kampüsü gezmek isterseniz yine rehber öğrenciler size
-                eşlik edecek. Kampüs turu öğrenci yurtlarından başlayacak ve
-                yurtlar bölgesindeki spor salonuyla devam edecek. Daha sonra
-                fakülte binaları ile kampüsün ana noktalarını görecek ve son
-                olarak kütüphaneyi gezeceksiniz.
-              </p>
-            </div>
-
-          </section>
-        </div>
+        </>
       )}
-    </div>
+    </motion.div>
   );
 };
 

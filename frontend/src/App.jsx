@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import Layout from "./components/Layout";
 import Event from "./pages/Event";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -31,8 +32,9 @@ import FairApplication from "./pages/FairApplication";
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
+      <Layout>
+        <Navbar />
+        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -145,6 +147,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
+      </Layout>
     </Router>
   );
 }

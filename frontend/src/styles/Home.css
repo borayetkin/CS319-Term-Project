@@ -1,174 +1,650 @@
-/* Parent container for layout */
-.home-container {
-  display: flex;
-  width: 100%;
-  height: calc(100vh - 54.5px);
-  gap: 2rem;
-  padding-top: 54.5px;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  box-sizing: border-box;
+.main-wrapper {
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
-.home-welcome-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: auto;
-}
-
-.home-text-container {
-  padding: 40px;
-  max-width: 550px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+/* Hero Section */
+.hero-section {
+  height: 90vh;
   background: linear-gradient(
-    135deg,
-    rgba(216, 188, 217, 0.7),
-    rgba(230, 224, 234, 0.7),
-    rgba(205, 224, 237, 0.7),
-    rgba(243, 241, 245, 0.7)
-  );
-  color: #2b3349;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 450px;
-}
-
-/* Home Info Section with Background Image */
-.home-info-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.home-info-container {
-  padding: 40px;
-  max-width: 900px;
-  width: 100%;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  background-image: linear-gradient(
-      rgba(204, 233, 233, 0.8),
-      rgba(165, 182, 210, 0.8)
-    ),
-    url("../public/images/download.jpeg"); /* Replace with your actual image path */
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.4)
+  ), url('/images/bilkent3.jpeg');
   background-size: cover;
   background-position: center;
-  color: #2b3349;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hero-content {
+  max-width: 1200px;
+  text-align: center;
+  padding: 2rem;
+  color: white;
+  animation: fadeIn 1s ease-out;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  margin-bottom: 3rem;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.hero-cta, .hero-secondary {
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-cta {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  background: #1d4ed8;
+  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.4);
+}
+
+.hero-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Stats Section */
+.stats-section {
+  margin-top: 2rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.stats-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+/* Featured Section */
+.featured-section {
+  padding: 6rem 2rem;
+  background: white;
+}
+
+.featured-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.featured-card {
+  padding: 2.5rem;
+  border-radius: 24px;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.featured-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.featured-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.featured-card p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.featured-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Events Section */
+.events-section {
+  padding: 6rem 2rem;
+  background: #f8fafc;
+}
+
+.section-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2rem;
+  color: #1e293b;
+}
+
+.view-all {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.events-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-date {
+  background: #2563eb;
+  color: white;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 450px;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.event-date .day {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.event-content {
+  padding: 1.5rem;
+}
+
+/* News Section */
+.news-section {
+  padding: 6rem 2rem;
+  background: white;
+}
+
+.news-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.news-card {
+  border-radius: 24px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+}
+
+.news-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.news-content {
+  padding: 1.5rem;
+}
+
+.news-date {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Campus Life Section */
+.campus-life-section {
+  padding: 6rem 2rem;
+  background: #f8fafc;
+}
+
+.campus-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.campus-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 24px;
+  text-align: center;
+  text-decoration: none;
+  color: #1e293b;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.campus-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.campus-card i {
+  font-size: 2rem;
+  color: #2563eb;
+  margin-bottom: 1rem;
+}
+
+.campus-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.campus-card p {
+  color: #64748b;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-buttons {
+    flex-direction: column;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .event-card {
+    flex-direction: column;
+  }
+  
+  .event-date {
+    padding: 1rem;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* Add this to your existing CSS */
+
+.action-cards-section {
+  margin-top: -50px;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 3;
+  margin-bottom: 4rem;
+}
+
+.action-cards-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.action-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.action-card h2 {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.action-card p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-button.primary {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* Shine effect */
+.action-button.primary::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s;
+  animation: shine 3s infinite;
+}
+
+/* Pulse effect */
+.action-button.primary::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 12px;
+  background: #2563eb;
+  opacity: 0;
+  z-index: -1;
+  animation: pulse 2s infinite;
+}
+
+.action-button.primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 30px rgba(37, 99, 235, 0.5);
+}
+
+.action-button.primary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.action-button.secondary {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 2px solid #e2e8f0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-button.secondary:hover {
+  background: #e2e8f0;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.action-button.secondary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Add these keyframe animations */
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Add loading state animations */
+.action-button.primary.loading {
+  background: linear-gradient(
+    90deg,
+    #2563eb 0%,
+    #4f46e5 50%,
+    #2563eb 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientShift 2s infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Hover lift effect for cards */
+.action-card {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Add this for better touch device handling */
+@media (hover: none) {
+  .action-button.primary::before {
+    display: none;
+  }
+  
+  .action-button.primary::after {
+    animation: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-card {
+    padding: 2rem;
+  }
+  
+  .action-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Button animation styles */
+.action-button {
   position: relative;
   overflow: hidden;
 }
 
-.home-info-container::before {
-  content: "";
+.button-text {
+  display: inline-block;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+.button-icon {
   position: absolute;
+  right: -20px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover .button-text {
+  transform: translateX(-10px);
+}
+
+.action-button:hover .button-icon {
+  right: 20px;
+  opacity: 1;
+}
+
+/* Click animation */
+.button-clicked {
+  animation: buttonClick 0.3s forwards;
+}
+
+@keyframes buttonClick {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+
+/* Page transition overlay */
+.page-transition-overlay {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.35); /* Adjust opacity as needed */
-  border-radius: 16px;
-  z-index: 1;
-}
-
-/* Ensure text is above the overlays */
-.home-info-container h2,
-.home-info-container p {
-  position: relative;
-  z-index: 2;
-}
-
-/* Styling for headings and paragraphs */
-.home-text-container h1,
-.home-info-container h2,
-.home-text-container p,
-.home-info-container p {
-  position: relative;
-  color: #2d2f77;
-  text-align: left;
-}
-
-.home-text-container h1,
-.home-info-container h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #2b3349;
-}
-
-.home-text-container p,
-.home-info-container p {
-  font-size: 1.2rem;
-  margin-bottom: 25px;
-  color: #2b3349;
-}
-
-/* CTA Button Styling */
-.home-cta-button {
-  text-decoration: none;
-  background-color: #5a67b3;
-  color: white;
-  padding: 12px 30px;
-  text-align: center;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, background-color 0.3s ease;
-  z-index: 2;
-  position: relative;
-}
-
-.home-cta-button:hover {
-  background-color: #444e98;
-  transform: scale(1.02);
-}
-
-.tour-applications {
-  padding: 2rem;
-  background-color: #e1e4f2;
-  max-width: 1200px;
-  margin: 2rem auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.tour-table {
   width: 100%;
-  border-collapse: collapse;
-}
-
-thead {
-  background-color: #5a67b3;
-  color: white;
-}
-
-th,
-td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  font-weight: bold;
-}
-
-tr:hover {
-  background-color: #d2d6e8;
-}
-.link {
-  text-decoration: none;
-  
-}
-.link :hover{
-  text-decoration: none;
-  cursor: pointer;
+  height: 100%;
+  background: #2563eb;
+  transform-origin: right;
+  z-index: 1000;
 }
 
