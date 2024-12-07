@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/TourApplication.css";
 import CustomDateTimePicker from "../components/SchoolTourDatePicker";
@@ -24,8 +24,12 @@ const TourApplication = () => {
   const [schools, setSchools] = useState([]);
   const [filteredSchools, setFilteredSchools] = useState([]);
   const navigate = useNavigate();
- 
-
+  const [emailError, setEmailError] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const emailTimeoutRef = useRef(null);
+  const [phoneError, setPhoneError] = useState("");
+  const [isTypingPhone, setIsTypingPhone] = useState(false);
+  const phoneTimeoutRef = useRef(null);
 
   // Fetch schools from backend on component mount
   useEffect(() => {
@@ -54,10 +58,82 @@ const TourApplication = () => {
     }
   }, [formData.city, formData.district, schools]);
 
-  const handleChange = (e) => {
-
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const isValidEmail = (email) => {
+    // Basic email regex pattern
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
   };
+
+  const isValidPhone = (phone) => {
+    // Regex for Turkish phone number format: 0XXXXXXXXXX (11 digits)
+    const phonePattern = /^0\d{10}$/;
+    return phonePattern.test(phone.replace(/\D/g, '')); // Remove non-digits before testing
+  };
+
+  // Format phone number as user types (0XXX XXX XXXX)
+  const formatPhoneNumber = (value) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length === 0) return '';
+    if (numbers.length <= 4) return numbers;
+    if (numbers.length <= 7) return `${numbers.slice(0, 4)} ${numbers.slice(4)}`;
+    return `${numbers.slice(0, 4)} ${numbers.slice(4, 7)} ${numbers.slice(7, 11)}`;
+  };
+
+  const handleChange = (e) => {
+    if (e.target.name === 'email') {
+      const email = e.target.value;
+      setFormData({ ...formData, email: email });
+      setIsTyping(true);
+      
+      // Clear any existing timeout
+      if (emailTimeoutRef.current) {
+        clearTimeout(emailTimeoutRef.current);
+      }
+      
+      // Set new timeout to validate email after user stops typing
+      emailTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        if (email && !isValidEmail(email)) {
+          setEmailError("Please enter a valid email address");
+        } else {
+          setEmailError("");
+        }
+      }, 1000); // Wait 1 second after user stops typing
+    } else if (e.target.name === 'phoneNumber') {
+      const phone = e.target.value;
+      const formattedPhone = formatPhoneNumber(phone);
+      setFormData({ ...formData, phoneNumber: formattedPhone });
+      setIsTypingPhone(true);
+      
+      if (phoneTimeoutRef.current) {
+        clearTimeout(phoneTimeoutRef.current);
+      }
+      
+      phoneTimeoutRef.current = setTimeout(() => {
+        setIsTypingPhone(false);
+        const digitsOnly = phone.replace(/\D/g, '');
+        if (digitsOnly && !isValidPhone(digitsOnly)) {
+          setPhoneError("Please enter a valid phone number");
+        } else {
+          setPhoneError("");
+        }
+      }, 1000);
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+  };
+
+  // Clean up the timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (emailTimeoutRef.current) {
+        clearTimeout(emailTimeoutRef.current);
+      }
+      if (phoneTimeoutRef.current) {
+        clearTimeout(phoneTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleTourTypeSelection = (e) => {
     setFormData({ ...formData, tourType: e.target.value });
@@ -66,6 +142,18 @@ const TourApplication = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Final email validation before submission
+    if (!isValidEmail(formData.email)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+    
+    if (!isValidPhone(formData.phoneNumber.replace(/\D/g, ''))) {
+      setPhoneError("Please enter a valid phone number starting with 0 (11 digits)");
+      return;
+    }
+    
     const { tourType, ...tourData } = formData;
     const endpoint =
       tourType === "school"
@@ -204,27 +292,36 @@ const TourApplication = () => {
               required
             />
 
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="example@example.com"
-            />
+            <div className="form-group">
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="example@example.com"
+                className={emailError && !isTyping ? "error" : ""}
+              />
+              {emailError && !isTyping && <span className="error-message">{emailError}</span>}
+            </div>
 
-            <label htmlFor="phoneNumber">Phone Number:</label>
-            <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              placeholder="0 5XX XXX XX XX"
-            />
+            <div className="form-group">
+              <label htmlFor="phoneNumber">Phone Number:</label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                required
+                placeholder="0XXX XXX XXXX"
+                className={phoneError && !isTypingPhone ? "error" : ""}
+                maxLength="13"
+              />
+              {phoneError && !isTypingPhone && <span className="error-message">{phoneError}</span>}
+            </div>
 
             {formData.tourType === "individual" ? (<>
               <label htmlFor="visitDate">Visit Date:</label>
