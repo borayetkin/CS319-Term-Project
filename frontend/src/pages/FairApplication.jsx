@@ -3,6 +3,7 @@ import "../styles/FairApplication.css";
 
 const FairApplication = () => {
   const [formData, setFormData] = useState({
+    organiserName: "",
     schoolName: "",
     city: "",
     fairDate: "",
@@ -96,9 +97,10 @@ const FairApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Ensure the date is in ISO format
     const fairRequestData = {
       ...formData,
-      fairDate: new Date(formData.fairDate).toISOString(), // Ensure proper date formatting
+      fairDate: formData.fairDate ? new Date(formData.fairDate).toISOString() : null,
     };
 
     try {
@@ -115,6 +117,7 @@ const FairApplication = () => {
       if (response.ok) {
         setMessage("Fair application submitted successfully!");
         setFormData({
+          organiserName: "",
           schoolName: "",
           city: "",
           fairTime: "",
@@ -139,6 +142,17 @@ const FairApplication = () => {
         {message && <p className="fair-application-message">{message}</p>}
 
         <form onSubmit={handleSubmit} className="fair-application-form">
+          <label htmlFor="organiserName">Fair Organiser Name:</label>
+          <input
+            type="text"
+            id="organiserName"
+            name="organiserName"
+            value={formData.organiserName}
+            onChange={handleChange}
+            required
+            placeholder="Enter organiser's full name"
+          />
+          
           <label htmlFor="schoolName">School Name:</label>
           <input
             type="text"

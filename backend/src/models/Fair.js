@@ -2,9 +2,13 @@ const { default: mongoose } = require('mongoose');
 const User = require('./User');
 
 const fairSchema = new mongoose.Schema({
+    organiserName: {
+        type: String,
+        required: true
+    },
     schoolName: {
-        type : String,
-        required : true
+        type: String,
+        required: true
     },
     email: {
         type: String,
