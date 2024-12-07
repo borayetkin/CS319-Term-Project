@@ -1,0 +1,157 @@
+.time-slot {
+    color: black;
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .time-slot.white {
+    background-color: white;
+  }
+  .time-slot.selected {
+    background-color: rgb(49, 15, 200);
+  }
+  
+  .time-slot.yellow {
+    background-color: yellow;
+  }
+  
+  .time-slot.red {
+    background-color: red;
+  }
+  
+  .time-slot.disabled {
+    background-color: grey;
+    cursor: not-allowed;
+  }
+  .restriction-message{
+    text-align: left;
+    font-size: small;
+  }
+  .custom-date-picker .disabled {
+    color: #ccc;
+    pointer-events: none;
+  }
+  
+  .custom-date-picker .day:hover:not(.disabled) {
+    background: #e9e9e9;
+  }
+  /* Custom Date Picker Container */
+.custom-date-picker {
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Input Field */
+  .custom-date-picker input {
+
+    margin-left: auto;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Size Variants */
+  .custom-date-picker.small input {
+    font-size: 12px;
+    padding: 6px;
+  }
+  
+  .custom-date-picker.medium input {
+    font-size: 16px;
+    padding: 8px;
+  }
+  
+  .custom-date-picker.large input {
+    font-size: 20px;
+    padding: 10px;
+  }
+  
+  /* Calendar Popup */
+  .calendar {
+ 
+    top: 100%;
+
+    z-index: 10;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  
+  }
+  
+  /* Calendar Header */
+  .calendar-header {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    align-content: center;
+    padding: 10px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #ccc;
+    font-size: 1.7rem;
+  }
+
+  .calendar-header button{
+    width: auto ;
+
+    text-align: center;
+    margin-left: 0;
+    scale: .9;
+  }
+  /* Calendar Grid for Days */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Seven columns for days of the week */
+    text-align: center;
+  }
+  
+  /* Day Name */
+  .calendar-grid .day-name {
+    font-weight: bold;
+    padding: 5px 0;
+  }
+  
+  /* Individual Day */
+  .calendar-grid .day {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    user-select: none; /* Prevent text selection */
+  }
+  
+  /* Current Month Days */
+  .calendar-grid .current-month {
+    color: black;
+  }
+  
+  /* Other Month Days */
+  .calendar-grid .other-month {
+    color: #aaa;
+  }
+  
+  /* Selected Day */
+  .calendar-grid .selected {
+    background: #2d649f;
+    color: white;
+
+  }
+  
+  /* Disabled Days */
+  .calendar-grid .disabled {
+    color: #ccc;
+    pointer-events: none;
+  }
+  .selected:hover{
+    background: #2d649f !important;
+
+  }
+  /* Hover Effect for Days */
+  .calendar-grid .day:hover:not(.disabled) {
+    background: #e9e9e9;
+  }

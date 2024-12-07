@@ -1,0 +1,30 @@
+.events-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+   text-align: center;
+  }
+  
+  .events-container h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .filter-sort-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .filter-controls {
+    display: flex;
+    align-items: center;
+  }
+  
+  .filter-controls label {
+    margin-right: 10px;
+  }
+  
+  .filter-controls select {
+    padding: 5px;
+    font-size: 1em;
+  }

@@ -1,0 +1,104 @@
+.fair-application-section {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 54.5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 54.5px;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.fair-application-container {
+  padding: 3rem;
+  background: linear-gradient(
+    135deg,
+    rgba(220, 217, 223, 0.7),
+    rgba(230, 224, 234, 0.7),
+    rgba(222, 214, 230, 0.7),
+    rgba(243, 241, 245, 0.7)
+  );
+  max-width: 550px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.fair-application-container h1 {
+  text-align: left;
+  font-size: 2.3rem;
+  color: #2b3349;
+  margin-bottom: 25px;
+}
+
+.fair-application-description {
+  font-size: 1rem;
+  color: #2b3349;
+  margin-bottom: 45px;
+  text-align: left;
+  line-height: 1.5;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fair-application-message {
+  text-align: center;
+  color: #5a67b3;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.fair-application-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.fair-application-form label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2b3349;
+  margin-top: 20px;
+}
+
+.fair-application-form input[type="text"],
+.fair-application-form input[type="email"],
+.fair-application-form input[type="date"],
+.fair-application-form input[type="tel"],
+.fair-application-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9fb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fair-application-form input:focus,
+.fair-application-form textarea:focus {
+  border-color: #5a67b3;
+  box-shadow: 0 0 8px rgba(90, 103, 179, 0.3);
+  outline: none;
+}
+
+.fair-application-submit {
+  background-color: #5a67b3;
+  color: white;
+  padding: 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 6px 15px rgba(90, 103, 179, 0.3);
+}
+
+.fair-application-submit:hover {
+  background-color: #444e98;
+  transform: scale(1.02);
+}

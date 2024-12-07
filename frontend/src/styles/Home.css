@@ -1,0 +1,174 @@
+/* Parent container for layout */
+.home-container {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 54.5px);
+  gap: 2rem;
+  padding-top: 54.5px;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.home-welcome-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: auto;
+}
+
+.home-text-container {
+  padding: 40px;
+  max-width: 550px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(216, 188, 217, 0.7),
+    rgba(230, 224, 234, 0.7),
+    rgba(205, 224, 237, 0.7),
+    rgba(243, 241, 245, 0.7)
+  );
+  color: #2b3349;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 450px;
+}
+
+/* Home Info Section with Background Image */
+.home-info-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-info-container {
+  padding: 40px;
+  max-width: 900px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(
+      rgba(204, 233, 233, 0.8),
+      rgba(165, 182, 210, 0.8)
+    ),
+    url("../public/images/download.jpeg"); /* Replace with your actual image path */
+  background-size: cover;
+  background-position: center;
+  color: #2b3349;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 450px;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-info-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.35); /* Adjust opacity as needed */
+  border-radius: 16px;
+  z-index: 1;
+}
+
+/* Ensure text is above the overlays */
+.home-info-container h2,
+.home-info-container p {
+  position: relative;
+  z-index: 2;
+}
+
+/* Styling for headings and paragraphs */
+.home-text-container h1,
+.home-info-container h2,
+.home-text-container p,
+.home-info-container p {
+  position: relative;
+  color: #2d2f77;
+  text-align: left;
+}
+
+.home-text-container h1,
+.home-info-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #2b3349;
+}
+
+.home-text-container p,
+.home-info-container p {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+  color: #2b3349;
+}
+
+/* CTA Button Styling */
+.home-cta-button {
+  text-decoration: none;
+  background-color: #5a67b3;
+  color: white;
+  padding: 12px 30px;
+  text-align: center;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.home-cta-button:hover {
+  background-color: #444e98;
+  transform: scale(1.02);
+}
+
+.tour-applications {
+  padding: 2rem;
+  background-color: #e1e4f2;
+  max-width: 1200px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.tour-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #5a67b3;
+  color: white;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #d2d6e8;
+}
+.link {
+  text-decoration: none;
+  
+}
+.link :hover{
+  text-decoration: none;
+  cursor: pointer;
+}
+

@@ -1,0 +1,130 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+  overflow: hidden;
+}
+
+.signup-left {
+  flex: 1.6;
+  background-image: url("login_background3.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 50px;
+  position: relative;
+}
+
+.signup-left::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(138, 43, 226, 0.5),
+    rgba(187, 29, 150, 0.8),
+    rgba(43, 67, 226, 0.2)
+  );
+  background-size: 300% 300%;
+  animation: gradientAnimation 6s ease infinite;
+  z-index: 1;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 75% 30%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.signup-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+form {
+  max-width: 450px;
+  width: 90%;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: white;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  text-align: center;
+  color: #333;
+}
+
+label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin: 4px 0 12px 0;
+}
+
+select {
+  background-color: white;
+  cursor: pointer;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #8a2be2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 8px;
+}
+
+button[type="submit"]:hover {
+  color: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5);
+  transform: scale(1);
+  background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
+}
+
+.form-group {
+  margin-top: 8px;
+}
+
+/* Error and success messages */
+p[style*="color: red"] {
+  color: #ef4444;
+  text-align: center;
+  margin: 8px 0;
+}
+
+p[style*="color: green"] {
+  color: #10b981;
+  text-align: center;
+  margin: 8px 0;
+} 

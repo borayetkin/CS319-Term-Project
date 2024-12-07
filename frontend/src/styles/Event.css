@@ -1,0 +1,89 @@
+/* Event.css */
+
+.event-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.event-info,
+.assigned-users {
+  width: 48%;
+}
+
+.event-info h1,
+.assigned-users h2 {
+  text-align: center;
+}
+
+.event-info p {
+  margin: 10px 0;
+}
+
+.event-info .highlight {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.assigned-users {
+  display: flex;
+  flex-direction: column;
+}
+
+.assigned-user {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.assigned-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.assigned-user span {
+  font-size: 16px;
+}
+
+.assigned-user .remove-button {
+  background-color: #dc3545;
+  width: auto;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-left: auto;
+}
+
+.assigned-user .remove-button:hover {
+  background-color: #c82333;
+}
+
+.add-user-button {
+  width: auto;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 3px;
+  display: block;
+  margin: 20px auto;
+}
+
+.add-user-button:hover {
+  background-color: #218838;
+}
