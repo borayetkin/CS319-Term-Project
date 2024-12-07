@@ -4,6 +4,7 @@ const connectDB = require("./src/config/db");
 const adminRoutes = require("./src/routes/adminRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const eventRoutes = require("./src/routes/eventRoutes");
+const fairRoutes = require("./src/routes/fairRoutes");
 const applicantRoutes = require("./src/routes/ApplicantRoutes");
 const schoolRoutes = require("./src/routes/schoolRoutes");
 const path = require("path");
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/fairs", fairRoutes);
 app.use("/api/applicants", applicantRoutes);
 app.use("/api", schoolRoutes);
 

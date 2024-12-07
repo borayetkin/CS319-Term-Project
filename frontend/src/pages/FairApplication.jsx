@@ -3,15 +3,16 @@ import "../styles/FairApplication.css";
 
 const FairApplication = () => {
   const [formData, setFormData] = useState({
-    applicantName: "",
     schoolName: "",
     city: "",
-    visitDate: "",
+    fairDate: "",
     fairTime: "",
     location: "",
     email: "",
     phoneNumber: "",
     additionalNotes: "",
+    requiredNumberOfGuides: 2, // Default value
+    hoursOfWork: 3, // Default value
   });
 
   const [message, setMessage] = useState("");
@@ -24,68 +25,36 @@ const FairApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { applicantName, ...fairData } = formData; // Extract applicantName
-    const dateTime = new Date(`${formData.visitDate}T${formData.fairTime}`);
-
-    const applicantData = {
-      name: formData.applicantName,
-      email: formData.email,
-      phoneNumber: formData.phoneNumber,
+    const fairRequestData = {
+      ...formData,
+      fairDate: new Date(formData.fairDate).toISOString(), // Ensure proper date formatting
     };
 
-    const fairRequestData = {
-        ...fairData,
-        applicant: {
-          applicantID: "some_generated_id", // Replace with your applicant ID logic
-          name: applicantName
-        },
-        email: formData.email, // Include email
-        phoneNumber: formData.phoneNumber, // Include phone number
-      };
-
     try {
-      // Step 1: Create or find the applicant
-      const applicantResponse = await fetch(
-        "http://localhost:3000/api/applicants",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(applicantData),
-        }
-      );
+      const response = await fetch("http://localhost:3000/api/fairs/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(fairRequestData),
+      });
 
-      const applicant = await applicantResponse.json();
+      const data = await response.json();
 
-      if (!applicantResponse.ok) {
-        setMessage(`Error: ${applicant.message}`);
-        return;
-      }
-
-      // Step 2: Create the fair invitation with the applicant info
-      fairRequestData.applicant = {
-        applicantID: applicant._id,
-        name: applicant.name,
-      };
-
-      const fairResponse = await fetch(
-        "http://localhost:3000/api/events/fairs",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(fairRequestData),
-        }
-      );
-
-      const fairData = await fairResponse.json();
-
-      if (fairResponse.ok) {
+      if (response.ok) {
         setMessage("Fair application submitted successfully!");
+        setFormData({
+          schoolName: "",
+          city: "",
+          fairTime: "",
+          fairDate: "",
+          location: "",
+          email: "",
+          phoneNumber: "",
+          additionalNotes: "",
+        });
       } else {
-        setMessage(`Error: ${fairData.message}`);
+        setMessage(`Error: ${data.message}`);
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");
@@ -99,17 +68,6 @@ const FairApplication = () => {
         {message && <p className="fair-application-message">{message}</p>}
 
         <form onSubmit={handleSubmit} className="fair-application-form">
-          <label htmlFor="applicantName">Applicant Name:</label>
-          <input
-            type="text"
-            id="applicantName"
-            name="applicantName"
-            value={formData.applicantName}
-            onChange={handleChange}
-            required
-            placeholder="Enter your name or organization"
-          />
-
           <label htmlFor="schoolName">School Name:</label>
           <input
             type="text"
@@ -132,12 +90,12 @@ const FairApplication = () => {
             placeholder="Enter the city"
           />
 
-          <label htmlFor="visitDate">Fair Date:</label>
+          <label htmlFor="fairDate">Fair Date:</label>
           <input
             type="date"
-            id="visitDate"
-            name="visitDate"
-            value={formData.visitDate}
+            id="fairDate"
+            name="fairDate"
+            value={formData.fairDate}
             onChange={handleChange}
             required
           />
