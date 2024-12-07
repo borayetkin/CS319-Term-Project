@@ -35,7 +35,7 @@ const ManageFairs = () => {
   };
   const fetchFairs = async (token,us) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/events/fairs`, {
+      const response = await fetch(`http://localhost:3000/api/fairs`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -139,8 +139,8 @@ const ManageFairs = () => {
                       <td>{app.schoolName || "N/A"}</td>
                       <td>{app.city || "N/A"}</td>
                       <td>{new Date(app.visitDate).toLocaleDateString()}</td>
-                      <td>{app.visitTime || "N/A"}</td>
-                      <td>{app.applicant.name || "N/A"}</td>
+                      <td>{app.fairTime || "N/A"}</td>
+          
                       <td>{app.email || "N/A"}</td>
                       <td>{app.phoneNumber || "N/A"}</td>
                       <td>{app.status}</td>
