@@ -3,7 +3,6 @@ const User = require("../models/User");
 const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
-const Fair = require("../models/Fair");
 const Applicant = require("../models/Applicant");
 // Get events with status "accepted"
 const setEventsWithApplicantData = async (events) => {
@@ -218,80 +217,7 @@ exports.createIndividualTour = async (req, res) => {
   }
 };
 
-// Create a fair
-exports.createFair = async (req, res) => {
-  try {
-    const {
-      applicant,
-      schoolName,
-      email,
-      phoneNumber,
-      city,
-      visitDate,
-      fairTime,
-      location,
-      additionalNotes = "",
-      hoursOfWork = 6,
-      requiredNumberOfGuides = 1,
-      status = "pending",
-    } = req.body;
 
-    // Validate required fields
-    if (
-      !applicant ||
-      !visitDate ||
-      !fairTime ||
-      !location ||
-      !email ||
-      !phoneNumber
-    ) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const fair = new Fair({
-      applicant,
-      schoolName,
-      email,
-      phoneNumber,
-      city,
-      visitDate: new Date(visitDate),
-      visitTime: fairTime,
-      fairTime,
-      location,
-      additionalNotes,
-      hoursOfWork,
-      requiredNumberOfGuides,
-      status,
-    });
-
-    fair.addToApplicantEvents(); // Ensure this method is implemented
-    fair.setWeekday(); // Set the weekday
-
-    await fair.save();
-
-    res.status(201).json({
-      message: "Fair created successfully",
-      fair,
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: "Failed to create fair",
-      error: error.message,
-    });
-  }
-};
-// Get all fairs
-exports.getFairs = async (req, res) => {
-  try {
-    const fairs = await Fair.find();
-    const fairsWithApplicantData = await setEventsWithApplicantData(fairs);
-    res.status(200).json(fairsWithApplicantData);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {

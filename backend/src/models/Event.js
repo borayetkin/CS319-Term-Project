@@ -40,7 +40,7 @@ const eventSchema = new mongoose.Schema({
   },
   typeStr :{
     type: String,
-    enum : ["Individual Tour", "School Tour", "Fair"]
+    enum : ["Individual Tour", "School Tour"]
   },
   additionalNotes :{
     type: String,
