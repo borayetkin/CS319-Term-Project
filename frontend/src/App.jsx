@@ -28,6 +28,7 @@ import TourApplication from "./pages/TourApplication";
 import PrivateRoute from "./components/PrivateRoute";
 import AddUser from "./pages/CoordinatorPages/DashboardPages/AddUser";
 import FairApplication from "./pages/FairApplication";
+import DashboardHome from "./pages/CoordinatorPages/DashboardPages/DashboardHome";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             </PrivateRoute>
           }
         >
+          <Route index element={<DashboardHome />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="ManageFairs" element={<ManageFairs />} />
           <Route path="adduser" element={<AddUser />} />
