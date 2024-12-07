@@ -1,5 +1,5 @@
 const { default: mongoose } = require('mongoose');
-const Event = require('./Event');
+const User = require('./User');
 
 const fairSchema = new mongoose.Schema({
     schoolName: {
@@ -18,6 +18,10 @@ const fairSchema = new mongoose.Schema({
         type: String,
         required : true
     },
+    fairDate: {
+         type: Date,
+         required: true,
+    },
     fairTime: {
         type: String,
         required: true,
@@ -30,11 +34,29 @@ const fairSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    requiredNumberOfGuides : {
+      type: Number,
+      default : 2
+    },
+    status : {
+      type: String,
+      enum : ["pending", "accepted", "rejected", "completed"],
+      default: "pending"
+    },
+    hoursOfWork : {
+      type : Number,
+      default : 3
+    },
 
   });
 
 fairSchema.methods.setLocation = function (location) {
     this.location = location
+    return this.save()
+}
+
+fairSchema.methods.changeDate =  function (date ){
+    this.date = date
     return this.save()
 }
 
@@ -51,11 +73,6 @@ fairSchema.methods.setStatus = function (status) {
   return Promise.reject(new Error("Invalid status"));
 };
 
-
-
-
-
-const Fair = Event.discriminator("Fair", fairSchema);
-Object.assign(fairSchema.methods, Event.schema.methods);
+const Fair = mongoose.model("Fair", fairSchema);
 
 module.exports = Fair;

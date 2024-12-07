@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
-const advisorAuth = require("../middleware/advisorMiddleware")
+const advisorAuth = require("../middleware/advisorMiddleware");
 // Destructure the required functions from the controller
 const {
   getAcceptedEvents,
@@ -32,8 +32,6 @@ const adminAuth = require("../middleware/adminMiddleware");
 // Routes for creating events
 router.post("/schooltours", createSchoolTour);
 router.post("/individualtours",  createIndividualTour);
-router.post("/fairs",createFair);
-router.get('/fairs',adminAuth, getFairs)
 // Routes for fetching events
 router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);
