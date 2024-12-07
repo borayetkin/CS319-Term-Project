@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../../../styles/AdvisorPages/Applications.css";
 
 const ManageFairs = () => {
   const [fairs, setFairs] = useState([]);

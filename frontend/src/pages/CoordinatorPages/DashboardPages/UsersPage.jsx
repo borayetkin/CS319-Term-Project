@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -82,6 +83,13 @@ const UsersPage = () => {
   return (
     <div className="admin-container">
       <h1>Registered Users</h1>
+      
+      <input
+        type="text"
+        placeholder="Search users..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       {users.length > 0 ? (
         <table>
           <thead>
@@ -94,31 +102,35 @@ const UsersPage = () => {
           </thead>
           <tbody>
           <tr>
-              <td colSpan="4" className="add-user-link">
+          <td colSpan="4" className="add-user-link">
                 <Link to="/dashboard/adduser">Add User</Link>
               </td>
             </tr>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <select
-                    value={user.role}
-                    onChange={(e) => updateUserRole(user._id, e.target.value)}
-                  >
-                    <option value="guide">Guide</option>
-                    <option value="coordinator">Coordinator</option>
-                    <option value="advisor">Advisor</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </td>
-                <td>
-                  <button className="delete-button" onClick={() => deleteUser(user._id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-           
+            {users
+              .filter((user) =>
+                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((user) => (
+                <tr key={user._id}>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <select
+                      value={user.role}
+                      onChange={(e) => updateUserRole(user._id, e.target.value)}
+                    >
+                      <option value="guide">Guide</option>
+                      <option value="coordinator">Coordinator</option>
+                      <option value="advisor">Advisor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button className="delete-button" onClick={() => deleteUser(user._id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       ) : (
@@ -129,3 +141,4 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+

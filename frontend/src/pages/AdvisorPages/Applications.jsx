@@ -10,6 +10,7 @@ const Applications = () => {
   const [user, setUser] = useState(null);
   const [tourType, setTourType] = useState("SchoolTour");
   const [slideIndex, setSlideIndex] = useState(0); // New state for slider
+  const [sortOption, setSortOption] = useState("default");
 
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -116,19 +117,62 @@ const Applications = () => {
     }
   };
 
-  const filteredApplications = applications.filter((app) => {
-    if (filterStatus !== "all" && app.status !== filterStatus) {
-      return false;
+  const getPriorityScore = (application) => {
+    if (!application.schoolPriority) return 0;
+    switch (application.schoolPriority) {
+      case "Medium": return 3; // Focus schools
+      case "High": return 2;   // Preferred schools
+      case "General": return 1;
+      default: return 0;
     }
-    if (tourType !== "all" && app.__t !== tourType) {
-      return false;
+  };
+
+  const getFilteredAndSortedApplications = () => {
+    let filtered = applications.filter((app) => {
+      if (filterStatus !== "all" && app.status !== filterStatus) {
+        return false;
+      }
+      if (tourType !== "all" && app.__t !== tourType) {
+        return false;
+      }
+      if (user && user.role === "advisor" && user.assignedDay) {
+        return app.weekday === user.assignedDay;
+      }
+      return true;
+    });
+
+    // Apply sorting based on selected option
+    switch (sortOption) {
+      case "default":
+        filtered.sort((a, b) => {
+          // First, sort by pending status
+          if (a.status === "pending" && b.status !== "pending") return -1;
+          if (b.status === "pending" && a.status !== "pending") return 1;
+          
+          // If both are pending, sort by school priority
+          if (a.status === "pending" && b.status === "pending") {
+            return getPriorityScore(b) - getPriorityScore(a);
+          }
+          
+          // If neither is pending, sort by date
+          return new Date(b.visitDate) - new Date(a.visitDate);
+        });
+        break;
+      case "date":
+        filtered.sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate));
+        break;
+      case "schoolName":
+        filtered.sort((a, b) => (a.schoolName || "").localeCompare(b.schoolName || ""));
+        break;
+      case "status":
+        filtered.sort((a, b) => a.status.localeCompare(b.status));
+        break;
     }
-    if (user && user.role === "advisor" && user.assignedDay) {
-      const visitDay = app.weekday;
-      return visitDay === user.assignedDay;
-    }
-    return true;
-  });
+
+    return filtered;
+  };
+
+  const filteredApplications = getFilteredAndSortedApplications();
 
   const handleViewDetails = (appId) => {
     navigate(`/application/${appId}`); // Redirect to the details page
@@ -185,6 +229,19 @@ const Applications = () => {
               ? "Show Individual Tours"
               : "Show School Tours"}
           </button>
+        </div>
+        <div className="sort-controls">
+          <label htmlFor="sort">Sort by:</label>
+          <select
+            id="sort"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="default">Default</option>
+            <option value="date">Date</option>
+            <option value="schoolName">School Name</option>
+            <option value="status">Status</option>
+          </select>
         </div>
       </div>
       {filteredApplications.length > 0 ? (
