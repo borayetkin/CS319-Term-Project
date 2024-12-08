@@ -125,8 +125,7 @@ label {
 }
 
 input,
-select,
-button {
+select {
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ccc;
