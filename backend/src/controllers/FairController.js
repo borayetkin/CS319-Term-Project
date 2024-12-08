@@ -68,7 +68,9 @@ exports.getFairs = async (req, res) => {
 
 exports.getAcceptedFairs = async (req, res) => {
   try {
-    const acceptedFairs = await Fair.find({ status: "accepted" });
+    const acceptedFairs = await Fair.find({ status: "accepted" })
+      .populate('assignedUsers', 'name') // Populate the guide's name
+      .exec();
 
     if (acceptedFairs.length === 0) {
       return res.status(404).json({ message: "No accepted fairs found." });
@@ -85,7 +87,9 @@ exports.getAcceptedFairs = async (req, res) => {
 exports.getFair = async (req, res) => {
   try {
     const { id } = req.params;
-    const fair = await Fair.findById(id);
+    const fair = await Fair.findById(id)
+          .populate('assignedUsers', 'name') // Populate the guide's name
+          .exec();
     if (!fair) {
       return res.status(404).json({ message: "Fair not found" });
     }
