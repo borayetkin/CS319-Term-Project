@@ -12,17 +12,21 @@
 
 .fair-application-container {
   padding: 3rem;
-  background: linear-gradient(
-    135deg,
-    rgba(220, 217, 223, 0.7),
-    rgba(230, 224, 234, 0.7),
-    rgba(222, 214, 230, 0.7),
-    rgba(243, 241, 245, 0.7)
-  );
+  background: linear-gradient(135deg, rgba(220, 217, 223, 0.7), rgba(243, 241, 245, 0.7));
+  contain: content;
   max-width: 550px;
   width: 100%;
   border-radius: 16px;
+  position: relative;
+}
+
+.fair-application-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 .fair-application-container h1 {

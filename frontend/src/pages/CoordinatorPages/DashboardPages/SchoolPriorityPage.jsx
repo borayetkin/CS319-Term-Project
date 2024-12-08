@@ -120,16 +120,16 @@ const SchoolPriorityPage = () => {
   // Add these new calculations
   const schoolStats = {
     general: schools.filter(s => s.Priority === "General").length,
-    preferred: schools.filter(s => s.Priority === "High").length,
-    focus: schools.filter(s => s.Priority === "Medium").length
+    preferred: schools.filter(s => s.Priority === "Medium").length,
+    focus: schools.filter(s => s.Priority === "High").length
   };
 
   const handleStatCardClick = (type) => {
     if (type === 'general') return; // Don't show modal for general schools
     
     const filteredSchools = schools.filter(s => 
-      (type === 'preferred' && s.Priority === 'High') ||
-      (type === 'focus' && s.Priority === 'Medium')
+      (type === 'preferred' && s.Priority === 'Medium') ||
+      (type === 'focus' && s.Priority === 'High')
     );
 
     setModalContent({
@@ -274,8 +274,8 @@ const SchoolPriorityPage = () => {
               }}
             >
               <option value="General">General</option>
-              <option value="High">Preferred</option>
-              <option value="Medium">Focus</option>
+              <option value="Medium">Preferred</option>
+              <option value="High">Focus</option>
             </select>
           </td>
           <td style={{ border: "1px solid #ddd", padding: "8px" }}>{school.SchoolName}</td>

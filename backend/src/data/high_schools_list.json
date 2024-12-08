@@ -11,7 +11,7 @@
     "District": "ALADAĞ",
     "SchoolName": "Akören Çok Programlı Anadolu Lisesi",
     "id": 2,
-    "Priority": "High"
+    "Priority": "General"
   },
   {
     "City": "ADANA",
@@ -7095,7 +7095,7 @@
     "District": "DEMRE",
     "SchoolName": "Demre Mesleki ve Teknik Anadolu Lisesi",
     "id": 1014,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "ANTALYA",
@@ -36635,7 +36635,7 @@
     "District": "ÇUMRA",
     "SchoolName": "Mustafa Akdemir Çok Programlı Anadolu Lisesi",
     "id": 5234,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "KONYA",
