@@ -16,6 +16,15 @@ const saveUser = async ({ name, email, password, role }) =>{
     );
     return token;
 }
+ exports.checkAuthUser = async (req,res)=>{
+  const user = req.user;
+  res.status(200).json("success");
+  // if (user && await User.findById(user.id).select("-password")) {
+  //   return res.status(200).json(user)
+  // }
+  
+  // return res.status(401).json({ message: "Unauthorized." });
+}
 const changeAdvisorToUser = async (advisor) => {
   const {_id, name, email, password, role} = advisor;
   const user = new User({_id,name, email, password, role});

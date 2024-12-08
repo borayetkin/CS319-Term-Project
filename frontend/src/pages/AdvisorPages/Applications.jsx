@@ -117,15 +117,7 @@ const Applications = () => {
     }
   };
 
-  const getPriorityScore = (application) => {
-    if (!application.schoolPriority) return 0;
-    switch (application.schoolPriority) {
-      case "Medium": return 3; // Focus schools
-      case "High": return 2;   // Preferred schools
-      case "General": return 1;
-      default: return 0;
-    }
-  };
+ 
 
   const getFilteredAndSortedApplications = () => {
     let filtered = applications.filter((app) => {
@@ -140,7 +132,16 @@ const Applications = () => {
       }
       return true;
     });
-
+    const getPriorityScore = (application) => {
+      const priority = application.applicant.priority;
+      if (!priority) return 0;
+      switch (priority) {
+        case "High": return 3;   // Preferred schools
+        case "Medium": return 2; // Focus schools
+        case "General": return 1;
+        default: return 0;
+      }
+    };
     // Apply sorting based on selected option
     switch (sortOption) {
       case "default":
@@ -166,6 +167,9 @@ const Applications = () => {
         break;
       case "status":
         filtered.sort((a, b) => a.status.localeCompare(b.status));
+        break;
+      case "priority":
+        filtered.sort((a, b) => getPriorityScore(b) - getPriorityScore(a));
         break;
     }
 
@@ -241,6 +245,7 @@ const Applications = () => {
             <option value="date">Date</option>
             <option value="schoolName">School Name</option>
             <option value="status">Status</option>
+            <option value="priority">Priority</option>
           </select>
         </div>
       </div>
@@ -251,6 +256,7 @@ const Applications = () => {
               {tourType === "SchoolTour" ? (
                 <>
                   <th>High School Name</th>
+                  <th>High School Priority</th>
                   <th>City</th>
                   <th>Date</th>
                   <th>Time</th>
@@ -292,6 +298,7 @@ const Applications = () => {
                   {tourType === "SchoolTour" ? (
                     <>
                       <td>{app.schoolName || "N/A"}</td>
+                      <td>{app.applicant.priority || "N/A"}</td>
                       <td>{app.city || "N/A"}</td>
                       <td>{new Date(app.visitDate).toLocaleDateString()}</td>
                       <td>{app.visitTime || "N/A"}</td>

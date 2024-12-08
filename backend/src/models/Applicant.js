@@ -20,6 +20,15 @@ const applicantSchema = new mongoose.Schema({
   events :
    [{type: mongoose.Schema.Types.ObjectId, ref: 'Event'}]
   ,
+  priority :
+  {
+    type: String,
+    default: "default"
+  },
+  schoolID :{
+    type: Number,
+    default: -1
+  }
 });
 applicantSchema.methods.saveEvent = async function(eventId) {
   try {

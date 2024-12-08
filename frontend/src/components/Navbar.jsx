@@ -35,9 +35,13 @@ const Navbar = () => {
         // If the token is invalid or expired, clear localStorage
         localStorage.removeItem("token");
         setIsLoggedIn(false);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error checking authentication:", error);
+      window.location.reload();
+      setRole("");
+      navigate("/"); 
       localStorage.removeItem("token"); // Ensure the token is cleared
       setIsLoggedIn(false);
     } finally {
@@ -84,7 +88,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {["admin", "advisor", "guide"].includes(role) && (
+            {["admin", "advisor","coordinator", "guide"].includes(role) && (
               <li>
                 <Link
                   to="/events"

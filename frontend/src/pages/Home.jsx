@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import "../styles/UsersPage.css"
 import { motion } from "framer-motion";
+import { FaCommentsDollar } from "react-icons/fa";
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -62,9 +63,11 @@ const Home = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (response.status === 401) {
         setIsLoggedIn(false);
         localStorage.clear();
+        window.location.reload();
       } else {
         setIsLoggedIn(true);
       }

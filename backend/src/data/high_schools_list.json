@@ -3588,7 +3588,7 @@
     "District": "MERKEZ",
     "SchoolName": "12 Haziran Anadolu Lisesi",
     "id": 513,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "AMASYA",
@@ -9328,7 +9328,7 @@
     "District": "ALTIEYLÜL",
     "SchoolName": "100. Yıl Mesleki ve Teknik Anadolu Lisesi",
     "id": 1333,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "BALIKESİR",
@@ -56746,7 +56746,7 @@
     "District": "TUZLUCA",
     "SchoolName": "100. Yıl Anadolu Lisesi",
     "id": 8107,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "IĞDIR",

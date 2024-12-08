@@ -24,7 +24,12 @@ const setEventsWithApplicantData = async (events) => {
         email: applicantData.email,
         phoneNumber: applicantData.phoneNumber,
       };
-    }
+      if (applicantData.schoolID) {
+        application.applicant.schoolID = applicantData.schoolID;
+      }
+      if (applicantData.priority) {
+        application.applicant.priority = applicantData.priority;
+     }}
   }
   return events;
 };

@@ -6,8 +6,15 @@ exports.createApplicant = async (req, res) => {
 
     try {
 
-        const { name, email, phoneNumber } = req.body;
-
+        const { name, email, phoneNumber,schoolID } = req.body;
+        // Check if applicant already exists
+        if (schoolID) {
+          const existingApplicant = await Applicant.findOne({schoolID:schoolID})
+       
+          if (existingApplicant){
+          return res.status(201).json(existingApplicant);
+          }
+        }
         // Validate input fields
         if (!name || !email || !phoneNumber) {
             return res.status(400).send("All fields are required");
