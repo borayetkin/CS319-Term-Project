@@ -7,6 +7,7 @@ const eventRoutes = require("./src/routes/eventRoutes");
 const fairRoutes = require("./src/routes/fairRoutes");
 const applicantRoutes = require("./src/routes/ApplicantRoutes");
 const schoolRoutes = require("./src/routes/schoolRoutes");
+const notificationRoutes = require("./src/routes/notificationRoutes");
 const path = require("path");
 const cors = require("cors"); // Import CORS
 
@@ -39,7 +40,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/fairs", fairRoutes);
 app.use("/api/applicants", applicantRoutes);
 app.use("/api", schoolRoutes);
-
+app.use("/api/notifications", notificationRoutes);
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

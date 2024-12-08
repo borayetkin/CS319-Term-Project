@@ -140,12 +140,8 @@ const ManageFairs = () => {
     if (!fair) return null;
     
     return (
-      <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content" onClick={e => e.stopPropagation()}>
-          <button className="modal-close" onClick={onClose}>
-            <FiX size={24} />
-          </button>
-          
+      <div className="modal-overlay">
+        <div className="modal-content">
           <h2>Fair Details</h2>
           
           <div className="details-grid">
@@ -201,14 +197,58 @@ const ManageFairs = () => {
               <p className="notes">{fair.additionalNotes || "No additional notes"}</p>
             </div>
           </div>
+
+          <button className="close-button" onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     );
   };
 
+  const sendDebugNotification = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/api/notifications/debug", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: "Debug Notification",
+          message: "This is a test notification sent at " + new Date().toLocaleString(),
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("Debug notification sent successfully!");
+      } else {
+        setMessage("Failed to send debug notification");
+      }
+    } catch (error) {
+      setMessage("Error sending debug notification: " + error.message);
+    }
+  };
+
   return (
     <div className="applications-container">
-      <h1>APPLICATIONS</h1>
+      <h1>Manage Fairs</h1>
+      
+      <button 
+        onClick={sendDebugNotification}
+        style={{
+          backgroundColor: "#6366f1",
+          color: "white",
+          padding: "8px 16px",
+          borderRadius: "4px",
+          border: "none",
+          cursor: "pointer",
+          marginBottom: "20px"
+        }}
+      >
+        Send Debug Notification
+      </button>
       {message && <p className="message">{message}</p>}
       
       <div className="controls-container">

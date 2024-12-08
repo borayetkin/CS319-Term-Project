@@ -1,5 +1,6 @@
 const Fair = require("../models/Fair");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 // Create a new fair
 exports.createFair = async (req, res) => {
@@ -97,6 +98,21 @@ exports.updateFairStatus = async (req, res) => {
     // Update status directly
     fair.status = status;
     await fair.save();
+
+    if (status === 'accepted') {
+      // Get all guides
+      const guides = await User.find({ role: 'guide' });
+      
+      // Create notifications for all guides
+      const notifications = guides.map(guide => ({
+        recipient: guide._id,
+        title: "New Fair Available",
+        message: `A new fair has been confirmed at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+        read: false
+      }));
+
+      await Notification.insertMany(notifications);
+    }
 
     res.status(200).json({
       message: "Fair status updated successfully",

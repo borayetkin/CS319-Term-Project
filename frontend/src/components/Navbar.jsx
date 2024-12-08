@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.css";
+import { FiBell } from 'react-icons/fi';
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -13,11 +16,15 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       checkAuth(token); // Validate the token with the server
+      fetchUserProfile(token);
+      if (user?.role === 'guide') {
+        fetchUnreadNotifications(token);
+      }
     } else {
       setIsLoggedIn(false);
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.role]);
 
   const checkAuth = async (token) => {
     try {
@@ -46,6 +53,39 @@ const Navbar = () => {
       setIsLoggedIn(false);
     } finally {
       setIsLoading(false); // Mark the loading as complete
+    }
+  };
+
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await fetch("/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
+  const fetchUnreadNotifications = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/notifications/unread-count", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadCount(data.count);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
     }
   };
 
@@ -125,6 +165,21 @@ const Navbar = () => {
                   className={isActive("/manage-guides") ? "active" : ""}
                 >
                   Manage Guides
+                </Link>
+              </li>
+            )}
+            {["guide"].includes(role) && (
+              <li>
+                <Link
+                  to="/guide/notifications"
+                  className={isActive("/guide/notifications") ? "active" : ""}
+                >
+                  <div className="notification-icon">
+                    <FiBell size={20} />
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
+                  </div>
                 </Link>
               </li>
             )}
