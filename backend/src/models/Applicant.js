@@ -23,7 +23,7 @@ const applicantSchema = new mongoose.Schema({
   priority :
   {
     type: String,
-    default: "default"
+    default: "General"
   },
   schoolID :{
     type: Number,

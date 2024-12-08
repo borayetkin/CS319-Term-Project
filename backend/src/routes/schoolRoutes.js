@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const Applicant = require("../models/Applicant");
 
 const router = express.Router();
 
@@ -18,24 +19,33 @@ router.get("/high-schools", (req, res) => {
 const filePath = path.join(__dirname, "../data/high_schools_list.json");
 
 // Update school priority
-router.put("/high-schools/:id", (req, res) => {
+router.put("/high-schools/:id", async (req, res) => {
   const { id } = req.params;
   const updatedSchool = req.body;
+  try {
+    const applicant = await Applicant.findOne({ schoolID: id });
+    if (applicant) {
+      applicant.priority = updatedSchool.Priority;
+      await applicant.save();
+    }
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) return res.status(500).json({ message: "Error reading file." });
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) return res.status(500).json({ message: "Error reading file." });
 
-    const schools = JSON.parse(data);
-    const index = schools.findIndex((school) => school.id === parseInt(id));
-    if (index === -1) return res.status(404).json({ message: "School not found." });
+      const schools = JSON.parse(data);
+      const index = schools.findIndex((school) => school.id === parseInt(id));
+      if (index === -1) return res.status(404).json({ message: "School not found." });
 
-    schools[index] = updatedSchool;
+      schools[index] = updatedSchool;
 
-    fs.writeFile(filePath, JSON.stringify(schools, null, 2), (err) => {
-      if (err) return res.status(500).json({ message: "Error writing file." });
-      res.json(updatedSchool);
+      fs.writeFile(filePath, JSON.stringify(schools, null, 2), (err) => {
+        if (err) return res.status(500).json({ message: "Error writing file." });
+        res.json(updatedSchool);
+      });
     });
-  });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating applicant." });
+  }
 });
 
 
