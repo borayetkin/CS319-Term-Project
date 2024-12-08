@@ -73,9 +73,13 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
     }
 
     const previousMonth = selectedDate ? selectedDate.getMonth() : null;
+    if (previousMonth !== null && previousMonth !== date.getMonth()) {
+      onMonthChange(date);
+    }
+    setSelectedDate(date);
+    setIsOpen(false);
+    onDateChange && onDateChange({target : {name : "visitDate", value : formatLocalDate(date)}});
 
-    // Proceed with the rest of the function logic
-    // ...
   };
 
   const changeMonth = (offset) => {

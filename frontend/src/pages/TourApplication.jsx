@@ -224,7 +224,7 @@ const TourApplication = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          applicant: { applicantID: data._id, name: data.name },
+          applicant: data,
           ...requestData,
         }),
       });
