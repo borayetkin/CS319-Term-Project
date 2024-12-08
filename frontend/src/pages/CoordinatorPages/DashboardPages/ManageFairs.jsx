@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { FiSearch, FiFilter, FiCheck, FiX, FiTrash2, FiEye } from 'react-icons/fi';
+import '../../../styles/CoordinatorPages/ManageFairs.css';
+
 
 const ManageFairs = () => {
   const [fairs, setFairs] = useState([]);
   const [message, setMessage] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredFairs, setFilteredFairs] = useState([]);
+  const [selectedFair, setSelectedFair] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   
 
   useEffect(() => {
@@ -14,6 +21,26 @@ const ManageFairs = () => {
       
     }
   }, []);
+
+  useEffect(() => {
+    let result = [...fairs];
+    
+    if (filterStatus !== "all") {
+      result = result.filter(fair => fair.status === filterStatus);
+    }
+    
+    if (searchTerm) {
+      result = result.filter(fair => 
+        fair.schoolName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fair.organiserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fair.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        fair.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    setFilteredFairs(result);
+  }, [fairs, filterStatus, searchTerm]);
+
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
@@ -55,13 +82,39 @@ const ManageFairs = () => {
 
 
 
-  const handleAction = async (eventId, status) => {
-    // To Be Implemented
-  };
-  const handleDelete = async (eventId) => {
+  const handleAction = async (fairId, status) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+      const response = await fetch(`http://localhost:3000/api/fairs/${fairId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (response.ok) {
+        setMessage(`Fair application ${status} successfully.`);
+        // Refresh the fairs list
+        await fetchFairs(token, user);
+        
+        // Clear the message after 3 seconds
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      } else {
+        const data = await response.json();
+        setMessage(`Failed to update fair status: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage("Error updating fair status: " + error.message);
+    }
+  };
+  const handleDelete = async (fairId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/fairs/${fairId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,7 +122,7 @@ const ManageFairs = () => {
       });
       if (response.ok) {
         setMessage("Application deleted successfully.");
-        await fetchFairs(token,user); // Refresh applications
+        await fetchFairs(token, user);
       } else {
         setMessage("Failed to delete application.");
       }
@@ -78,38 +131,122 @@ const ManageFairs = () => {
     }
   };
 
+  const handleShowDetails = (fair) => {
+    setSelectedFair(fair);
+    setShowDetailsModal(true);
+  };
+
+  const DetailsModal = ({ fair, onClose }) => {
+    if (!fair) return null;
+    
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <button className="modal-close" onClick={onClose}>
+            <FiX size={24} />
+          </button>
+          
+          <h2>Fair Details</h2>
+          
+          <div className="details-grid">
+            <div className="detail-item">
+              <label>School Name:</label>
+              <p>{fair.schoolName || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Organiser Name:</label>
+              <p>{fair.organiserName || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>City:</label>
+              <p>{fair.city || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Date:</label>
+              <p>{new Date(fair.fairDate).toLocaleDateString() || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Time:</label>
+              <p>{fair.fairTime || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Email:</label>
+              <p>{fair.email || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Phone Number:</label>
+              <p>{fair.phoneNumber || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item">
+              <label>Status:</label>
+              <p className={`status-badge ${fair.status}`}>
+                {fair.status.charAt(0).toUpperCase() + fair.status.slice(1)}
+              </p>
+            </div>
+            
+            <div className="detail-item full-width">
+              <label>Full Address:</label>
+              <p>{fair.location || "N/A"}</p>
+            </div>
+            
+            <div className="detail-item full-width">
+              <label>Additional Notes:</label>
+              <p className="notes">{fair.additionalNotes || "No additional notes"}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="applications-container">
       <h1>APPLICATIONS</h1>
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
+      
       <div className="controls-container">
-  <div className="filter-controls">
-    <label htmlFor="filter">Filter by Status:</label>
-    <select
-      id="filter"
-      value={filterStatus}
-      onChange={(e) => setFilterStatus(e.target.value)}
-    >
-      <option value="all">All</option>
-      <option value="pending">Pending</option>
-      <option value="accepted">Accepted</option>
-      <option value="rejected">Rejected</option>
-    </select>
-  </div>
+        <div className="search-bar">
+          <FiSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by school, organiser, city..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-</div>
-      {fairs.length > 0 ? (
+        <div className="filter-controls">
+          <FiFilter className="filter-icon" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      {filteredFairs.length > 0 ? (
         <table>
           <thead>
             <tr>
               {(
                 <>
                   <th>High School Name</th>
+                  <th>Organiser Name</th>
                   <th>City</th>
                   <th>Date</th>
                   <th>Time</th>
-                  <th>Applicant Name</th>
                   <th>Applicant Email</th>
                   <th>Applicant Number</th>
                   <th>Status</th>
@@ -119,8 +256,7 @@ const ManageFairs = () => {
             </tr>
           </thead>
           <tbody>
-            {
-            fairs.map((app) => {
+            {filteredFairs.map((app) => {
               let className = "";
               if (app.status === "accepted") {
                 className = "accepted";
@@ -137,16 +273,51 @@ const ManageFairs = () => {
                   
                     <>
                       <td>{app.schoolName || "N/A"}</td>
+                      <td>{app.organiserName || "N/A"}</td>
                       <td>{app.city || "N/A"}</td>
-                      <td>{new Date(app.visitDate).toLocaleDateString()}</td>
+                      <td>{new Date(app.fairDate).toLocaleDateString()}</td>
                       <td>{app.fairTime || "N/A"}</td>
-          
                       <td>{app.email || "N/A"}</td>
                       <td>{app.phoneNumber || "N/A"}</td>
-                      <td>{app.status}</td>
                       <td>
-                        <div className="button-container">
-                            To Be Implemented
+                        <span className={`status-badge ${app.status}`}>
+                          {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            className="action-button details"
+                            onClick={() => handleShowDetails(app)}
+                            title="Show Details"
+                          >
+                            <FiEye size={16} />
+                          </button>
+                          {app.status === "pending" && (
+                            <>
+                              <button
+                                className="action-button accept"
+                                onClick={() => handleAction(app._id, "accepted")}
+                                title="Accept Application"
+                              >
+                                <FiCheck size={16} />
+                              </button>
+                              <button
+                                className="action-button reject"
+                                onClick={() => handleAction(app._id, "rejected")}
+                                title="Reject Application"
+                              >
+                                <FiX size={16} />
+                              </button>
+                            </>
+                          )}
+                          <button
+                            className="action-button delete"
+                            onClick={() => handleDelete(app._id)}
+                            title="Delete Application"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </>
@@ -157,7 +328,15 @@ const ManageFairs = () => {
           </tbody>
         </table>
       ) : (
-        <p>No applications found.</p>
+        <div className="no-results">
+          <p>No applications found matching your criteria.</p>
+        </div>
+      )}
+      {showDetailsModal && (
+        <DetailsModal
+          fair={selectedFair}
+          onClose={() => setShowDetailsModal(false)}
+        />
       )}
     </div>
   );

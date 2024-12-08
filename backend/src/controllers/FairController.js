@@ -5,6 +5,7 @@ const User = require("../models/User");
 exports.createFair = async (req, res) => {
   try {
     const {
+      organiserName,
       schoolName,
       email,
       phoneNumber,
@@ -18,17 +19,19 @@ exports.createFair = async (req, res) => {
       hoursOfWork = 3,
     } = req.body;
 
-    // Validate required fields
-    if (!schoolName || !email || !phoneNumber || !location || !fairTime || !city) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Validate the date
+    const parsedDate = new Date(fairDate);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
     }
 
     const fair = new Fair({
+      organiserName,
       schoolName,
       email,
       phoneNumber,
       location,
-      fairDate: new Date(fairDate),
+      fairDate: parsedDate,
       fairTime,
       city,
       additionalNotes,
@@ -81,12 +84,19 @@ exports.updateFairStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+    // Validate status
+    if (!['accepted', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
     const fair = await Fair.findById(id);
     if (!fair) {
       return res.status(404).json({ message: "Fair not found" });
     }
 
-    await fair.setStatus(status);
+    // Update status directly
+    fair.status = status;
+    await fair.save();
 
     res.status(200).json({
       message: "Fair status updated successfully",

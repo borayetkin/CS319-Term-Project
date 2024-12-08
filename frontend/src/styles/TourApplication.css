@@ -185,3 +185,94 @@
     padding: 10px 20px;
   }
 }
+
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+input.error {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+  transition: all 0.2s ease;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Phone input specific styles */
+input[type="tel"] {
+  letter-spacing: 0.5px;
+  font-family: monospace; /* Makes the spacing more consistent */
+}
+
+input[type="tel"]::placeholder {
+  letter-spacing: normal;
+  font-family: inherit;
+}
+
+/* Error states (can be combined with existing error styles) */
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input.error {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideIn 0.3s ease-out forwards;
+}
