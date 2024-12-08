@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch, FiFilter, FiCheck, FiX, FiTrash2, FiEye } from 'react-icons/fi';
 import '../../../styles/CoordinatorPages/ManageFairs.css';
-
+import { useNavigate } from "react-router-dom";
 
 const ManageFairs = () => {
   const [fairs, setFairs] = useState([]);
@@ -12,32 +12,33 @@ const ManageFairs = () => {
   const [filteredFairs, setFilteredFairs] = useState([]);
   const [selectedFair, setSelectedFair] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserProfile(token)
-      
+
     }
   }, []);
 
   useEffect(() => {
     let result = [...fairs];
-    
+
     if (filterStatus !== "all") {
       result = result.filter(fair => fair.status === filterStatus);
     }
-    
+
     if (searchTerm) {
-      result = result.filter(fair => 
+      result = result.filter(fair =>
         fair.schoolName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         fair.organiserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         fair.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         fair.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     setFilteredFairs(result);
   }, [fairs, filterStatus, searchTerm]);
 
@@ -70,7 +71,7 @@ const ManageFairs = () => {
       if (response.ok) {
         const data = await response.json();
         setFairs(data);
-        
+
       } else {
 
         setMessage(`Failed to fetch applications`);
@@ -98,7 +99,7 @@ const ManageFairs = () => {
         setMessage(`Fair application ${status} successfully.`);
         // Refresh the fairs list
         await fetchFairs(token, user);
-        
+
         // Clear the message after 3 seconds
         setTimeout(() => {
           setMessage("");
@@ -138,60 +139,60 @@ const ManageFairs = () => {
 
   const DetailsModal = ({ fair, onClose }) => {
     if (!fair) return null;
-    
+
     return (
       <div className="modal-overlay">
         <div className="modal-content">
           <h2>Fair Details</h2>
-          
+
           <div className="details-grid">
             <div className="detail-item">
               <label>School Name:</label>
               <p>{fair.schoolName || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Organiser Name:</label>
               <p>{fair.organiserName || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>City:</label>
               <p>{fair.city || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Date:</label>
               <p>{new Date(fair.fairDate).toLocaleDateString() || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Time:</label>
               <p>{fair.fairTime || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Email:</label>
               <p>{fair.email || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Phone Number:</label>
               <p>{fair.phoneNumber || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
               <label>Status:</label>
               <p className={`status-badge ${fair.status}`}>
                 {fair.status.charAt(0).toUpperCase() + fair.status.slice(1)}
               </p>
             </div>
-            
+
             <div className="detail-item full-width">
               <label>Full Address:</label>
               <p>{fair.location || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item full-width">
               <label>Additional Notes:</label>
               <p className="notes">{fair.additionalNotes || "No additional notes"}</p>
@@ -234,8 +235,10 @@ const ManageFairs = () => {
   return (
     <div className="applications-container">
       <h1>Manage Fairs</h1>
-      
-      <button 
+      <button onClick={() => navigate("/dashboard/guide-management")} style={{ padding: "10px 20px" , width :"auto" }}>
+          Assign Guides
+      </button>
+      <button
         onClick={sendDebugNotification}
         style={{
           backgroundColor: "#6366f1",
@@ -249,8 +252,9 @@ const ManageFairs = () => {
       >
         Send Debug Notification
       </button>
+
       {message && <p className="message">{message}</p>}
-      
+
       <div className="controls-container">
         <div className="search-bar">
           <FiSearch className="search-icon" />
@@ -305,12 +309,12 @@ const ManageFairs = () => {
               } else {
                 className = "pending";
               }
-              
 
-   
+
+
               return (
                 <tr key={app._id} className={className}>
-                  
+
                     <>
                       <td>{app.schoolName || "N/A"}</td>
                       <td>{app.organiserName || "N/A"}</td>
@@ -361,7 +365,7 @@ const ManageFairs = () => {
                         </div>
                       </td>
                     </>
-                  
+
                 </tr>
               )
             })}

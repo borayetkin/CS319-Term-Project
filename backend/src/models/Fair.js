@@ -51,6 +51,9 @@ const fairSchema = new mongoose.Schema({
       type : Number,
       default : 3
     },
+    assignedUsers: [{
+      type: mongoose.Schema.Types.ObjectId, ref: 'User', default: []
+    }],
 
   });
 

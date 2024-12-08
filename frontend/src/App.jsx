@@ -20,6 +20,7 @@ import CompletedEvents from "./pages/GuidePages/PastEvents";
 import UsersPage from "./pages/CoordinatorPages/DashboardPages/UsersPage";
 import SettingsPage from "./pages/CoordinatorPages/DashboardPages/SettingsPage";
 import ManageFairs from "./pages/CoordinatorPages/DashboardPages/ManageFairs";
+import GuideManagement from "./pages/CoordinatorPages/DashboardPages/GuideManagement";
 import SchoolPriorityPage from "./pages/CoordinatorPages/DashboardPages/SchoolPriorityPage";
 import AdminDashboard from "./pages/CoordinatorPages/AdminDashboard";
 import Navbar from "./components/Navbar";
@@ -70,6 +71,7 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="guides" element={<ViewGuidesPage />} />
           <Route path="ManageFairs" element={<ManageFairs />} />
+          <Route path="guide-management" element ={< GuideManagement/>} />
           <Route path="adduser" element={<AddUser />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="schoolPriority" element={<SchoolPriorityPage />} />
