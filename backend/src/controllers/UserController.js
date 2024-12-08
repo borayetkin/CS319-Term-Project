@@ -18,7 +18,7 @@ const saveUser = async ({ name, email, password, role }) =>{
 }
  exports.checkAuthUser = async (req,res)=>{
   const user = req.user;
-  res.status(200).json("success");
+  res.status(200).json(user);
   // if (user && await User.findById(user.id).select("-password")) {
   //   return res.status(200).json(user)
   // }

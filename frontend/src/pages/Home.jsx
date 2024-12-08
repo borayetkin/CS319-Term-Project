@@ -52,7 +52,10 @@ const Home = () => {
       checkLoggedin(token); // Fetch events if logged in
     }
   }, []);
-  const openEvents = () => {
+  const openEvents = (user) => {
+
+    
+    if (user.role === "coordinator") return window.location.href = (`/applications`)
     window.location.href = (`/events`)
   }
   // Fetch events from the backend
@@ -63,12 +66,13 @@ const Home = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      const user = await response.json();
       if (response.status === 401) {
         setIsLoggedIn(false);
         localStorage.clear();
         window.location.reload();
       } else {
+        openEvents(user);
         setIsLoggedIn(true);
       }
     } catch (error) {
@@ -86,9 +90,7 @@ const Home = () => {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="main-wrapper"
     >
-      {isLoggedIn ? (
-        openEvents()
-      ) : (
+      {
         <>
           <section className="hero-section">
             <div className="hero-content">
@@ -251,7 +253,7 @@ const Home = () => {
             </div>
           </section>
         </>
-      )}
+      }
     </motion.div>
   );
 };

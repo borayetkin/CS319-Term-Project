@@ -128,7 +128,7 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-            {["admin", "advisor","coordinator", "guide"].includes(role) && (
+            {["admin", "advisor", "guide"].includes(role) && (
               <li>
                 <Link
                   to="/events"
