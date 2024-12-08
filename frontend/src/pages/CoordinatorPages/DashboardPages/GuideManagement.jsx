@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import '../../../styles/CoordinatorPages/ManageFairs.css';
+import "../../../styles/CoordinatorPages/GuideManagement.css";
 
 const GuideManagement = () => {
   const [fairs, setFairs] = useState([]);
@@ -52,12 +52,10 @@ const GuideManagement = () => {
     }
   };
 
-  const saveChanges = async (fairId) => {
+  const assignGuide = async (fairId) => {
     const guideToAssign = updatedAssignments[fairId];
-    const guideToRemove = updatedRemovals[fairId];
 
     try {
-      // Assign new guide
       if (guideToAssign) {
         const assignResponse = await fetch(
           `http://localhost:3000/api/fairs/${fairId}/assign-guide`,
@@ -75,11 +73,19 @@ const GuideManagement = () => {
           const errorData = await assignResponse.json();
           throw new Error(errorData.message || "Failed to assign guide");
         }
+        setMessage("Guide assigned successfully!");
+        fetchFairs(); // Refresh the fairs list
       }
+    } catch (error) {
+      setMessage("Error assigning guide: " + error.message);
+    }
+  };
 
-      // Remove selected guide
+  const removeGuide = async (fairId) => {
+    const guideToRemove = updatedRemovals[fairId];
+
+    try {
       if (guideToRemove) {
-        // Assuming you add a similar remove-guide API for fairs
         const removeResponse = await fetch(
           `http://localhost:3000/api/fairs/${fairId}/remove-guide`,
           {
@@ -96,23 +102,30 @@ const GuideManagement = () => {
           const errorData = await removeResponse.json();
           throw new Error(errorData.message || "Failed to remove guide");
         }
+        setMessage("Guide removed successfully!");
+        fetchFairs(); // Refresh the fairs list
       }
-
-      setMessage("Changes saved successfully!");
-      fetchFairs(); // Refresh the fairs list
     } catch (error) {
-      setMessage("Error saving changes: " + error.message);
+      setMessage("Error removing guide: " + error.message);
     }
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+      >
         <h1>Fair Guide Management</h1>
-        <button onClick={() => navigate("/dashboard/ManageFairs")} style={{ padding: "10px 20px" , width :"auto" }}>
-            Waitinig
+        <button
+          onClick={() => navigate("/dashboard/ManageFairs")}
+          style={{ padding: "10px 20px" }}
+        >
+          Waiting
         </button>
-        <button onClick={() => navigate("/completed-fairs")} style={{ padding: "10px 20px" }}>
+        <button
+          onClick={() => navigate("/completed-fairs")}
+          style={{ padding: "10px 20px" }}
+        >
           View Completed Fairs
         </button>
       </div>
@@ -129,7 +142,7 @@ const GuideManagement = () => {
             <th>Assigned Guides</th>
             <th>Assign New Guide</th>
             <th>Remove Guide</th>
-            <th>Save Changes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -143,18 +156,22 @@ const GuideManagement = () => {
               <td>{fair.requiredNumberOfGuides}</td>
               <td>
                 {fair.assignedUsers.map((guide) => (
-                  <div key={guide._id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <div
+                    key={guide._id}
+                    style={{ display: "flex", alignItems: "center", gap: "5px" }}
+                  >
                     <img
                       src={personIconUrl}
-                      alt={guide.name}
-                      title={guide.name}
+                      alt={guide.name || "Guide"}
+                      title={guide.name || "Guide"}
                       style={{ width: "20px", height: "20px", cursor: "pointer" }}
                     />
-                    {guide.name}
+                    {guide.name || "Guide Not Found"}
                   </div>
                 ))}
               </td>
               <td>
+                {/* Assign New Guide Dropdown */}
                 <select
                   onChange={(e) =>
                     setUpdatedAssignments((prev) => ({
@@ -167,21 +184,22 @@ const GuideManagement = () => {
                   <option value="" disabled>
                     Select Guide
                   </option>
-                  {guides
-                    .filter(
-                      (guide) =>
-                        !fair.assignedUsers.some(
-                          (assigned) => assigned._id === guide._id
-                        )
-                    )
-                    .map((guide) => (
-                      <option key={guide._id} value={guide._id}>
-                        {guide.name}
-                      </option>
-                    ))}
+                  {guides.map((guide) => (
+                    <option key={guide._id} value={guide._id}>
+                      {guide.name}
+                    </option>
+                  ))}
                 </select>
+                {/* Assign Button */}
+                <button
+                  style={{ marginTop: "10px", padding: "5px 10px" }}
+                  onClick={() => assignGuide(fair._id)}
+                >
+                  Assign Guide
+                </button>
               </td>
               <td>
+                {/* Remove Guide Dropdown */}
                 <select
                   onChange={(e) =>
                     setUpdatedRemovals((prev) => ({
@@ -200,9 +218,16 @@ const GuideManagement = () => {
                     </option>
                   ))}
                 </select>
+                {/* Remove Button */}
+                <button
+                  style={{ marginTop: "10px", padding: "5px 10px" }}
+                  onClick={() => removeGuide(fair._id)}
+                >
+                  Remove Guide
+                </button>
               </td>
               <td>
-                <button onClick={() => saveChanges(fair._id)}>Save Changes</button>
+                {/* Any additional actions, if required */}
               </td>
             </tr>
           ))}

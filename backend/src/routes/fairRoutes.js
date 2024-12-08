@@ -11,17 +11,19 @@ const {
     getFair,
     updateFairStatus,
     assignGuideToFair,
+    removeGuideFromFair,
     deleteFair,
 } = require("../controllers/FairController.js");
 
 //get
 router.get('/',adminAuth, getFairs);
 router.get('/fair/:id',adminAuth,getFair);
-router.get('/accepted-fairs',getAcceptedFairs)
+router.get('/accepted-fairs',getAcceptedFairs);
 
 //post
 router.post("/create",createFair);
 router.post('/:id/assign-guide', adminAuth, assignGuideToFair);
+router.post('/:id/remove-guide', adminAuth, removeGuideFromFair);
 
 router.patch('/:id/status', adminAuth, updateFairStatus);
 
