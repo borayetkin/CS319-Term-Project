@@ -29,7 +29,6 @@ const EventRow = ({
   };
 
   return (
-
     <tr key={event._id} className="event-row">
       <td>{event.applicant?.name || "N/A"}</td>
       <td>{getEventType()}</td>
@@ -52,36 +51,50 @@ const EventRow = ({
       </td>
       <td>{event.requiredNumberOfGuides || "N/A"}</td>
       <td>{event.status || "N/A"}</td>
-      <td>
-        <Link to={`/events/${event._id}`} className="view-details">
-          View Details
-        </Link>
-        {user && user.role === "advisor" && !eventIsFull && event.assignedAdvisor === user._id &&(
-        <button
-          className="assign-guide-button"
-          onClick={() => assignGuide(event._id)}
-        >
-          Assign Guide
-        </button>
-      )}
-        {user && !checkIfUserHasApplied() && !eventIsFull ? (
-          <button
-            className="join-button"
-            onClick={() => addToAssignedEvents(event._id)}
-          >
-            Apply To Event
-          </button>
-        ): 
-        (user && checkIfUserHasApplied() && !eventIsFull && (
-          <div style={{color: "gray"} }>Applied</div>))}
-        {user && user.assignedEvents?.includes(event._id) && (
-          <button
-            className="unassign-button"
-            onClick={() => removeAssignedEvent(event._id)}
-          >
-            Unassign from Event
-          </button>
-        )}
+      <td className="actions-cell">
+        <div className="action-buttons">
+          <Link to={`/events/${event._id}`} className="action-button view">
+            <i className="fas fa-eye"></i>
+            View Details
+          </Link>
+          
+          {user && user.role === "advisor" && !eventIsFull && event.assignedAdvisor === user._id && (
+            <button
+              className="action-button assign"
+              onClick={() => assignGuide(event._id)}
+            >
+              <i className="fas fa-user-plus"></i>
+              Assign Guide
+            </button>
+          )}
+          
+          {user && !checkIfUserHasApplied() && !eventIsFull ? (
+            <button
+              className="action-button apply"
+              onClick={() => addToAssignedEvents(event._id)}
+            >
+              <i className="fas fa-hand-point-up"></i>
+              Apply
+            </button>
+          ) : (
+            user && checkIfUserHasApplied() && !eventIsFull && (
+              <span className="status-badge applied">
+                <i className="fas fa-check"></i>
+                Applied
+              </span>
+            )
+          )}
+          
+          {user && user.assignedEvents?.includes(event._id) && (
+            <button
+              className="action-button unassign"
+              onClick={() => removeAssignedEvent(event._id)}
+            >
+              <i className="fas fa-user-minus"></i>
+              Unassign
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import '../../styles/GuidePages/Events.css'
+import '../../styles/components/LoadingSpinner.css';
 import EventRow from "../../components/EventRow";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -12,6 +14,7 @@ const Events = () => {
   const [sortOption, setSortOption] = useState("visitDate");
   const [filterType, setFilterType] = useState("");
   const [user, setUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchAcceptedEvents = async () => {
@@ -124,7 +127,9 @@ const Events = () => {
   const sortEvents = (events, option) => {
     return [...events].sort((a, b) => {
       if (option === "name") {
-        return a.name.localeCompare(b.name);
+        const nameA = (a.applicant?.name || "").toLowerCase();
+        const nameB = (b.applicant?.name || "").toLowerCase();
+        return nameA.localeCompare(nameB);
       } else if (option === "visitDate") {
         return new Date(a.visitDate) - new Date(b.visitDate);
       } else if (option === "requiredGuides") {
@@ -134,80 +139,117 @@ const Events = () => {
     });
   };
 
-  const filteredEvents = events.filter((event) =>
-    filterType ? event.__t === filterType : true
-
-  );
+  const filteredEvents = events.filter((event) => {
+    const matchesType = filterType ? event.__t === filterType : true;
+    const matchesSearch = searchTerm.trim() === "" ? true : 
+      (event.applicant?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.__t || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.city || "").toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesType && matchesSearch;
+  });
 
   const sortedEvents = sortEvents(filteredEvents, sortOption);
 
   if (isLoading) {
-    return <div>Loading events...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="error-container">
+        <div className="error-content">
+          <i className="fas fa-exclamation-circle"></i>
+          <h3>Error Loading Events</h3>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
   }
  
   return (
     <div className="events-container">
-      <h1>CONFIRMED EVENTS</h1>
-    {message && <div>{message}</div>}
-      <div className="filter-sort-controls">
-        <div className="filter-controls">
-          <label htmlFor="filterType">Filter by type:</label>
-          <select
-            id="filterType"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="">All</option>
-            <option value="IndividualTour">Individual Tour</option>
-            <option value="SchoolTour">School Tour</option>
-          </select>
+      <div className="events-header">
+        <h1>Confirmed Events</h1>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <i className="fas fa-search search-icon"></i>
         </div>
+      </div>
 
-        <div className="sort-controls">
-          <label htmlFor="sortOption">Sort by:</label>
-          <select
-            id="sortOption"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-          >
-            <option value="visitDate">Visit Date</option>
-            <option value="name">Name</option>
-            <option value="requiredGuides">Required Guides</option>
-          </select>
+      {message && <div className="alert-message">{message}</div>}
+
+      <div className="controls-container">
+        <div className="filter-sort-controls">
+          <div className="control-group">
+            <label htmlFor="filterType">
+              <i className="fas fa-filter"></i> Filter
+            </label>
+            <select
+              id="filterType"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+            >
+              <option value="">All Types</option>
+              <option value="IndividualTour">Individual Tour</option>
+              <option value="SchoolTour">School Tour</option>
+            </select>
+          </div>
+
+          <div className="control-group">
+            <label htmlFor="sortOption">
+              <i className="fas fa-sort"></i> Sort
+            </label>
+            <select
+              id="sortOption"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="visitDate">Visit Date</option>
+              <option value="name">Name</option>
+              <option value="requiredGuides">Required Guides</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {sortedEvents.length > 0 ? (
-        <table className="">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Date</th>
-              <th>Current Guides</th>
-              <th>Required Guides</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedEvents.map((event) => (
-              <EventRow
-              key={event._id}
-              event={event}
-              user={user}
-              addToAssignedEvents={applyToEvent}
-              removeAssignedEvent={removeAssignedEvent}
-            />
-            ))}
-          </tbody>
-        </table>
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Current Guides</th>
+                <th>Required Guides</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedEvents.map((event) => (
+                <EventRow
+                  key={event._id}
+                  event={event}
+                  user={user}
+                  addToAssignedEvents={applyToEvent}
+                  removeAssignedEvent={removeAssignedEvent}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <p>No events found.</p>
+        <div className="no-results">
+          <i className="fas fa-search"></i>
+          <p>No events found</p>
+        </div>
       )}
     </div>
   );
