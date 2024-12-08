@@ -11,6 +11,7 @@ const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -56,20 +57,51 @@ const Navbar = () => {
     }
   };
 
-  const fetchUserProfile = async (token) => {
+  const fetchUserProfile = async () => {
     try {
-      const response = await fetch("/api/auth/profile", {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
+      // First check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      // Check content type
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("Response was not JSON");
+      }
+
+      const data = await response.json();
+      setUser(data);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("Profile fetch error:", error);
+      // Handle specific error types
+      if (error instanceof SyntaxError) {
+        // JSON parse error
+        setMessage("Server sent invalid data");
+      } else if (error instanceof TypeError) {
+        // Network or other errors
+        setMessage("Network error or invalid response format");
+      } else {
+        setMessage(`Error: ${error.message}`);
+      }
+      
+      // Clear token if it's invalid or expired
+      if (error.message.includes("401")) {
+        localStorage.removeItem("token");
+        setUser(null);
+      }
     }
   };
 

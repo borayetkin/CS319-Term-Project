@@ -8,68 +8,50 @@ const EventRow = ({
   addToAssignedEvents,
   removeAssignedEvent,
 }) => {
+  if (!event) return null;
 
   const personIconUrl =
   "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
-  const eventIsFull = event.assignedUsers.length >= event.requiredNumberOfGuides
+  const eventIsFull = event.assignedUsers?.length >= event.requiredNumberOfGuides;
   const assignGuide = (eventID) => {
     window.location.href = `/events/${eventID}?assignGuide=true`;
     
   };
   const checkIfUserHasApplied = () => {
-    const appliedUserIds = event.appliedUsers.map((user) => user._id);
-    return appliedUserIds.includes(user._id);
-  }
+    return event.appliedUsers?.some(appliedUser => appliedUser._id === user?._id);
+  };
+
+  // Helper function to determine event type
+  const getEventType = () => {
+    if (event.__t === "SchoolTour") return "School Tour";
+    if (event.__t === "IndividualTour") return "Individual Tour";
+    return event.typeStr || "N/A"; // Fallback to typeStr if available
+  };
+
   return (
 
     <tr key={event._id} className="event-row">
-      <td>{event.applicant.name}</td>
-      <td>{event.__t.replace(/([a-z])([A-Z])/g, "$1 $2")}</td>
-      <td>{new Date(event.visitDate).toLocaleDateString()}</td>
+      <td>{event.applicant?.name || "N/A"}</td>
+      <td>{getEventType()}</td>
       <td>
-                <div style={{ display: "flex", gap: "5px" }}>
-                  {event.assignedUsers.map((assignee) => (
-                    <div
-                      key={assignee._id}
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <img
-                        src={personIconUrl}
-                        alt={assignee.name}
-                        title={assignee.name}
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                      <span
-                        style={{
-                          position: "absolute",
-                          bottom: "100%",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          marginBottom: "5px",
-                          padding: "5px",
-                          backgroundColor: "rgba(0, 0, 0, 0.7)",
-                          color: "#fff",
-                          borderRadius: "5px",
-                          fontSize: "12px",
-                          whiteSpace: "nowrap",
-                          opacity: "0",
-                          transition: "opacity 0.2s",
-                          pointerEvents: "none",
-                        }}
-                        className="tooltip"
-                      >
-                        {assignee.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </td>
-      <td>{event.requiredNumberOfGuides}</td>
-      <td>{event.status}</td>
+        {event.visitDate ? new Date(event.visitDate).toLocaleDateString() : "N/A"}
+      </td>
+      <td>
+        {event.assignedUsers?.length || 0}
+        {event.assignedUsers?.map((user) => (
+          <div key={user._id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <img
+              src={personIconUrl}
+              alt={user.name}
+              title={user.name}
+              style={{ width: "20px", height: "20px", cursor: "pointer" }}
+            />
+            {user.name}
+          </div>
+        ))}
+      </td>
+      <td>{event.requiredNumberOfGuides || "N/A"}</td>
+      <td>{event.status || "N/A"}</td>
       <td>
         <Link to={`/events/${event._id}`} className="view-details">
           View Details
@@ -92,7 +74,7 @@ const EventRow = ({
         ): 
         (user && checkIfUserHasApplied() && !eventIsFull && (
           <div style={{color: "gray"} }>Applied</div>))}
-        {user && user.assignedEvents.includes(event._id) && (
+        {user && user.assignedEvents?.includes(event._id) && (
           <button
             className="unassign-button"
             onClick={() => removeAssignedEvent(event._id)}
