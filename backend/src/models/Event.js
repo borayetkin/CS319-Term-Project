@@ -2,14 +2,9 @@ const mongoose = require("mongoose");
 const User = require('./User');
 const Applicant = require('./Applicant');
 const eventSchema = new mongoose.Schema({
-  applicant: {
-    applicantID : {type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'},
-    name:{
-      type: String,
-      required: true,
-    }
+  applicant:  {type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'},
 // For now, will be updated with a new applicant class
-  },
+
   visitDate : {
     type: Date,
     required : true
@@ -19,6 +14,9 @@ const eventSchema = new mongoose.Schema({
     required : true
   },
   assignedUsers: [{
+    type: mongoose.Schema.Types.ObjectId, ref: 'User', default: []
+  }],
+  appliedUsers: [{
     type: mongoose.Schema.Types.ObjectId, ref: 'User', default: []
   }],
   requiredNumberOfGuides : {
@@ -110,7 +108,7 @@ eventSchema.methods.getApplicant = function () {
 eventSchema.methods.addToApplicantEvents = function () {
 
   
-  return Applicant.findById(this.applicant.applicantID)
+  return Applicant.findById(this.applicant)
     .then(applicant => {
       if (!applicant) {
         return Promise.reject(new Error('Applicant not found'));

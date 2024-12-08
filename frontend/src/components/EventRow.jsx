@@ -16,6 +16,10 @@ const EventRow = ({
     window.location.href = `/events/${eventID}?assignGuide=true`;
     
   };
+  const checkIfUserHasApplied = () => {
+    const appliedUserIds = event.appliedUsers.map((user) => user._id);
+    return appliedUserIds.includes(user._id);
+  }
   return (
 
     <tr key={event._id} className="event-row">
@@ -78,14 +82,16 @@ const EventRow = ({
           Assign Guide
         </button>
       )}
-        {user && !user.assignedEvents.includes(event._id) && !eventIsFull&& (
+        {user && !checkIfUserHasApplied() && !eventIsFull ? (
           <button
             className="join-button"
             onClick={() => addToAssignedEvents(event._id)}
           >
-            Join Event
+            Apply To Event
           </button>
-        )}
+        ): 
+        (user && checkIfUserHasApplied() && !eventIsFull && (
+          <div style={{color: "gray"} }>Applied</div>))}
         {user && user.assignedEvents.includes(event._id) && (
           <button
             className="unassign-button"

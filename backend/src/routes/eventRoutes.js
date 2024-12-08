@@ -23,7 +23,7 @@ const {
   markEventAsCompleted,
   takeBackEventAction,
   confirmEventAction,
-
+  applyToEvent,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -53,6 +53,7 @@ router.post("/confirm-action/:eventId", advisorAuth, confirmEventAction);
 // Routes for assigning roles
 router.post("/assign-advisor", auth, assignAdvisorToTour);
 router.post("/assign-guide", auth, assignGuideToEvent);
+router.post("/apply", auth, applyToEvent);
 router.post("/remove-guide", auth, removeAssignedGuideFromEvent);
 
 // Route for fetching application counts on the date&time

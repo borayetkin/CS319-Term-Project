@@ -5,75 +5,11 @@ const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
 // Get events with status "accepted"
-const setEventsWithApplicantData = async (events) => {
-  const applicants = await Applicant.find();
-  const applicantMap = applicants.reduce((map, applicant) => {
-    map[applicant._id] = applicant;
-    return map;
-  }, {});
 
-  for (let i = 0; i < events.length; i++) {
-    events[i] = events[i].toJSON();
-    let application = events[i];
-    const applicantData = applicantMap[application.applicant.applicantID];
-    if (applicantData) {
-      application.applicant = {
-        ...application.applicant,
-        name: applicantData.name,
-        email: applicantData.email,
-        phoneNumber: applicantData.phoneNumber,
-      };
-      if (applicantData.schoolID) {
-        application.applicant.schoolID = applicantData.schoolID;
-      }
-      if (applicantData.priority) {
-        application.applicant.priority = applicantData.priority;
-     }}
-  }
-  return events;
-};
-const setEventsWithApplicantDataAndUser = async (events) => {
-  const users = await User.find();
-  const userMap = users.reduce((map, user) => {
-    map[user._id] = user;
-    return map;
-  }, {});
-  const applicants = await Applicant.find();
-  const applicantMap = applicants.reduce((map, applicant) => {
-    map[applicant._id] = applicant;
-    return map;
-  }, {});
-
-  for (let i = 0; i < events.length; i++) {
-    events[i] = events[i].toJSON();
-    let application = events[i];
-    const applicantData = applicantMap[application.applicant.applicantID];
-    if (applicantData) {
-      application.applicant = {
-        ...application.applicant,
-        name: applicantData.name,
-        email: applicantData.email,
-        phoneNumber: applicantData.phoneNumber,
-      };
-    }
-    application.assignedUsers = application.assignedUsers.map((userId) => {
-      const userData = userMap[userId];
-      return userData
-        ? {
-            _id: userId,
-            name: userData.name,
-            email: userData.email,
-            phoneNumber: userData.phoneNumber,
-          }
-        : { name: "N/A", email: "N/A", phoneNumber: "N/A" };
-    });
-  }
-  return events;
-}
 exports.getAcceptedEvents = async (req, res) => {
   try {
-    const acceptedEvents = await Event.find({ status: "accepted" });
-    const events = await setEventsWithApplicantDataAndUser(acceptedEvents);
+    const acceptedEvents = await Event.find({ status: "accepted" }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+
     res.status(200).json(acceptedEvents);
   } catch (error) {
     console.error(error);
@@ -89,9 +25,9 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({
         _id: { $in: user2.assignedEvents },
-      });
-      const events = await setEventsWithApplicantData(acceptedEvents);
-      res.status(200).json(events);
+      }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+    
+      res.status(200).json(acceptedEvents);
     } else {
       res.status(400).json({ message: "Access Forbidden" });
     }
@@ -105,9 +41,9 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
 
     if (userparams.role === "advisor") {
       const user2 = await User.findById(userparams.id);
-      const acceptedEvents = await Event.find({ weekday: user2.assignedDay });
-      const events = await setEventsWithApplicantData(acceptedEvents);
-      res.status(200).json(events);
+      const acceptedEvents = await Event.find({ weekday: user2.assignedDay }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+
+      res.status(200).json(acceptedEvents);
     } else {
       res.status(401).json({ error: "Access Denied" });
     }
@@ -244,25 +180,22 @@ exports.getAllEvents = async (req, res) => {
         query.status = "accepted";
       }
 
-      const events = await Event.find(query);
-      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+      const events = await Event.find(query).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
 
-      return res.status(200).json(eventsWithApplicantData);
+      return res.status(200).json(events);
     }
 
     // If accepted events are requested
     if (accepted === "true") {
-      const events = await Event.find({ status: "accepted" });
-      const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
+      const events = await Event.find({ status: "accepted" }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
 
-      return res.status(200).json(eventsWithApplicantData);
+      return res.status(200).json(events);
     }
 
     // Default case: Fetch all events
-    const events = await Event.find();
-    const eventsWithApplicantData = await setEventsWithApplicantData(events);
+    const events = await Event.find().populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
 
-    return res.status(200).json(eventsWithApplicantData);
+    return res.status(200).json(events);
   } catch (error) {
     console.error("Error in getAllEvents:", error);
     return res.status(500).json({ message: "Server error", error: error.message });
@@ -273,10 +206,10 @@ exports.getAllEvents = async (req, res) => {
 //gets completed events
 exports.getCompletedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: { $in: ["completed-non-verified", "completed-verified","canceled-verified","canceled-non-verified"] } });
+    const events = await Event.find({ status: { $in: ["completed-non-verified", "completed-verified","canceled-verified","canceled-non-verified"] } }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
       
-    const eventsWithApplicantData = await setEventsWithApplicantDataAndUser(events);
-    res.status(200).json(eventsWithApplicantData);
+
+    res.status(200).json(events);
   } catch (error) {
     res
       .status(500)
@@ -291,36 +224,9 @@ exports.getEvent = async (req, res) => {
     const { id } = req.params;
 
     // Fetch the event by ID
-    let event = await Event.findById(id);
+    let event = await Event.findById(id).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
-    }
-
-    event = event.toJSON();
-
-    // Fetch the assigned advisor (if available)
-    if (event.assignedAdvisor) {
-      const advisor = await User.findById(event.assignedAdvisor);
-      event.assignedAdvisor = advisor
-        ? advisor.toJSON()
-        : { name: "N/A", email: "N/A" };
-    }
-
-    // Fetch the applicant details (if available)
-    const applicantData = await Applicant.findById(event.applicant.applicantID);
-    if (applicantData) {
-      event.applicant = {
-        ...event.applicant,
-        name: applicantData.name,
-        email: applicantData.email,
-        phoneNumber: applicantData.phoneNumber,
-      };
-    } else {
-      event.applicant = {
-        name: "N/A",
-        email: "N/A",
-        phoneNumber: "N/A",
-      };
     }
 
     
@@ -664,3 +570,36 @@ exports.confirmEventAction = async (req, res) => {
     });
   }
 };
+exports. applyToEvent = async (req, res) => {
+  try {
+
+    const { eventID } = req.body;
+    const { userrole, userid } = req.headers;
+    const user = await User.findById(userid || req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const event = await Event.findById(eventID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (event.appliedUsers.includes(userid)) {
+      return res
+        .status(400)
+        .json({ message: "Guide is already assigned to this event." });
+    }
+
+    // Assign the guide to the event
+    event.appliedUsers.push(userid);
+   
+
+    await event.save();
+
+    // Add the event to the guide's list of assigned events
+    res.status(200).json({ message: "Applied to event successfully" });
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}

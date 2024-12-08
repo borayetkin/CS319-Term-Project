@@ -66,13 +66,13 @@ const Events = () => {
       setMessage("Error fetching user profile: " + error.message);
     }
   };
-  const addToAssignedEvents = async(eventId) =>{
+  const applyToEvent = async(eventId) =>{
     try {
       const token = localStorage.getItem("token");
 
       
       const response = await fetch(
-        `http://localhost:3000/api/events/assign-guide`,
+        `http://localhost:3000/api/events/apply`,
         {
           method: "POST",
           headers: {
@@ -200,7 +200,7 @@ const Events = () => {
               key={event._id}
               event={event}
               user={user}
-              addToAssignedEvents={addToAssignedEvents}
+              addToAssignedEvents={applyToEvent}
               removeAssignedEvent={removeAssignedEvent}
             />
             ))}
