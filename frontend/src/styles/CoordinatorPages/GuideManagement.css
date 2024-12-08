@@ -1,0 +1,148 @@
+/* Container */
+.page-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* Assignment Form */
+.assignment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.assignment-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.assignment-form select,
+.assignment-form input {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 1rem;
+  background: #f8f9fa;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.assignment-form select:focus,
+.assignment-form input:focus {
+  border-color: #007bff;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Buttons */
+.assignment-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.assignment-buttons .btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.assignment-buttons .btn.assign {
+  background-color: #28a745;
+  color: white;
+}
+
+.assignment-buttons .btn.assign:hover {
+  background-color: #218838;
+}
+
+.assignment-buttons .btn.remove {
+  background-color: #dc3545;
+  color: white;
+}
+
+.assignment-buttons .btn.remove:hover {
+  background-color: #c82333;
+}
+
+/* Table Styles */
+.assignment-table {
+  width: 100%;
+  margin-top: 2rem;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-table th,
+.assignment-table td {
+  padding: 1rem;
+  text-align: left;
+  border: 1px solid #dee2e6;
+}
+
+.assignment-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.assignment-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.assignment-table tr:hover {
+  background: #e9ecef;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+
+  .assignment-form {
+    padding: 1rem;
+  }
+
+  .assignment-buttons {
+    flex-direction: column;
+  }
+
+  .assignment-buttons .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

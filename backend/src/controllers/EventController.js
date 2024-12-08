@@ -380,7 +380,7 @@ exports.assignGuideToEvent = async (req, res) => {
 
     // Add the event to the guide's list of assigned events
     try {
-      await guide.addAssignedEvent(eventID); // Assuming this method exists in your User model
+      await guide.addAssignedEvent(eventID);
       await guide.save();
     } catch (error) {
       return res

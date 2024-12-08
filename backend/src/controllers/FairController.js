@@ -56,7 +56,9 @@ exports.createFair = async (req, res) => {
 // Get all fairs
 exports.getFairs = async (req, res) => {
   try {
-    const fairs = await Fair.find();
+    const fairs = await Fair.find()
+      .populate('assignedUsers', 'name') // Populate the guide's name
+      .exec();
     res.status(200).json(fairs);
   } catch (error) {
     console.error("Error fetching fairs:", error);
@@ -117,7 +119,7 @@ exports.updateFairStatus = async (req, res) => {
     if (status === 'accepted') {
       // Get all guides
       const guides = await User.find({ role: 'guide' });
-      
+
       // Create notifications for all guides
       const notifications = guides.map(guide => ({
         recipient: guide._id,
@@ -142,7 +144,8 @@ exports.updateFairStatus = async (req, res) => {
 // Assign guide to a fair
 exports.assignGuideToFair = async (req, res) => {
   try {
-    const { userID, fairID } = req.body;
+    const { id: fairID } = req.params;
+    const { userID } = req.body;
 
     const fair = await Fair.findById(fairID);
     if (!fair) {
@@ -154,31 +157,59 @@ exports.assignGuideToFair = async (req, res) => {
       return res.status(400).json({ message: "Invalid guide ID" });
     }
 
-    if (fair.assignedUsers && fair.assignedUsers.length >= fair.requiredNumberOfGuides) {
-      return res.status(400).json({
-        message: `Cannot assign more than ${fair.requiredNumberOfGuides} guide(s) to this fair.`,
-      });
-    }
-
     if (fair.assignedUsers.includes(userID)) {
-      return res.status(400).json({ message: "Guide is already assigned to this fair." });
+      return res.status(400).json({ message: "Guide already assigned." });
     }
 
-    fair.assignedUsers = [...(fair.assignedUsers || []), userID];
+    if (fair.assignedUsers.length >= fair.requiredNumberOfGuides) {
+      return res.status(400).json({ message: "Required number of guides already assigned." });
+    }
+
+    fair.assignedUsers.push(userID);
     await fair.save();
 
-    if (guide.addAssignedEvent) {
+    try {
       await guide.addAssignedEvent(fairID);
       await guide.save();
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "Failed to assign guide", error: error.message });
     }
 
-    res.status(200).json({
-      message: "Guide assigned successfully",
-      fair,
-    });
+    res.status(200).json({ message: "Guide assigned successfully.", fair });
   } catch (error) {
-    console.error("Error assigning guide to fair:", error);
+    console.error("Error assigning guide:", error);
     res.status(500).json({ message: "Failed to assign guide", error: error.message });
+  }
+};
+
+// Remove guide from a fair
+exports.removeGuideFromFair = async (req, res) => {
+  try {
+    const { id: fairID } = req.params;
+    const { userID } = req.body;
+
+    const fair = await Fair.findById(fairID);
+    if (!fair) {
+      return res.status(404).json({ message: "Fair not found" });
+    }
+
+    if (!fair.assignedUsers.includes(userID)) {
+      return res.status(400).json({ message: "Guide is not assigned to this fair." });
+    }
+
+    fair.assignedUsers = fair.assignedUsers.filter(
+      assignedUserID => assignedUserID.toString() !== userID
+    );
+    await guide.removeAssignedEvent(fairID);
+    await fair.save();
+    await guide.save();
+
+    res.status(200).json({ message: "Guide removed successfully.", fair });
+  } catch (error) {
+    console.error("Error removing guide:", error);
+    res.status(500).json({ message: "Failed to remove guide", error: error.message });
   }
 };
 
