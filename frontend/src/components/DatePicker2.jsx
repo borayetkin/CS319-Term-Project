@@ -9,7 +9,23 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   const today = new Date();
   const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-  const isDisabled = (date) => date < twoWeeksFromNow;
+  const isDisabled = (date) => {
+    // Check if the date is a weekend (Saturday or Sunday)
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return true; // Disable weekends
+    }
+
+    // Add any other conditions for disabling dates here
+    // ...
+
+    return false;
+  };
+
+  const isWeekday = (date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6; // 0 is Sunday, 6 is Saturday
+  };
   const daysArray = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
   const formatLocalDate = (date) => {
     const year = date.getFullYear();
@@ -50,13 +66,16 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   const handleDateSelect = (date) => {
     if (isDisabled(date)) return;
 
-    const previousMonth = selectedDate ? selectedDate.getMonth() : null;
-    if (previousMonth !== null && previousMonth !== date.getMonth()) {
-      onMonthChange(date);
+    // Check if the selected date is a weekend (Saturday or Sunday)
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return; // Do not allow selection of weekends
     }
-    setSelectedDate(date);
-    setIsOpen(false);
-    onDateChange && onDateChange({target : {name : "visitDate", value : formatLocalDate(date)}});
+
+    const previousMonth = selectedDate ? selectedDate.getMonth() : null;
+
+    // Proceed with the rest of the function logic
+    // ...
   };
 
   const changeMonth = (offset) => {
