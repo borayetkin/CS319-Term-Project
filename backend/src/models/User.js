@@ -47,6 +47,19 @@ const userSchema = new mongoose.Schema({
   completedEvents: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] },
   ],
+  phone: {
+    type: String,
+    default: "",
+  },
+  department: {
+    type: String,
+    default: "",
+  },
+  year: {
+    type: Number,
+    min: 1,
+    max: 4,
+  },
 });
 userSchema.methods.updateAssignedDay = function updateAssignedDay(day) {
   this.assignedDay = day;
@@ -98,5 +111,10 @@ userSchema.methods.completeEvent = function (eventId) {
 userSchema.methods.applyToFair = function (fairID){
     // To be implemented
 }
+userSchema.methods.updateContactInfo = function(email, phone) {
+  if (email) this.email = email;
+  if (phone) this.phone = phone;
+  return this.save();
+};
 const User = mongoose.model("User", userSchema);
 module.exports = User;

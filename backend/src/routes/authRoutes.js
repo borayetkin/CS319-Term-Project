@@ -14,6 +14,9 @@ const adminAuth = require("../middleware/adminMiddleware"); // Middleware for ad
 const advisorAuth = require("../middleware/advisorMiddleware");
 const router = express.Router();
 
+const userController = require('../controllers/UserController');
+
+
 // Login route
 router.post("/login", loginUser);
 
@@ -32,3 +35,5 @@ router.get("/guides", auth, getAllGuides);
 
 router.get("/user-search",auth,searchUsers)
 module.exports = router;
+
+router.put('/update-contact', auth, userController.updateContactInfo);

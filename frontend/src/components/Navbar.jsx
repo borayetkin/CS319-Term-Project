@@ -171,8 +171,8 @@ const Navbar = () => {
             {["guide"].includes(role) && (
               <li>
                 <Link
-                  to="/guide/notifications"
-                  className={isActive("/guide/notifications") ? "active" : ""}
+                  to="/notifications"
+                  className={isActive("/notifications") ? "active" : ""}
                 >
                   <div className="notification-icon">
                     <FiBell size={20} />

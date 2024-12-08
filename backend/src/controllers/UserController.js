@@ -278,3 +278,48 @@ exports.searchUsers = async (req, res) => {
     res.status(500).json({ message: "Server error while searching users." });
   }
 };
+
+exports.updateContactInfo = async (req, res) => {
+  try {
+    const { email, phone } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await user.updateContactInfo(email, phone);
+    
+    const updatedUser = await User.findById(req.user.id).select("-password");
+    res.json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while updating contact info" });
+  }
+};
+
+exports.getGuidesWithDetails = async (req, res) => {
+  try {
+    const guides = await User.find({ 
+      role: "guide" 
+    }).select("-password")
+      .populate('assignedEvents')
+      .lean();
+
+    const guidesWithStats = await Promise.all(guides.map(async (guide) => {
+      const completedTours = guide.assignedEvents?.filter(event => 
+        event.status.includes('completed')
+      ).length || 0;
+
+      return {
+        ...guide,
+        toursCompleted: completedTours
+      };
+    }));
+
+    res.status(200).json(guidesWithStats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch guides", error: err.message });
+  }
+};

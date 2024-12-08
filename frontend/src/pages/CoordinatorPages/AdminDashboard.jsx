@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import "../../styles/CoordinatorPages/AdminDashboard.css";
-import { RiDashboardLine, RiCalendarEventLine, RiUserLine, RiListCheck, RiSettings4Line } from "react-icons/ri";
+import { RiDashboardLine, RiCalendarEventLine, RiUserLine, RiListCheck, RiSettings4Line, RiTeamLine } from "react-icons/ri";
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -24,6 +24,11 @@ const AdminDashboard = () => {
           <li>
             <Link to="/dashboard/users" className={location.pathname.includes("/users") ? "active" : ""}>
               <RiUserLine style={{marginRight: "12px"}} /> View Users
+            </Link>
+          </li>
+          <li>
+            <Link to="/dashboard/guides" className={location.pathname.includes("/guides") ? "active" : ""}>
+              <RiTeamLine style={{marginRight: "12px"}} /> View Guides
             </Link>
           </li>
           <li>

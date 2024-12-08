@@ -364,3 +364,134 @@
     color: #f3f4f6;
   }
 } 
+
+/* Edit Form Styles */
+.edit-form {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.info-card.editable input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.info-card.editable input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.edit-button {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.edit-button:hover {
+  background-color: #4338ca;
+}
+
+.edit-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.save-button,
+.cancel-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.save-button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #4338ca;
+}
+
+.cancel-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.cancel-button:hover {
+  background-color: #e5e7eb;
+}
+
+.update-message {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.update-message.success {
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode support for edit form */
+@media (prefers-color-scheme: dark) {
+  .info-card.editable input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+  }
+
+  .cancel-button {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .cancel-button:hover {
+    background-color: #4b5563;
+  }
+
+  .update-message.success {
+    background-color: #064e3b;
+    color: #a7f3d0;
+    border-color: #059669;
+  }
+} 

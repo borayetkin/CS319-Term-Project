@@ -29,6 +29,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import AddUser from "./pages/CoordinatorPages/DashboardPages/AddUser";
 import FairApplication from "./pages/FairApplication";
 import DashboardHome from "./pages/CoordinatorPages/DashboardPages/DashboardHome";
+import NotificationsPage from './pages/GuidePages/Notifications';
+import ViewGuidesPage from "./pages/CoordinatorPages/DashboardPages/ViewGuidesPage";
 
 function App() {
   return (
@@ -66,6 +68,7 @@ function App() {
         >
           <Route index element={<DashboardHome />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="guides" element={<ViewGuidesPage />} />
           <Route path="ManageFairs" element={<ManageFairs />} />
           <Route path="adduser" element={<AddUser />} />
           <Route path="settings" element={<SettingsPage />} />
@@ -145,6 +148,7 @@ function App() {
           }
         />
         <Route path="/events/:id" element={<Event />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         {/* Catch-all Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
