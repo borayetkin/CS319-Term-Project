@@ -7,6 +7,7 @@ const adminAuth = require("../middleware/adminMiddleware");
 const {
     createFair,
     getFairs,
+    getAcceptedFairs,
     getFair,
     updateFairStatus,
     assignGuideToFair,
@@ -16,6 +17,7 @@ const {
 //get
 router.get('/',adminAuth, getFairs);
 router.get('/fair/:id',adminAuth,getFair);
+router.get('/accepted-fairs',getAcceptedFairs)
 
 //post
 router.post("/create",createFair);

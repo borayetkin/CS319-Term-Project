@@ -64,6 +64,21 @@ exports.getFairs = async (req, res) => {
   }
 };
 
+exports.getAcceptedFairs = async (req, res) => {
+  try {
+    const acceptedFairs = await Fair.find({ status: "accepted" });
+
+    if (acceptedFairs.length === 0) {
+      return res.status(404).json({ message: "No accepted fairs found." });
+    }
+
+    res.status(200).json(acceptedFairs);
+  } catch (error) {
+    console.error("Error fetching accepted fairs:", error);
+    res.status(500).json({ message: "Failed to fetch accepted fairs", error: error.message });
+  }
+};
+
 // Get a specific fair by ID
 exports.getFair = async (req, res) => {
   try {
@@ -186,3 +201,5 @@ exports.deleteFair = async (req, res) => {
     res.status(500).json({ message: "Failed to delete fair", error: error.message });
   }
 };
+
+
