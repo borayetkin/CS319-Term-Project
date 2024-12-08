@@ -489,7 +489,7 @@ const Applications = () => {
                               <button
                                 className="accept"
                                 onClick={() =>
-                                  handleAction(app._id, "accepted")
+                                  handleAction(app._id, app,"accepted")
                                 }
                                 title="Accept"
                               >
@@ -498,7 +498,7 @@ const Applications = () => {
                               <button
                                 className="decline"
                                 onClick={() =>
-                                  handleAction(app._id, "rejected")
+                                  handleAction(app._id, app,"rejected")
                                 }
                                 title="Decline"
                               >
