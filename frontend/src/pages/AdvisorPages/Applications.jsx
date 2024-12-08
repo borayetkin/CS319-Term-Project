@@ -67,7 +67,7 @@ const Applications = () => {
     }
   };
 
-  const handleAction = async (eventId, status) => {
+  const handleAction = async (eventId,event, status) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -80,7 +80,7 @@ const Applications = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status ,event }),
         }
       );
 
@@ -438,7 +438,7 @@ const Applications = () => {
                               <button
                                 className="accept"
                                 onClick={() =>
-                                  handleAction(app._id, "accepted")
+                                  handleAction(app._id,app, "accepted")
                                 }
                                 title="Accept"
                               >
@@ -447,7 +447,7 @@ const Applications = () => {
                               <button
                                 className="decline"
                                 onClick={() =>
-                                  handleAction(app._id, "rejected")
+                                  handleAction(app._id,app, "rejected")
                                 }
                                 title="Decline"
                               >

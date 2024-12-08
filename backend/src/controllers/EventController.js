@@ -236,11 +236,34 @@ exports.getEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+const acceptTourApplicationByCoordinator = async (req, res) => {
+  try {
+
+  
+    const { eventId } = req.params;
+    const { userrole, userid } = req.headers;
+    const weeakday = req.body.event.weekday;
+    const advisors = await Advisor.find({ assignedDay: weeakday });
+    const randomAdvisor = advisors[Math.floor(Math.random() * advisors.length)];
+    if (!randomAdvisor) {
+
+      return res.status(404).json({ message: "No Advisor with the weekday found" });
+    }
+
+    await randomAdvisor.acceptTourApplication(eventId);
+    await randomAdvisor.save();
+    return res.status(200).json({ message: "Tour application accepted and a random advisor has been assigned!" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
 const acceptTourApplication = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { userrole, userid } = req.headers;
-    if (userrole !== "advisor") {
+   if (userrole === "coordinator") {
+      return await acceptTourApplicationByCoordinator(req, res);
+    } else if (userrole !== "advisor") {
       return res.status(401).json({
         message: "Only advisors can accept tour applications",
       });
@@ -250,9 +273,9 @@ const acceptTourApplication = async (req, res) => {
     await advisor.acceptTourApplication(eventId);
     await advisor.save();
 
-    res.status(200).json({ message: "Tour application accepted" });
+    return res.status(200).json({ message: "Tour application accepted" });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 }
 // Update an event
@@ -261,7 +284,7 @@ exports.updateEvent = async (req, res) => {
     const { userrole, userid } = req.headers;
     const { eventId } = req.params;
     if (req.body.status && req.body.status == "accepted") {
-      acceptTourApplication(req, res);
+      await acceptTourApplication(req, res);
     } else {
       const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
         new: true,
