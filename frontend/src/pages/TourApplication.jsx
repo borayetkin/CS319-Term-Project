@@ -13,7 +13,7 @@ const TourApplication = () => {
     visitTime: "",
     city: "",
     district: "",
-    studentCount: "",
+    studentCount: "", 
     schoolName: "",
     additionalNotes: "",
     studentHighSchool: "",
@@ -224,7 +224,7 @@ const TourApplication = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          applicant: data,
+          applicant: data._id,
           ...requestData,
         }),
       });
