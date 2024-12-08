@@ -27,7 +27,9 @@ const ManageGuides = () => {
 
       if (response.ok) {
         const eventsData = await response.json();
-        setEvents(eventsData);  
+        setEvents(eventsData);
+        const guides = eventsData.map((event) => event.appliedUsers);
+        setGuides(guides);  
       } else {
         setMessage("Failed to fetch events.");
       }
@@ -43,7 +45,8 @@ const ManageGuides = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setGuides(data);
+        
+        //setGuides(data);
       } else {
         setMessage("Failed to fetch guides.");
       }
@@ -51,7 +54,14 @@ const ManageGuides = () => {
       setMessage("Error fetching guides: " + error.message);
     }
   };
+  const cleaChoices = () => {
+    setUpdatedAssignments({});
+    setUpdatedRemovals({});
 
+  }
+  const checkIfGuideHasBeenAssigned = (event, guide) => {
+    return event.assignedUsers.some((assignedGuide) => assignedGuide._id === guide._id);
+  };
   const saveChanges = async (eventId) => {
     const guideToAssign = updatedAssignments[eventId];
 
@@ -80,6 +90,7 @@ const ManageGuides = () => {
           const errorData = await assignResponse.json();
           throw new Error(errorData.message || "Failed to assign guide");
         }
+        cleaChoices();
       }
 
       // Remove selected guide
@@ -170,18 +181,12 @@ const ManageGuides = () => {
                   <option value="" disabled>
                     Select Guide
                   </option>
-                  {guides
-                    .filter(
-                      (guide) =>
-                        !event.assignedUsers.some(
-                          (assigned) => assigned._id === guide._id
-                        )
-                    )
-                    .map((guide) => (
-                      <option key={guide._id} value={guide._id}>
-                        {guide.name}
-                      </option>
-                    ))}
+                  {guides[index].map((guide) => (
+                    checkIfGuideHasBeenAssigned(event,guide) ? null :
+                    <option key={guide._id} value={guide._id}>
+                      {guide.name}
+                    </option>
+                  ))}
                 </select>
               </td>
               <td>

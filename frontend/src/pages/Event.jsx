@@ -237,19 +237,8 @@ const Event = ({assignGuideOpened = false}) => {
               )}
             </div>
           ))}
-        {loggedinUser && loggedinUser.role === "advisor" && event.assignedAdvisor._id === loggedinUser._id &&(
-          <button className="add-user-button" onClick={() => setShowUserSearch(true)}>
-            Add User
-          </button>
-        )}
+        
       </div>
-      {showUserSearch && event.assignedAdvisor._id === loggedinUser._id &&(
-        <UserSearch
-          userType="guide"
-          onClose={() => setShowUserSearch(false)}
-          onSelectUser={handleAddUser}
-        />
-      )}
     </div>)}
     </>
   )
