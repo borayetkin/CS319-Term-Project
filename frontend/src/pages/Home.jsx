@@ -119,7 +119,7 @@ const Home = () => {
                   üniversitenin sunduğu fırsatları ve etkinlikleri yerinde
                   görebilirsiniz.
                 </p>
-                <div className="action-buttons">
+               
                   <button 
                     className="action-button primary"
                     onClick={(e) => handleNavigation('/apply', e)}
@@ -127,7 +127,7 @@ const Home = () => {
                     <span className="button-text">Ziyaret Başvurusu</span>
                     <span className="button-icon">→</span>
                   </button>
-                </div>
+          
               </div>
 
               <div className="action-card">
