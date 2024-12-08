@@ -11,6 +11,8 @@ const Applications = () => {
   const [tourType, setTourType] = useState("SchoolTour");
   const [slideIndex, setSlideIndex] = useState(0); // New state for slider
   const [sortOption, setSortOption] = useState("default");
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState(null);
 
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -117,8 +119,6 @@ const Applications = () => {
     }
   };
 
- 
-
   const getFilteredAndSortedApplications = () => {
     let filtered = applications.filter((app) => {
       if (filterStatus !== "all" && app.status !== filterStatus) {
@@ -178,8 +178,9 @@ const Applications = () => {
 
   const filteredApplications = getFilteredAndSortedApplications();
 
-  const handleViewDetails = (appId) => {
-    navigate(`/application/${appId}`); // Redirect to the details page
+  const handleViewDetails = (app) => {
+    setSelectedApplication(app);
+    setShowDetailsModal(true);
   };
 
   // Calculate counts for the slider
@@ -195,6 +196,122 @@ const Applications = () => {
 
   const handleSlide = () => {
     setSlideIndex((prevIndex) => (prevIndex + 1) % sliderContent.length);
+  };
+
+  const DetailsModal = ({ application, onClose }) => {
+    if (!application) return null;
+    
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Application Details</h2>
+          
+          <div className="details-grid">
+            {application.__t === "SchoolTour" ? (
+              <>
+                <div className="detail-item">
+                  <label>School Name:</label>
+                  <p>{application.schoolName || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>School Priority:</label>
+                  <p>{application.applicant.priority || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>City:</label>
+                  <p>{application.city || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Visit Date:</label>
+                  <p>{new Date(application.visitDate).toLocaleDateString()}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Visit Time:</label>
+                  <p>{application.visitTime || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Student Count:</label>
+                  <p>{application.studentCount || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Contact Person:</label>
+                  <p>{application.contactPerson || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Email:</label>
+                  <p>{application.email || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Phone Number:</label>
+                  <p>{application.phoneNumber || "N/A"}</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="detail-item">
+                  <label>Student Name:</label>
+                  <p>{application.studentName || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Student High School:</label>
+                  <p>{application.studentHighSchool || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Visit Date:</label>
+                  <p>{new Date(application.visitDate).toLocaleDateString()}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Visit Time:</label>
+                  <p>{application.visitTime || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Email:</label>
+                  <p>{application.applicant.email || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Phone Number:</label>
+                  <p>{application.applicant.phoneNumber || "N/A"}</p>
+                </div>
+                
+                <div className="detail-item">
+                  <label>Major of Interest:</label>
+                  <p>{application.majorOfInterest || "N/A"}</p>
+                </div>
+              </>
+            )}
+            
+            <div className="detail-item">
+              <label>Status:</label>
+              <p className={`status-badge ${application.status}`}>
+                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+              </p>
+            </div>
+            
+            <div className="detail-item full-width">
+              <label>Additional Notes:</label>
+              <p className="notes">{application.additionalNotes || "No additional notes"}</p>
+            </div>
+          </div>
+
+          <button className="close-button" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -310,7 +427,7 @@ const Applications = () => {
                       <td>
                         <div className="button-container">
                           <button
-                            onClick={() => handleViewDetails(app._id)}
+                            onClick={() => handleViewDetails(app)}
                             className="view-details"
                             title="View Details"
                           >
@@ -361,7 +478,7 @@ const Applications = () => {
                       <td>
                         <div className="button-container">
                           <button
-                            onClick={() => handleViewDetails(app._id)}
+                            onClick={() => handleViewDetails(app)}
                             className="view-details"
                             title="View Details"
                           >
@@ -407,6 +524,12 @@ const Applications = () => {
         </table>
       ) : (
         <p>No applications found.</p>
+      )}
+      {showDetailsModal && (
+        <DetailsModal
+          application={selectedApplication}
+          onClose={() => setShowDetailsModal(false)}
+        />
       )}
     </div>
   );

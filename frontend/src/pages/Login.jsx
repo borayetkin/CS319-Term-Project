@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "../styles/Login.css"; // Add the custom CSS file
 
@@ -9,6 +9,61 @@ const Login = () => {
   });
 
   const [error, setError] = useState(null);
+
+  // Add mouse tracking animation
+  useEffect(() => {
+    const atomContainer = document.querySelector('.atom-container');
+    const loginLeft = document.querySelector('.login-left');
+    let rafId;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const lerp = (start, end, factor) => {
+      return start + (end - start) * factor;
+    };
+
+    const animate = () => {
+      currentX = lerp(currentX, targetX, 0.1);
+      currentY = lerp(currentY, targetY, 0.1);
+      
+      if (atomContainer) {
+        atomContainer.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) 
+                                       rotate3d(${-currentY * 0.01}, ${currentX * 0.01}, 0, ${Math.sqrt(currentX * currentX + currentY * currentY) * 0.05}deg)`;
+      }
+      
+      rafId = requestAnimationFrame(animate);
+    };
+
+    const handleMouseMove = (e) => {
+      const rect = loginLeft.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      
+      targetX = x * 0.15;
+      targetY = y * 0.15;
+    };
+
+    const handleMouseLeave = () => {
+      targetX = 0;
+      targetY = 0;
+    };
+
+    if (loginLeft && atomContainer) {
+      loginLeft.addEventListener('mousemove', handleMouseMove);
+      loginLeft.addEventListener('mouseleave', handleMouseLeave);
+      rafId = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      if (loginLeft) {
+        loginLeft.removeEventListener('mousemove', handleMouseMove);
+        loginLeft.removeEventListener('mouseleave', handleMouseLeave);
+      }
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,8 +97,31 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="full-page-animation"></div>
       <div className="login-left">
+        <div className="atom-container">
+          <div className="nucleus"></div>
+          <div className="orbital orbital-1">
+            <a className="block" style={{"--index": "0", "--bg": "var(--gradient-1)"}} tabIndex="0">
+              <span className="block__item">A</span>
+            </a>
+          </div>
+          <div className="orbital orbital-2">
+            <a className="block" style={{"--index": "1", "--bg": "var(--gradient-3)"}} tabIndex="0">
+              <span className="block__item">T</span>
+            </a>
+          </div>
+          <div className="orbital orbital-3">
+            <a className="block" style={{"--index": "2", "--bg": "var(--gradient-5)"}} tabIndex="0">
+              <span className="block__item">O</span>
+            </a>
+          </div>
+          <div className="orbital orbital-4">
+            <a className="block" style={{"--index": "3", "--bg": "var(--gradient-7)"}} tabIndex="0">
+              <span className="block__item">M</span>
+            </a>
+          </div>
+        </div>
+        
         <h1 className="login-title">Log Into</h1>
         <h2 className="login-logo">ATOM</h2>
         <p className="login-subtitle">Advanced Tanıtım Ofisi Manager</p>
