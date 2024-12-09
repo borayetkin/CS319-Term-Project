@@ -60,6 +60,14 @@ const userSchema = new mongoose.Schema({
     min: 1,
     max: 4,
   },
+  reviews: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Review"
+  }],
+  averageRating: {
+    type: Number,
+    default: 0
+  }
 });
 userSchema.methods.updateAssignedDay = function updateAssignedDay(day) {
   this.assignedDay = day;
@@ -116,5 +124,15 @@ userSchema.methods.updateContactInfo = function(email, phone) {
   if (phone) this.phone = phone;
   return this.save();
 };
+
+userSchema.methods.addReview = async function(reviewId) {
+  try {
+    this.reviews.push(reviewId);
+    return this.save();
+  } catch (error) {
+    throw new Error(`Failed to save review: ${error.message}`);
+  }
+}
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;
