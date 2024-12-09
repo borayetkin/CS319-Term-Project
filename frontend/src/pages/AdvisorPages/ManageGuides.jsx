@@ -116,7 +116,7 @@ const ManageGuides = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px" }} className="manage-guides-page">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>Event Guide Management</h1>
         <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" , width :"auto" }}>

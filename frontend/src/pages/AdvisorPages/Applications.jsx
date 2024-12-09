@@ -328,7 +328,7 @@ const Applications = () => {
   };
 
   return (
-    <div className="applications-container">
+    <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
       <div className="slider-box" onClick={handleSlide}>
         {sliderContent[slideIndex]}

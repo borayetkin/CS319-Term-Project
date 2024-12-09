@@ -10,7 +10,7 @@
   padding-top: 54.5px;
   padding: 2rem;
   z-index: 1;
-}
+
 
 .tour-application-container {
   padding: 3rem;
@@ -170,21 +170,7 @@
 }
 
 /* Responsive adjustments for mobile */
-@media (max-width: 600px) {
-  .tour-application-container {
-    padding: 1.5rem;
-  }
 
-  .tour-application-container h1 {
-    font-size: 2rem;
-  }
-
-  .tour-type-button,
-  .tour-application-submit {
-    font-size: 0.9rem;
-    padding: 10px 20px;
-  }
-}
 
 .form-group {
   position: relative;
@@ -210,12 +196,7 @@ input.error {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 input {
   width: 100%;
@@ -275,4 +256,26 @@ input[type="tel"]::placeholder {
   opacity: 0;
   transform: translateY(-10px);
   animation: slideIn 0.3s ease-out forwards;
+}
+}
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 600px) {
+  .tour-application-container {
+    padding: 1.5rem;
+  }
+
+  .tour-application-container h1 {
+    font-size: 2rem;
+  }
+
+  .tour-type-button,
+  .tour-application-submit {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
 }

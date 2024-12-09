@@ -3,7 +3,8 @@
   max-width: 800px;
   margin: 0 auto;
 }
-
+.notifications-container {
+  
 .notifications-list {
   display: flex;
   flex-direction: column;
@@ -80,3 +81,4 @@
   color: #6b7280;
   padding: 2rem;
 } 
+}

@@ -3,7 +3,8 @@
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
-
+.profile-container {
+  
 .profile-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -88,9 +89,10 @@
 .profile-error {
   color: #dc2626;
 }
-
+}
 /* Responsive Design */
 @media (max-width: 768px) {
+  .profile-container {
   .profile-grid {
     grid-template-columns: 1fr;
   }
@@ -102,6 +104,7 @@
   .profile-header {
     padding: 1.5rem;
   }
+}
 }
 
 /* Dark Mode Support */
@@ -124,7 +127,7 @@
 } 
 
 /* Add these new styles while keeping existing ones */
-
+.profile-container {
 .guide-info-section {
   margin-top: 3rem;
   padding-top: 2rem;
@@ -178,9 +181,10 @@
   font-weight: 500;
   word-break: break-word;
 }
-
+}
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
+  .profile-container {
   .guide-info-section h2 {
     color: #f3f4f6;
   }
@@ -205,9 +209,11 @@
     color: #818cf8;
   }
 }
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .profile-container {
   .profile-grid {
     grid-template-columns: 1fr;
   }
@@ -215,10 +221,11 @@
   .info-card {
     padding: 1.25rem;
   }
+}
 } 
 
 /* Add these new styles while keeping existing ones */
-
+.profile-container {
 .role-info-section {
   margin-top: 3rem;
   padding-top: 2rem;
@@ -268,9 +275,10 @@
   border-color: #4f46e5;
   ring: 2px solid rgba(79, 70, 229, 0.2);
 }
-
+}
 /* Dark mode support for new elements */
 @media (prefers-color-scheme: dark) {
+  .profile-container {
   .role-info-section {
     border-top-color: #374151;
   }
@@ -288,8 +296,9 @@
   .day-select:focus {
     border-color: #818cf8;
   }
+}
 } 
-
+.profile-container {
 /* Add or update these styles */
 
 .day-select-container {
@@ -351,9 +360,10 @@
   width: 100%;
   max-width: 200px;
 }
-
+}
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
+  .profile-container {
   .day-display p {
     color: #f3f4f6;
   }
@@ -363,8 +373,9 @@
     border-color: #374151;
     color: #f3f4f6;
   }
+}
 } 
-
+.profile-container {
 /* Edit Form Styles */
 .edit-form {
   width: 100%;
@@ -459,7 +470,7 @@
   color: #059669;
   border: 1px solid #a7f3d0;
 }
-
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -473,6 +484,7 @@
 
 /* Dark mode support for edit form */
 @media (prefers-color-scheme: dark) {
+  .profile-container {
   .info-card.editable input {
     background-color: #374151;
     border-color: #4b5563;
@@ -494,4 +506,5 @@
     color: #a7f3d0;
     border-color: #059669;
   }
+}
 } 

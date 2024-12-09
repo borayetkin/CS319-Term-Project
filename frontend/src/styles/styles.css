@@ -158,29 +158,33 @@ button:hover,
 }
 
 /* Table styling */
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
-thead {
-  background-color: #5a67b3;
-  color: white;
-}
-
-th,
-td {
-  padding: 12px;
+table th, table td {
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  border: 1px solid #ddd;
 }
 
-th {
+table th {
+  background-color: #f2f2f2;
+  color: #333;
   font-weight: bold;
 }
 
-tr:hover {
-  background-color: #d2d6e8;
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+table tbody tr{
+  transition: background-color 0.3s ease;
+
+}
+table tbody tr:hover {
+  background-color: #f1f1f1 !important;
 }
 
 /* Message styling */

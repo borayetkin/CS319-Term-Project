@@ -1,3 +1,8 @@
+.applications-page-container {
+    padding: 20px;
+    width: 100%;
+}
+.applications-page-container {
 .controls-container {
     display: flex;
     justify-content: space-between; /* Space between filter and tour type */
@@ -67,10 +72,7 @@
 }
 
 /* Add these new table-related styles */
-.applications-container {
-    padding: 20px;
-    width: 100%;
-}
+
 
 table {
     width: 100%;
@@ -266,4 +268,5 @@ tbody tr:nth-child(even) {
 .status.pending {
     color: #ecc94b; /* Yellow for pending */
     font-weight: bold;
+}
 }

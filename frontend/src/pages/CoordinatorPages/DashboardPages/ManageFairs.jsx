@@ -233,7 +233,7 @@ const ManageFairs = () => {
   };
 
   return (
-    <div className="applications-container">
+    <div className="fair-managenent-applications-container">
       <h1>Manage Fairs</h1>
       <button onClick={() => navigate("/dashboard/guide-management")} style={{ padding: "10px 20px" , width :"auto" }}>
           Assign Guides

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-import "../styles/UsersPage.css"
+
 import { motion } from "framer-motion";
 import { FaCommentsDollar } from "react-icons/fa";
 

@@ -231,7 +231,7 @@
   align-items: center;
   gap: 0.5rem;
 }
-
+.main-wrapper {
 /* Events Section */
 .events-section {
   padding: 6rem 2rem;
@@ -298,7 +298,7 @@
 .event-content {
   padding: 1.5rem;
 }
-
+}
 /* News Section */
 .news-section {
   padding: 6rem 2rem;
@@ -475,7 +475,7 @@
   gap: 1rem;
   margin-top: auto;
 }
-
+.main-wrapper {
 .action-button {
   display: inline-flex;
   align-items: center;
@@ -556,7 +556,7 @@
 .action-button.secondary:active {
   transform: translateY(1px) scale(0.98);
 }
-
+}
 /* Add these keyframe animations */
 @keyframes shine {
   0% {
@@ -584,7 +584,7 @@
     opacity: 0;
   }
 }
-
+.main-wrapper {
 /* Add loading state animations */
 .action-button.primary.loading {
   background: linear-gradient(
@@ -596,7 +596,7 @@
   background-size: 200% 100%;
   animation: gradientShift 2s infinite;
 }
-
+}
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -647,7 +647,7 @@
     font-size: 1.5rem;
   }
 }
-
+.main-wrapper {
 /* Button animation styles */
 .action-button {
   position: relative;
@@ -680,7 +680,7 @@
 .button-clicked {
   animation: buttonClick 0.3s forwards;
 }
-
+}
 @keyframes buttonClick {
   0% {
     transform: scale(1);

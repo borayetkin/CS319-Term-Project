@@ -140,7 +140,7 @@ const SchoolPriorityPage = () => {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }} className="SchoolPriorityPage">
       <h1 style={{ textAlign: "center", color: "#4CAF50" }}>List of High Schools</h1>
 
       {/* Add Stats Cards */}

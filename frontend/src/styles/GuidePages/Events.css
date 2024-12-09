@@ -4,7 +4,8 @@
   border-radius: 1rem;
 
 }
-
+.events-container {
+ 
 .events-header {
   display: flex;
   justify-content: space-between;
@@ -128,6 +129,7 @@
 
 /* Assign button */
 .action-button.assign {
+  
   background-color: #818cf8;
   color: white;
 }
@@ -138,6 +140,7 @@
 
 /* Apply button */
 .action-button.apply {
+  text-align: center;
   background-color: #10b981;
   color: white;
 }
@@ -230,4 +233,5 @@
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
+}
 }
