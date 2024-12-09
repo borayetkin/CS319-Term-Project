@@ -227,6 +227,9 @@ const Applications = () => {
     return (
       <div className="modal-overlay">
         <div className="modal-content">
+          <button className="modal-close" onClick={onClose}>
+            ×
+          </button>
           <h2>Application Details</h2>
 
           <div className="details-grid">
@@ -331,10 +334,6 @@ const Applications = () => {
               </p>
             </div>
           </div>
-
-          <button className="close-button" onClick={onClose}>
-            Close
-          </button>
         </div>
       </div>
     );
