@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import '../../styles/GuidePages/Events.css'
-const AssignedEvents = () => {
+import PastEvents from "./PastEvents";
+import LoadingSpinner from "../../components/LoadingSpinner";
+const AssignedEvents = () => {  
+  
   const [assignedEvents, setAssignedEvents] = useState([]);
   const [message, setMessage] = useState("");
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -13,6 +17,7 @@ const AssignedEvents = () => {
     }
   }, []);
 
+  
   const fetchAssignedEvents = async (token) => {
     try {
       const response = await fetch(
@@ -29,29 +34,32 @@ const AssignedEvents = () => {
         const currentDate = new Date();
         const futureEvents = data.filter(event => new Date(event.visitDate) > currentDate);
         setAssignedEvents(futureEvents);
+        setIsLoading(false);
+
       } else {
         setMessage("Failed to fetch assigned events.");
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       setMessage("Error fetching assigned events: " + error.message);
     }
   };
+  if (showPastEvents===true) return <div> <PastEvents setShowPastEvents={setShowPastEvents} /></div>;
 
   return (
     <div className="events-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
       <h1>Assigned Future Events</h1>
         
-        <Link style={{textDecoration : "none", color : "inherit"}} to={`/past-events`} className="view-details">
-        <button style={{ width: "auto" }} onClick={() =>{}}>
+        <button style={{ width: "auto" }} onClick={()=>setShowPastEvents(true)}>
           View Past Events
-          </button>
-        </Link>
+        </button>
         
       </div>
       
       {message && <p>{message}</p>}
-      {assignedEvents.length > 0 ? (
+      
         <table>
           <thead>
             <tr>
@@ -63,7 +71,10 @@ const AssignedEvents = () => {
             </tr>
           </thead>
           <tbody>
-            {assignedEvents.map((event) => (
+          {assignedEvents.length > 0 ? (
+          
+ 
+            assignedEvents.map((event) => (
               <tr key={event._id}>
                 <td>{event.applicant.name || "N/A"}</td>
                 <td>{new Date(event.visitDate).toLocaleDateString()}</td>
@@ -71,12 +82,25 @@ const AssignedEvents = () => {
 
                 <td>{event.status}</td>
               </tr>
-            ))}
+            ))
+         
+          ) :( isLoading ? (
+          <tr>
+            <td colSpan="100" style={{ textAlign: "center",  background : "none"}}>
+            <LoadingSpinner
+            loading="Assigned Events" />
+            </td>
+          </tr>
+          ):(
+            <tr>
+              <td colSpan="100" style={{ textAlign: "center" }}>
+                No events assigned yet.
+              </td>
+            </tr>)
+          )}
           </tbody>
         </table>
-      ) : (
-        <p>No events assigned yet.</p>
-      )}
+      
     </div>
   );
 };

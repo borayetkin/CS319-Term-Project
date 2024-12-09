@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "../../styles/AdvisorPages/Applications.css";
 import { FaEye, FaCheck, FaTimes, FaTrash } from 'react-icons/fa'; // Import icons
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -13,12 +14,16 @@ const Applications = () => {
   const [sortOption, setSortOption] = useState("default");
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      console.log(isLoading);
+      
       fetchUserProfile(token);
     }
   }, []);
@@ -34,10 +39,16 @@ const Applications = () => {
         const data = await response.json();
         setUser(data);
         fetchApplications(token, data);
+        
+
       } else {
+        setIsLoading(false);
+        
         setMessage("Failed to fetch user profile");
       }
     } catch (error) {
+      setIsLoading(false);
+
       setMessage("Error fetching user profile: " + error.message);
     }
   };
@@ -59,6 +70,7 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setApplications(data);
+        setIsLoading(false);
       } else {
         setMessage(`Failed to fetch applications`);
       }
@@ -200,13 +212,14 @@ const Applications = () => {
 
   const DetailsModal = ({ application, onClose }) => {
     if (!application) return null;
-    
+   
     return (
       <div className="modal-overlay">
         <div className="modal-content">
           <h2>Application Details</h2>
-          
+  
           <div className="details-grid">
+          
             {application.__t === "SchoolTour" ? (
               <>
                 <div className="detail-item">
@@ -366,7 +379,7 @@ const Applications = () => {
           </select>
         </div>
       </div>
-      {filteredApplications.length > 0 ? (
+      
         <table>
           <thead>
             <tr>
@@ -400,7 +413,8 @@ const Applications = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredApplications.map((app) => {
+          {filteredApplications.length > 0 ? (
+            filteredApplications.map((app) => {
               let className = "";
               if (app.status === "accepted") {
                 className = "accepted";
@@ -519,18 +533,33 @@ const Applications = () => {
                   )}
                 </tr>
               );
-            })}
-          </tbody>
-        </table>
-      ) : (
-        <p>No applications found.</p>
-      )}
+            })
+
+      ) :( isLoading ? (
+        <tr>
+          <td colSpan="100" style={{ textAlign: "center",  background : "none" }}>
+            <div >
+          <LoadingSpinner
+          loading="Applications" 
+          style={{maxHeight: "100px"}}/>
+          </div>
+          </td>
+        </tr>
+        ):(
+          <tr>
+            <td colSpan="100" style={{ textAlign: "center" }}>
+              No applications found.
+            </td>
+          </tr>)
+        )}
       {showDetailsModal && (
         <DetailsModal
           application={selectedApplication}
           onClose={() => setShowDetailsModal(false)}
         />
       )}
+                </tbody>
+                </table>
     </div>
   );
 };
