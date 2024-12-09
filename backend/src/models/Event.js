@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require('./User');
 const Applicant = require('./Applicant');
+
 const eventSchema = new mongoose.Schema({
   applicant:  {type: mongoose.Schema.Types.ObjectId, ref: 'Applicant'},
 // For now, will be updated with a new applicant class
@@ -44,13 +45,23 @@ const eventSchema = new mongoose.Schema({
     type: String,
     default : ""
   },
-    weekday : {
-        type : String,
-        default: "Monday",
-        enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    }
-    ,
-    assignedAdvisor: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+  weekday : {
+    type : String,
+    default: "Monday",
+    enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  },
+  assignedAdvisor: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User'
+  },
+  review: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review'
+  },
+  reviewSubmitted: {
+    type: Boolean,
+    default: false
+  }
 
 });
 
@@ -145,5 +156,16 @@ eventSchema.methods.markVerified = function (){
 eventSchema.methods.isUserAssigned = function (userId){
   return this.assignedUsers.includes(userId)
 }
+
+eventSchema.methods.setReview = async function(reviewId) {
+  try {
+    this.review = reviewId;
+    reviewSubmitted = true;
+    return this.save();
+  } catch (error) {
+    throw new Error(`Failed to save review: ${error.message}`);
+  }
+}
+
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;
