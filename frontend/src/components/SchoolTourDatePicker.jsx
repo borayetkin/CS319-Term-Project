@@ -51,7 +51,7 @@ const CustomDateTimePicker = ({handleChange}) => {
   };
 
   const renderTimeSlots = (date) => {
-    const times = ["09:00", "12:00", "15:00"];
+    const times = ["09:00", "11:00", "13:30", "16:00"];
     return times.map((time) => {
       const availability = getAvailability(time,date);
 

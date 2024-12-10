@@ -120,7 +120,7 @@ const ViewGuidesPage = () => {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="guides-container">
+    <div className="view-guides-page-container">
       <h1>View Guides</h1>
       
       <div className="controls-container">

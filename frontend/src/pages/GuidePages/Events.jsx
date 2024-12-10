@@ -151,9 +151,7 @@ const Events = () => {
 
   const sortedEvents = sortEvents(filteredEvents, sortOption);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+
 
   if (error) {
     return (
@@ -218,7 +216,7 @@ const Events = () => {
         </div>
       </div>
 
-      {sortedEvents.length > 0 ? (
+      
         <div className="table-container">
           <table>
             <thead>
@@ -233,7 +231,9 @@ const Events = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedEvents.map((event) => (
+            {sortedEvents.length > 0 ? (
+            
+              sortedEvents.map((event) => (
                 <EventRow
                   key={event._id}
                   event={event}
@@ -241,16 +241,32 @@ const Events = () => {
                   addToAssignedEvents={applyToEvent}
                   removeAssignedEvent={removeAssignedEvent}
                 />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="no-results">
+              ))
+            
+          
+      ) :( isLoading ? (
+        <tr>
+          <td colSpan="100" style={{ textAlign: "center",  background : "none" }}>
+            <div >
+          <LoadingSpinner
+          loading="Events" 
+          />
+          </div>
+          </td>
+        </tr>
+        ):(
+          <tr>
+            <td colSpan="100" style={{ textAlign: "center" }}>
+            <div className="no-results">
           <i className="fas fa-search"></i>
           <p>No events found</p>
         </div>
-      )}
+            </td>
+          </tr>)
+        )}
+      </tbody>
+      </table>
+      </div>
     </div>
   );
 };

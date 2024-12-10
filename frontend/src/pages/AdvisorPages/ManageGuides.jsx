@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/AdvisorPages/ManageGuides.css";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const ManageGuides = () => {
   const [events, setEvents] = useState([]);
@@ -8,6 +9,7 @@ const ManageGuides = () => {
   const [updatedAssignments, setUpdatedAssignments] = useState({});
   const [updatedRemovals, setUpdatedRemovals] = useState({});
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const token = localStorage.getItem("token");
   const personIconUrl =
@@ -16,7 +18,6 @@ const ManageGuides = () => {
 
   useEffect(() => {
     fetchEvents();
-    fetchGuides();
   }, []);
 
   const fetchEvents = async () => {
@@ -30,31 +31,22 @@ const ManageGuides = () => {
         setEvents(eventsData);
         const guides = eventsData.map((event) => event.appliedUsers);
         setGuides(guides);  
+        setIsLoading(false);
+
       } else {
+        setIsLoading(false);
+
         setMessage("Failed to fetch events.");
       }
     } catch (error) {
+      setIsLoading(false);
+
       setMessage("Error fetching events: " + error.message);
     }
   };
 
-  const fetchGuides = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/guides", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        
-        //setGuides(data);
-      } else {
-        setMessage("Failed to fetch guides.");
-      }
-    } catch (error) {
-      setMessage("Error fetching guides: " + error.message);
-    }
-  };
-  const cleaChoices = () => {
+ 
+  const clearChoices = () => {
     setUpdatedAssignments({});
     setUpdatedRemovals({});
 
@@ -90,7 +82,7 @@ const ManageGuides = () => {
           const errorData = await assignResponse.json();
           throw new Error(errorData.message || "Failed to assign guide");
         }
-        cleaChoices();
+        clearChoices();
       }
 
       // Remove selected guide
@@ -124,7 +116,7 @@ const ManageGuides = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px" }} className="manage-guides-page">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>Event Guide Management</h1>
         <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" , width :"auto" }}>
@@ -148,7 +140,7 @@ const ManageGuides = () => {
           </tr>
         </thead>
         <tbody>
-          {events.map((event, index) => (
+          {events.length>0 ? (events.map((event, index) => (
             <tr key={event._id}>
               <td>{index + 1}</td>
               <td>{event.applicant.name}</td>
@@ -216,7 +208,20 @@ const ManageGuides = () => {
                 <button onClick={() => saveChanges(event._id)}>Save Changes</button>
               </td>
             </tr>
-          ))}
+          ))):( isLoading ? (
+          <tr>
+            <td colSpan="100" style={{ textAlign: "center",  background : "none"}}>
+            <LoadingSpinner
+            loading="Guides & Events" />
+            </td>
+          </tr>
+          ):(
+            <tr>
+              <td colSpan="100" style={{ textAlign: "center" }}>
+                No tours found.
+              </td>
+            </tr>)
+          )}
         </tbody>
       </table>
     </div>

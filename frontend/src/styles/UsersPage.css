@@ -6,7 +6,7 @@
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+
 
 table {
   width: 100%;
@@ -98,4 +98,5 @@ p {
 .add-user-link a:hover {
   text-decoration: none;
   background-color: #4cae4c;
+}
 }

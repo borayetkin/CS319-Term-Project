@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs"); 
 const jwt = require("jsonwebtoken");
 const Advisor = require("../models/Advisor");
-
+const Event = require("../models/Event");
 
 const saveUser = async ({ name, email, password, role }) =>{
     // Create new user with conditional role
@@ -61,7 +61,7 @@ exports.updateUser = async (req, res) => {
 deleteUserFromEvents = async (userId) => {
   const events = await Event.find();
   events.forEach(async (event) => {
-    const index = event.participants.indexOf(userId);
+    const index = event.assignedUsers.indexOf(userId);
     if (index !== -1) {
       event.participants.splice(index, 1);
       await event.save();

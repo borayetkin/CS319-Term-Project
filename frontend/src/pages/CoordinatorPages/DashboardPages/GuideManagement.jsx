@@ -111,7 +111,7 @@ const GuideManagement = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px" }} className="GuideManagement">
       <div
         style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
       >

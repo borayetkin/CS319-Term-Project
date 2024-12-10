@@ -2,9 +2,10 @@
   padding: 2rem;
   background-color: #ffffff;
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
 
+}
+.events-container {
+ 
 .events-header {
   display: flex;
   justify-content: space-between;
@@ -128,6 +129,7 @@
 
 /* Assign button */
 .action-button.assign {
+  
   background-color: #818cf8;
   color: white;
 }
@@ -138,6 +140,7 @@
 
 /* Apply button */
 .action-button.apply {
+  text-align: center;
   background-color: #10b981;
   color: white;
 }
@@ -230,4 +233,5 @@
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
+}
 }

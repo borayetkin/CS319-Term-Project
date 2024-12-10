@@ -1,10 +1,10 @@
-.container {
+.signup-container {
   display: flex;
   height: 100vh;
   background-color: #f4f4f4;
   overflow: hidden;
 }
-
+.signup-container {
 .signup-left {
   flex: 1.6;
   background-image: url("login_background3.png");
@@ -36,14 +36,14 @@
   animation: gradientAnimation 6s ease infinite;
   z-index: 1;
 }
-
+}
 @keyframes gradientAnimation {
   0% { background-position: 0% 50%; }
   25% { background-position: 75% 30%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
-
+.signup-container {
 .signup-right {
   flex: 1;
   display: flex;
@@ -128,3 +128,4 @@ p[style*="color: green"] {
   text-align: center;
   margin: 8px 0;
 } 
+}

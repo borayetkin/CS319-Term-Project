@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const CompletedTours = () => {
   const [completedTours, setCompletedTours] = useState([]);
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -24,11 +26,17 @@ const CompletedTours = () => {
       if (response.ok) {
         const data = await response.json();
         setCompletedTours(data);
+        setIsLoading(false);
+
       } else {
         const errorData = await response.json();
         setMessage(errorData.message || "Failed to fetch completed tours.");
+        setIsLoading(false);
+
       }
     } catch (error) {
+      setIsLoading(false);
+
       setMessage("Error fetching completed tours: " + error.message);
     }
   };
@@ -112,12 +120,18 @@ const CompletedTours = () => {
                 </td>
               </tr>
             )})
-          ) : (
+          ) : ( isLoading ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
+            <td colSpan="100" style={{ textAlign: "center",  background : "none"}}>
+            <LoadingSpinner loading="Completed Tours" />
+          </td>
+          </tr>
+          ):(
+            <tr>
+              <td colSpan="100" style={{ textAlign: "center" }}>
                 No completed tours found.
               </td>
-            </tr>
+            </tr>)
           )}
         </tbody>
       </table>

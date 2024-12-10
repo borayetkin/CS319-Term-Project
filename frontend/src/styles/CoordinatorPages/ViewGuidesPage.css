@@ -1,7 +1,7 @@
-.guides-container {
+.view-guides-page-container {
   padding: 2rem;
 }
-
+.view-guides-page-container {
 .controls-container {
   display: flex;
   justify-content: space-between;
@@ -84,7 +84,7 @@ th {
 .action-button:hover {
   transform: translateY(-1px);
 }
-
+}
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -155,11 +155,11 @@ th {
 .close-button:hover {
   background: #4338ca;
 }
-
+.view-guides-page-container {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   table {
-    background: #1f2937;
+    color: white;
   }
 
   th {
@@ -189,3 +189,4 @@ th {
     color: #e5e7eb;
   }
 } 
+}

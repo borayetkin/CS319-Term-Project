@@ -14,7 +14,8 @@
     margin-bottom: 20px;
     color: #333;
   }
-  
+  .add-user-container {
+    
   .form-group {
     margin-bottom: 15px;
   }
@@ -55,3 +56,4 @@
   button:hover {
     background-color: #0056b3;
   }
+}

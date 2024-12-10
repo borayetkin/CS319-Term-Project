@@ -3,6 +3,7 @@
   max-width: 800px;
   margin: 0 auto;
 }
+.notifications-container {
 
 .notifications-list {
   display: flex;
@@ -24,7 +25,7 @@
 
 .notification-item.unread {
   border-left: 4px solid #3b82f6;
-  background: #f8fafc;
+  background: #e0e7ee;
 }
 
 .notification-item.read {
@@ -80,3 +81,4 @@
   color: #6b7280;
   padding: 2rem;
 } 
+}

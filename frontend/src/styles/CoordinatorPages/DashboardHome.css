@@ -1,12 +1,12 @@
 .dashboard-home {
     padding: 20px;
   }
-  
+
   .dashboard-home h1 {
     margin-bottom: 30px;
     color: #2d3748;
   }
-  
+  .dashboard-home {
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -72,3 +72,4 @@
     margin-bottom: 20px;
     font-size: 1.2rem;
   }
+}

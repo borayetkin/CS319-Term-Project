@@ -1,6 +1,7 @@
 const Fair = require("../models/Fair");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const { sendNotification } = require("./NotificationController");
 
 // Create a new fair
 exports.createFair = async (req, res) => {
@@ -180,7 +181,19 @@ exports.assignGuideToFair = async (req, res) => {
         .status(400)
         .json({ message: "Failed to assign guide", error: error.message });
     }
-
+    const notifactionProps = {
+      recipient: userID,
+      title: "New Fair Assigned",
+      message: `You have been assigned to a new fair at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+      read: false
+    }
+    
+    try {
+      sendNotification(notifactionProps)
+    } catch (error) {
+      
+      return res.status(400).json({ message: "Failed to send notification", error: error.message });
+    }
     res.status(200).json({ message: "Guide assigned successfully.", fair });
   } catch (error) {
     console.error("Error assigning guide:", error);
@@ -206,10 +219,22 @@ exports.removeGuideFromFair = async (req, res) => {
     fair.assignedUsers = fair.assignedUsers.filter(
       assignedUserID => assignedUserID.toString() !== userID
     );
+    const guide = await User.findById(userID);
     await guide.removeAssignedEvent(fairID);
     await fair.save();
     await guide.save();
-
+    const notifactionProps = {
+      recipient: userID,
+      title: "Removed From Fair",
+      message: `You have been removed from a fair at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+      read: false
+    }
+    try {
+      sendNotification(notifactionProps)
+    } catch (error) {
+      
+      return res.status(400).json({ message: "Failed to send notification", error: error.message });
+    }
     res.status(200).json({ message: "Guide removed successfully.", fair });
   } catch (error) {
     console.error("Error removing guide:", error);
@@ -226,7 +251,21 @@ exports.deleteFair = async (req, res) => {
     if (!fair) {
       return res.status(404).json({ message: "Fair not found" });
     }
-
+    const recipients = fair.assignedUsers;
+    for (let i = 0; i < recipients.length; i++) {
+      const notifactionProps = {
+        recipient: recipients[i],
+        title: "Fair Deleted",
+        message: `A fair you were assigned to has been deleted : ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+        read: false
+      }
+      try {
+        sendNotification(notifactionProps)
+      } catch (error) {
+        
+        return res.status(400).json({ message: "Failed to send notification", error: error.message });
+      }
+    }
     res.status(200).json({
       message: "Fair deleted successfully",
       fair,

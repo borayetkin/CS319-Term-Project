@@ -10,7 +10,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+  
   
   .user-search-container {
     background: white;
@@ -59,3 +59,4 @@
     align-items: center;
     gap: 4px;
   }
+}

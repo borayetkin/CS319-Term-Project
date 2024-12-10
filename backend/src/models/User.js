@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
-const Tour = require("./Tour");
-const Event = require("./Event");
-const SchoolTour = require('./SchoolTour');
-const IndividualTour = require("./IndividualTour");
+
 
 
 const userSchema = new mongoose.Schema({
