@@ -29,9 +29,9 @@ const EventRow = ({
   };
 
   return (
-    <tr key={event._id} className="event-row">
+    <tr key={event._id} className="event-row" >
       <td>{event.applicant?.name || "N/A"}</td>
-      <td>{getEventType()}</td>
+      <td> <div className="time">{event.visitTime}</div></td>
       <td>
         {event.visitDate ? new Date(event.visitDate).toLocaleDateString() : "N/A"}
       </td>
