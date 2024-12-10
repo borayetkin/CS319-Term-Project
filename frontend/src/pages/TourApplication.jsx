@@ -501,6 +501,101 @@ const TourApplication = () => {
   );
 
 };
+const postRandomSchoolTours = async () => {
+  const response = await fetch("http://localhost:3000/api/high-schools");
+  const schools = await response.json();
 
+  const hours = ["09:00", "12:00", "15:00"];
+  const today = new Date();
+  const oneWeekFromNow = new Date(today);
+  oneWeekFromNow.setDate(today.getDate() + 7);
+  const usedEmails = new Set();
+
+  for (let i = 0; i < 10; i++) {
+    const randomDate = new Date(today.getTime() + Math.random() * (oneWeekFromNow.getTime() - today.getTime()));
+    const randomHour = hours[Math.floor(Math.random() * hours.length)];
+    const dateTime = new Date(`${randomDate.toISOString().split('T')[0]}T${randomHour}`);
+
+    let email;
+    do {
+      email = `user${Math.floor(Math.random() * 100000)}@example.com`;
+    } while (usedEmails.has(email));
+    usedEmails.add(email);
+
+
+    const filteredSchools = schools.filter(school => school.Priority === "Medium" || school.Priority === "High");
+    const randomSchool = filteredSchools[Math.floor(Math.random() * filteredSchools.length)];
+    const schoolID = randomSchool.id;
+    const priority = randomSchool.Priority;
+
+    const formData = {
+      tourType: "school",
+      contactPerson: `Person ${Math.floor(Math.random() * 1000)}`,
+      email: email,
+      studentCount: Math.floor(Math.random() * 200 +30),
+      visitDate: dateTime.toISOString().split('T')[0],
+      visitTime: randomHour,
+      city: randomSchool.City,
+      district: randomSchool.District,
+      schoolName: randomSchool.SchoolName,
+      schoolID: schoolID,
+      phoneNumber: `0${Math.floor(Math.random() * 10000000000)}`,
+      schoolPriority: priority,
+      status: "pending"
+    };
+    const { tourType, ...tourData } = formData;
+
+    const requestData = {
+      ...tourData,
+      visitDate: dateTime,
+      typeStr: "School Tour",
+    };
+    try {
+      const response2 = await fetch(`http://localhost:3000/api/applicants`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body:
+          tourType === "school"
+            ? JSON.stringify({
+               
+                name: formData.schoolName,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+                priority : formData.schoolPriority,
+                schoolID : formData.schoolID,
+              })
+            : JSON.stringify({
+                name: formData.contactPerson,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+              }),
+      });
+      
+      const data = await response2.json();
+     
+      const response = await fetch(`http://localhost:3000/api/events/schooltours`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          applicant:  data._id,
+          ...requestData,
+        }),
+      });
+      const data2 = await response.json();
+
+      if (response.ok && response2.ok) {
+        
+      }
+    } catch (error) {
+      
+
+
+  }
+  }
+};
 
 export default TourApplication;
