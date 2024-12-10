@@ -7,7 +7,7 @@ const Signup = () => {
     email: "",
     password: "",
     role: "guide", // Default role
-    assignedDay : ""
+    assignedDay: "",
   });
 
   const [error, setError] = useState(null);
@@ -46,15 +46,13 @@ const Signup = () => {
 
   return (
     <div className="signup-container">
-      <div className="signup-left">
-        {/* Left side content if needed */}
-      </div>
+      <div className="signup-left">{/* Left side content if needed */}</div>
       <div className="signup-right">
         <form onSubmit={handleSubmit}>
           <h1>Sign Up</h1>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          
+
           <label htmlFor="name">Name:</label>
           <input
             type="text"
@@ -100,22 +98,25 @@ const Signup = () => {
           {formData.role === "advisor" && (
             <div className="form-group">
               <label htmlFor="assignedDay">Assigned Day:</label>
-             
-            <select
-              id="assignedDay"
-              name="assignedDay"
-              value={formData.assignedDay}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select a day</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-            </select>
-            </div>)}
+
+              <select
+                id="assignedDay"
+                name="assignedDay"
+                value={formData.assignedDay}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select a day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+          )}
           <button type="submit">Sign Up</button>
         </form>
       </div>

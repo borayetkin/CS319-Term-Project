@@ -11,17 +11,10 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
 
   const isDisabled = (date) => {
     // Check if the date is a weekend (Saturday or Sunday)
-    const dayOfWeek = date.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return true; // Disable weekends
-    }
-
-    // Add any other conditions for disabling dates here
-    // ...
-
-    return false;
+    if (date <= twoWeeksFromNow) {
+    return true;
   };
-
+  }
   const isWeekday = (date) => {
     const day = date.getDay();
     return day !== 0 && day !== 6; // 0 is Sunday, 6 is Saturday
@@ -66,11 +59,7 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   const handleDateSelect = (date) => {
     if (isDisabled(date)) return;
 
-    // Check if the selected date is a weekend (Saturday or Sunday)
-    const dayOfWeek = date.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return; // Do not allow selection of weekends
-    }
+
 
     const previousMonth = selectedDate ? selectedDate.getMonth() : null;
     if (previousMonth !== null && previousMonth !== date.getMonth()) {
