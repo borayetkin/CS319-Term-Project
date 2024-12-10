@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1eabcc27-6488-4035-81d6-e70601e96baa" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/FairRow.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/controllers/FairController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/controllers/FairController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/fairRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/fairRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/GuidePages/Events.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/GuidePages/Events.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

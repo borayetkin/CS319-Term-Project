@@ -276,4 +276,45 @@ exports.deleteFair = async (req, res) => {
   }
 };
 
+exports.applyToFair = async (req, res) => {
+  try {
+    const { fairID } = req.body; // Fair ID from the request body
+    const { userrole, userid } = req.headers; // User role and ID from headers
+
+    // Ensure only guides can apply
+    if (userrole !== "guide") {
+      return res.status(403).json({ message: "Only guides can apply to fairs." });
+    }
+
+    // Find the guide (user)
+    const user = await User.findById(userid || req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the fair
+    const fair = await Fair.findById(fairID);
+    if (!fair) {
+      return res.status(404).json({ message: "Fair not found" });
+    }
+
+    // Check if the guide has already applied
+    if (fair.appliedUsers.includes(userid)) {
+      return res
+        .status(400)
+        .json({ message: "You have already applied to this fair." });
+    }
+
+    // Add the guide to the list of applied users
+    fair.appliedUsers.push(userid);
+
+    await fair.save();
+
+    res.status(200).json({ message: "Applied to fair successfully" });
+  } catch (error) {
+    console.error("Error applying to fair:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 
