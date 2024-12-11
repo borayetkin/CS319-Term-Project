@@ -136,26 +136,3 @@ exports.deleteReview = async (req, res) => {
     res.status(500).json({ message: "Error deleting review.", error: error.message });
   }
 };
-
-exports.sendReviewEmail = async (req, res) => {
-  const { eventId } = req.body;
-
-  try {
-    const event = await Event.findById(eventId).populate('applicant');
-    if (!event) return res.status(404).send("Event not found");
-
-    const applicant = event.applicant;
-    if (!applicant || !applicant.email) return res.status(404).send("Applicant email not found");
-
-    // Generate review link
-    const reviewLink = `http://localhost:${process.env.PORT}/review/${evenId}`;
-
-    // Trigger the email service to send the review email
-    await sendReviewEmail(applicant.email, applicant.name, reviewLink);
-
-    res.status(200).json({ message: "Review email sent successfully!" });
-  } catch (error) {
-    console.error("Failed to send review email:", error.message);
-    res.status(500).json({ message: "Failed to send review email", error: error.message });
-  }
-};

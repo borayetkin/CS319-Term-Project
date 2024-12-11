@@ -5,6 +5,8 @@ const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
 const { sendConfirmationEmail } = require("../config/EmailService");
+const { sendReviewEmail } = require("../config/EmailService");
+const { findApplicantById } = require("./ApplicantController")
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -566,38 +568,51 @@ exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
-    const event = await Event.findById(eventId);
+
+    // Fetch event by ID
+    let event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
+
+    // Check if the user is assigned to the event
     if (!event.isUserAssigned(userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
 
-    await Event.findByIdAndUpdate(eventId, {
-      status: "completed-non-verified",
-    });
+    // Update event status to "completed-non-verified"
+    event.status = "completed-non-verified";
+    await event.save();  // Save the updated event
 
-    try {
-      await sendReviewEmail({ body: { eventId } }, res);
-    } catch (emailError) {
-      console.error("Error sending review email:", emailError.message);
-      return res
-        .status(500)
-        .json({ message: "Event completed, but failed to send review email." });
+    // Generate review link
+    const reviewLink = `http://localhost:5173/review/${eventId}`;
+
+    // Populate the applicant data from the event
+    await event.populate('applicant'); // Wait for population to complete
+    const applicant = event.applicant;
+
+    if (!applicant) {
+      return res.status(404).json({ message: "Applicant not found" });
     }
 
+    // Send the review email
+    await sendReviewEmail(applicant.email, applicant.name, reviewLink);
+
+    // Respond with success
     res.status(200).json({
       message: "Event marked as completed successfully, review email sent.",
     });
   } catch (error) {
+    // Handle errors
+    console.error(error);
     res
       .status(500)
       .json({ message: "Failed to complete event", error: error.message });
   }
 };
+
 exports.takeBackEventAction = async (req, res) => {
   try {
     const { eventId } = req.params;
