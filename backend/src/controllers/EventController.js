@@ -529,7 +529,18 @@ exports.markEventAsCompleted = async (req, res) => {
     await Event.findByIdAndUpdate(eventId, {
       status: "completed-non-verified",
     });
-    res.status(200).json({ message: "Event marked as completed successfully" });
+    
+    try {
+      await sendReviewEmail({ body: { eventId } }, res);
+    } catch (emailError) {
+      console.error("Error sending review email:", emailError.message);
+      return res
+        .status(500)
+        .json({ message: "Event completed, but failed to send review email." });
+    }
+
+    res.status(200).json({ message: "Event marked as completed successfully, review email sent." });
+    
   } catch (error) {
     res
       .status(500)
@@ -626,3 +637,21 @@ exports. applyToEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 }
+
+exports.isReviewSubmitted = async (req, res) => {
+  const { eventId } = req.params; // Get eventId from the request parameters
+
+  try {
+    // Find the event by its ID
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    return res.status(200).json({ isReviewAlreadySubmitted: event.reviewSubmitted });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error checking review status.", error: error.message });
+  }
+};

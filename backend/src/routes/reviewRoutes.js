@@ -14,7 +14,4 @@ router.get("/applicant/:applicantId", reviewController.getReviewsByApplicant);
 // Delete a review
 router.delete("/:reviewId", reviewController.deleteReview);
 
-// Send email notification to the applicant after the event is completed
-router.post("/send-email", reviewController.sendReviewEmail);
-
 module.exports = router;

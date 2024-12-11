@@ -1,11 +1,10 @@
 const Review = require("../models/Review");
 const Event = require("../models/Event");
 const Applicant = require("../models/Applicant");
-//const nodemailer = require('nodemailer');
 
 // Create a new review
 exports.createReview = async (req, res) => {
-  const { rating, comment, eventId, applicantId } = req.body;
+  const { rating, comment, eventId } = req.body;
 
   try {
     // Check if the event already has a review
@@ -17,6 +16,8 @@ exports.createReview = async (req, res) => {
     if (event.reviewSubmitted) {
       return res.status(400).json({ message: "Review already submitted for this event." });
     }
+
+    const applicantId = event.applicant;
 
     // Create and save the review
     const review = new Review({
@@ -104,43 +105,15 @@ exports.sendReviewEmail = async (req, res) => {
     const applicant = event.applicant;
     if (!applicant || !applicant.email) return res.status(404).send("Applicant email not found");
 
-    // ORIGINAL EMAIL SENDING ALGO, WILL BE IMPLEMENTED IN THE FUTURE
-    /*
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL, // Your email
-        pass: process.env.EMAIL_PASSWORD, // Your email password
-      },
-    }); 
+    // Generate review link
+    const reviewLink = `http://localhost:${process.env.PORT}/review/${evenId}`;
 
-    // Email content
-    const reviewLink = `http://domain.com/review/${eventId}`;
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: applicant.email,
-      subject: 'Submit Your Review',
-      text: `Please submit your review for the event. Click the link: ${reviewLink}`,
-      html: `<p>Please submit your review for the event. Click the link: <a href="${reviewLink}">Submit Review</a></p>`,
-    };
+    // Trigger the email service to send the review email
+    await sendReviewEmail(applicant.email, applicant.name, reviewLink);
 
-    // Send the email
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).send("Review link sent successfully!");
+    res.status(200).json({ message: "Review email sent successfully!" });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Failed to send review link");
-  } */
-
-  const reviewLink = `http://localhost:${process.env.PORT}/review/${eventId}`;
-    console.log(`Email to: ${applicant.email}`);
-    console.log(`Subject: Submit Your Review`);
-    console.log(`Content: Please submit your review here: ${reviewLink}`);
-
-    res.status(200).send("Simulated email sent successfully!");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Failed to send review link");
+    console.error("Failed to send review email:", error.message);
+    res.status(500).json({ message: "Failed to send review email", error: error.message });
   }
 };

@@ -25,3 +25,19 @@ exports.sendConfirmationEmail = async (email, name) => {
     console.error(`Failed to send confirmation email to ${email}:`, error);
   }
 };
+
+exports.sendReviewEmail = async (email, name, reviewLink) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER, // Sender email
+      to: email, // Recipient email
+      subject: "Submit Your Review", // Subject line
+      text: `Dear ${name},\n\nPlease submit your review for the event. Click the link: ${reviewLink}\n\nBest regards,\nYour Team`, // Plain text email body
+      html: `<p>Dear ${name},</p><p>Please submit your review for the event. Click the link: <a href="${reviewLink}">Submit Review</a></p><p>Best regards,<br>Your Team</p>`, // HTML email body
+    });
+    console.log(`Review email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send review email to ${email}:`, error.message);
+    throw new Error("Email sending failed.");
+  }
+};
