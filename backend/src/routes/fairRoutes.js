@@ -18,7 +18,7 @@ const {
 
 //get
 router.get('/',adminAuth, getFairs);
-router.get('/fair/:id',adminAuth,getFair);
+router.get('/fair/:id',auth,getFair);
 router.get('/accepted-fairs',getAcceptedFairs);
 
 //post

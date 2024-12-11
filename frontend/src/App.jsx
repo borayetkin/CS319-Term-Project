@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Layout from "./components/Layout";
 import Event from "./pages/Event";
+import Fair from "./pages/Fair";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -154,6 +155,7 @@ function App() {
           }
         />
         <Route path="/events/:id" element={<Event />} />
+        <Route path="/fairs/:id" element={<Fair />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         {/* Catch-all Route */}
         <Route path="*" element={<Navigate to="/" />} />
