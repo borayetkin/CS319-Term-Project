@@ -24,6 +24,7 @@ const {
   takeBackEventAction,
   confirmEventAction,
   applyToEvent,
+  isReviewSubmitted,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -41,6 +42,7 @@ router.get("/:id", auth, getEvent);
 // Add this route to fetch event details by ID
 router.get("/details/:id", auth, getEvent); // Assuming `getEvent` handles fetching by ID
 router.get("/:id/assignees", auth, getEventAssignees);
+router.get("/check-review/:eventId", isReviewSubmitted);
 
 // Routes for updating and deleting events
 router.put("/:eventId", advisorAuth, updateEvent);

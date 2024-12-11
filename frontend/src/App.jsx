@@ -32,6 +32,8 @@ import FairApplication from "./pages/FairApplication";
 import DashboardHome from "./pages/CoordinatorPages/DashboardPages/DashboardHome";
 import NotificationsPage from './pages/GuidePages/Notifications';
 import ViewGuidesPage from "./pages/CoordinatorPages/DashboardPages/ViewGuidesPage";
+import ReviewForm from "./pages/ReviewForm";
+import ReviewSubmitted from "./pages/ReviewSubmitted";
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/apply" element={<TourApplication />} />
         <Route path="/invite" element={<FairApplication />} />
+        <Route path="/review/:eventId" element={<ReviewForm />} />
+        <Route path="/review/submitted" element={<ReviewSubmitted />} />
 
         {/* Private Routes */}
         <Route

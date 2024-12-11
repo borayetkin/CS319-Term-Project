@@ -1,0 +1,147 @@
+/* Root Section */
+.review-form-section {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 54.5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: rgba(243, 241, 245, 0.7);
+}
+
+/* Container */
+.review-form-container {
+  padding: 3rem;
+  background: linear-gradient(
+    135deg,
+    rgba(220, 217, 223, 0.7),
+    rgba(230, 224, 234, 0.7),
+    rgba(222, 214, 230, 0.7),
+    rgba(243, 241, 245, 0.7)
+  );
+  max-width: 550px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.review-form-container h1 {
+  font-size: 2.3rem;
+  color: #2b3349;
+  margin-bottom: 15px;
+}
+
+.review-form-description {
+  font-size: 1rem;
+  color: #2b3349;
+  margin-bottom: 25px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2b3349;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9fb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input and Textarea Focus */
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #5a67b3;
+  box-shadow: 0 0 8px rgba(90, 103, 179, 0.3);
+  outline: none;
+}
+
+/* Error States */
+input.error,
+textarea.error {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.review-form-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+/* Star Rating */
+.star-rating {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.star {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #f5a623;
+}
+
+.star:hover,
+.star:focus {
+  color: #f5a623;
+}
+
+/* Submit Button */
+.review-form-submit {
+  background-color: #5a67b3;
+  color: white;
+  padding: 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 6px 15px rgba(90, 103, 179, 0.3);
+}
+
+.review-form-submit:hover {
+  background-color: #444e98;
+  transform: scale(1.02);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .review-form-container {
+    padding: 1.5rem;
+  }
+
+  .review-form-container h1 {
+    font-size: 2rem;
+  }
+
+  .review-form-submit {
+    font-size: 0.9rem;
+    padding: 12px 20px;
+  }
+}
