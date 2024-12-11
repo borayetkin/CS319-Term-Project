@@ -13,21 +13,19 @@ const ReviewForm = () => {
   const [isCheckingStatus, setIsCheckingStatus] = useState(true); // To track if review status is being checked
 
   useEffect(() => {
-    // Check if a review has already been submitted for this event
     const checkReviewStatus = async () => {
       try {
         const response = await fetch(`http://localhost:3000/api/events/check-review/${eventId}`);
         const data = await response.json();
 
-        // If a review is already submitted, set reviewSubmitted to true
         if (data.isReviewAlreadySubmitted) {
           setReviewSubmitted(true);
-          navigate("/review/submitted"); // Redirect to the "Review Submitted" page
+          navigate("/review/submitted");
         }
       } catch (error) {
         console.error("Error checking review status:", error);
       } finally {
-        setIsCheckingStatus(false); // Mark the status check as completed
+        setIsCheckingStatus(false);
       }
     };
 
@@ -54,14 +52,13 @@ const ReviewForm = () => {
         body: JSON.stringify({
           rating,
           comment,
-          eventId
+          eventId,
         }),
       });
 
       const data = await response.json();
 
       if (response.status === 201) {
-        alert("Review submitted successfully!");
         navigate("/review/submitted");
       } else {
         setError(data.message || "Error submitting review.");
@@ -70,12 +67,6 @@ const ReviewForm = () => {
       setError("Error submitting review. Please try again.");
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleRatingHover = (ratingValue) => {
-    if (rating === 0) {
-      setRating(ratingValue);
     }
   };
 
@@ -98,14 +89,12 @@ const ReviewForm = () => {
         {error && <p className="review-form-error">{error}</p>}
         <form className="review-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="rating">Rating (1-5)</label>
+            <label htmlFor="rating">Rating</label>
             <div className="star-rating">
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
                   className={`star ${star <= rating ? "filled" : ""}`}
-                  onMouseEnter={() => handleRatingHover(star)}
-                  onMouseLeave={() => handleRatingHover(0)}
                   onClick={() => handleRatingClick(star)}
                 >
                   ★
@@ -121,7 +110,7 @@ const ReviewForm = () => {
               rows="5"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className={error && !comment ? "error" : ""}
+              placeholder="Write your comment here..."
             ></textarea>
           </div>
           <button
