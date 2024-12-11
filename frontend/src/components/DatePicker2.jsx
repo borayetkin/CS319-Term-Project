@@ -15,10 +15,7 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
     return true;
   };
   }
-  const isWeekday = (date) => {
-    const day = date.getDay();
-    return day !== 0 && day !== 6; // 0 is Sunday, 6 is Saturday
-  };
+
   const daysArray = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
   const formatLocalDate = (date) => {
     const year = date.getFullYear();
@@ -83,8 +80,8 @@ const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
         
         <div className={`custom-date-picker ${size}`}>
         <input
-          type="text"
           
+          readOnly
           name='visitDate'
           style={{"cursor" : "pointer" , "caret-color": "transparent"}}
           value={selectedDate ? formatLocalDate(selectedDate) : ""}

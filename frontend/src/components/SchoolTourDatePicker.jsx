@@ -94,6 +94,7 @@ const CustomDateTimePicker = ({handleChange}) => {
      
         <label htmlFor="visitTime">Visit Time:</label>
         <input type="text" 
+        readOnly
         name="visitTime"
         style={{"cursor" : "pointer" , "caret-color": "transparent"}}
         

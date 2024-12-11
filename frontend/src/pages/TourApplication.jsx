@@ -32,7 +32,7 @@ const TourApplication = () => {
   const [phoneError, setPhoneError] = useState("");
   const [isTypingPhone, setIsTypingPhone] = useState(false);
   const phoneTimeoutRef = useRef(null);
-
+  const dateTimeTimeoutRef = useRef(null);
   // Fetch schools from backend on component mount
   useEffect(() => {
     const fetchSchools = async () => {
@@ -65,7 +65,9 @@ const TourApplication = () => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   };
-
+  const hasEnteredDateAndTime = (date,time) => {
+    return date !== "" && time !== "";
+  };
   const isValidPhone = (phone) => {
     // Regex for Turkish phone number format: 0XXXXXXXXXX (11 digits)
     const phonePattern = /^0\d{10}$/;
@@ -120,7 +122,8 @@ const TourApplication = () => {
           setPhoneError("");
         }
       }, 1000);
-    } else {    console.log(formData);
+    } 
+     else {    
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
   };
@@ -134,6 +137,10 @@ const TourApplication = () => {
       if (phoneTimeoutRef.current) {
         clearTimeout(phoneTimeoutRef.current);
       }
+      if (dateTimeTimeoutRef.current) {
+        clearTimeout(dateTimeTimeoutRef.current);
+      }
+
     };
   }, []);
 
@@ -165,7 +172,15 @@ const TourApplication = () => {
       setPhoneError("Please enter a valid phone number starting with 0 (11 digits)");
       return;
     }
-    
+    if(!hasEnteredDateAndTime(formData.visitDate,formData.visitTime)) {
+      setMessage("Please enter date and time");
+      const messageElement = document.getElementById("message");
+      if (messageElement) {
+        messageElement.focus();
+        
+      }
+      return;
+    }
     const { tourType, ...tourData } = formData;
     const endpoint =
       tourType === "school"
@@ -234,9 +249,20 @@ const TourApplication = () => {
         setMessage("Tour application submitted successfully!");
       } else {
         setMessage("Error: " + data2.message);
+        const messageElement = document.getElementById("message");
+        if (messageElement) {
+          messageElement.focus();
+          
+        }
+     
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");
+      const messageElement = document.getElementById("message");
+      if (messageElement) {
+        messageElement.focus();
+      }
+      return;
     }
   };
 
@@ -260,7 +286,7 @@ const TourApplication = () => {
     <section className="tour-application-section">
       <div className="tour-application-container">
         <h1>Submit a Tour Application</h1>
-        {message && <p className="tour-application-message">{message}</p>}
+        {message && <p className="tour-application-message" id="message" tabindex="0">{message}</p>}
 
         <p className="tour-application-description">
           Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
