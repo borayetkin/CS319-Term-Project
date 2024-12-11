@@ -1,0 +1,48 @@
+  .fair-row {
+    transition: background-color 0.3s ease;
+  }
+
+  .fair-row:hover {
+    background-color: #f1f1f1;
+  }
+
+  .fair-row td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .fair-row .view-details {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .fair-row .view-details:hover {
+    text-decoration: underline;
+  }
+
+  .fair-row .assign-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .fair-row .assign-button:hover {
+    background-color: #218838;
+  }
+
+  .fair-row .unassign-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .fair-row .unassign-button:hover {
+    background-color: #c82333;
+  }
+
