@@ -80,6 +80,7 @@ exports.createSchoolTour = async (req, res) => {
       studentCount,
       additionalNotes,
       phoneNumber,
+      reserveDates
     } = req.body;
 
     if (
@@ -106,8 +107,8 @@ exports.createSchoolTour = async (req, res) => {
       studentCount,
       additionalNotes,
       phoneNumber,
+      reserveDates: reserveDates ? reserveDates.map(date => { return {visitDate : new Date(date.date), visitTime : date.time}}) : [],
     });
-
     schoolTour.setRequiredNumberOfGuides();
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
@@ -118,6 +119,7 @@ exports.createSchoolTour = async (req, res) => {
       schoolTour,
     });
   } catch (error) {
+    console.error(error)
     res.status(500).json({
       message: "Error creating school tour",
       error: error.message,

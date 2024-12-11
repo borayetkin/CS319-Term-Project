@@ -20,7 +20,8 @@ const TourApplication = () => {
     phoneNumber: "",
     majorOfInterest: "",
     schoolID : "",
-    schoolProirity : ""
+    schoolProirity : "",
+    reserveDates: [],
   });
   const [message, setMessage] = useState("");
   const [schools, setSchools] = useState([]);
@@ -84,6 +85,8 @@ const TourApplication = () => {
   };
 
   const handleChange = (e) => {
+    
+    
     if (e.target.name === 'email') {
       const email = e.target.value;
       setFormData({ ...formData, email: email });
@@ -123,7 +126,14 @@ const TourApplication = () => {
         }
       }, 1000);
     } 
-     else {    
+    
+
+     else if (e.target.name === "combinedDateTimeUpdate") {
+      const {visitDate,visitTime,reserveDates} = e.target.value;
+      console.log(visitDate,visitTime,reserveDates);
+      setFormData({ ...formData, visitDate: visitDate, visitTime: visitTime, reserveDates: reserveDates });
+    }else{   
+      
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
   };
@@ -286,7 +296,7 @@ const TourApplication = () => {
     <section className="tour-application-section">
       <div className="tour-application-container">
         <h1>Submit a Tour Application</h1>
-        {message && <p className="tour-application-message" id="message" tabindex="0">{message}</p>}
+        {message && <p className="tour-application-message" id="message" tabIndex="0">{message}</p>}
 
         <p className="tour-application-description">
           Bilkent Üniversitesi’ni daha yakından tanımak isteyen eğitim
