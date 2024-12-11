@@ -122,14 +122,6 @@ userSchema.methods.updateContactInfo = function(email, phone) {
   return this.save();
 };
 
-userSchema.methods.addReview = async function(reviewId) {
-  try {
-    this.reviews.push(reviewId);
-    return this.save();
-  } catch (error) {
-    throw new Error(`Failed to save review: ${error.message}`);
-  }
-}
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -1,25 +1,36 @@
 const Review = require("../models/Review");
 const Event = require("../models/Event");
 const Applicant = require("../models/Applicant");
+const User = require("../models/User");
 
 // Create a new review
 exports.createReview = async (req, res) => {
   const { rating, comment, eventId } = req.body;
 
   try {
-    // Check if the event already has a review
+    // Validate input fields
+    if (!rating) {
+      return res.status(400).json({ message: "Rating is required." });
+    }
+
+    // Check if the event exists
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
 
+    // Check if the event already has a review
     if (event.reviewSubmitted) {
       return res.status(400).json({ message: "Review already submitted for this event." });
     }
 
-    const applicantId = event.applicant;
+    // Retrieve assigned users (if needed)
+    const assignees = event.assignedUsers
+      ? await User.find({ _id: { $in: event.assignedUsers } })
+      : [];
 
     // Create and save the review
+    const applicantId = event.applicant;
     const review = new Review({
       rating,
       comment,
@@ -34,11 +45,29 @@ exports.createReview = async (req, res) => {
     event.reviewSubmitted = true;
     await event.save();
 
+    // Update each assigned user's reviews and recalculate their averageRating
+    for (const assignee of assignees) {
+      assignee.reviews.push(savedReview._id);
+
+      // Fetch all reviews associated with this user
+      const userReviews = await Review.find({ _id: { $in: assignee.reviews } });
+
+      // Calculate the average rating
+      const totalRating = userReviews.reduce((sum, rev) => sum + rev.rating, 0);
+      assignee.averageRating = userReviews.length > 0 ? totalRating / userReviews.length : 0;
+
+      // Save the updated user
+      await assignee.save();
+    }
+
+    // Return success response
     res.status(201).json({ message: "Review submitted successfully.", review: savedReview });
   } catch (error) {
+    console.error("Error creating review:", error.message);
     res.status(500).json({ message: "Error creating review.", error: error.message });
   }
 };
+
 
 // Fetch a specific review
 exports.getReview = async (req, res) => {
@@ -62,6 +91,19 @@ exports.getReview = async (req, res) => {
 // Fetch all reviews for a specific user
 exports.getReviewsByApplicant = async (req, res) => {
   const { applicantId } = req.params;
+
+  try {
+    const reviews = await Review.find({ applicant: applicantId })
+      .populate("event", "visitDate visitTime");
+
+    res.status(200).json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching reviews.", error: error.message });
+  }
+};
+
+exports.getReviewsByUser = async (req, res) => {
+  const { userId } = req.params;
 
   try {
     const reviews = await Review.find({ applicant: applicantId })
