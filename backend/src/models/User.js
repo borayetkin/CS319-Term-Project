@@ -24,12 +24,6 @@ const userSchema = new mongoose.Schema({
   assignedDay: {
     type: String,
   },
-  acceptedTours: [
-    {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
-      default: [],
-    },
-  ],
   // Guide Attributes
   bilkentId: {
     type: Number,
@@ -43,6 +37,12 @@ const userSchema = new mongoose.Schema({
   ],
   completedEvents: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] },
+  ],
+  assignedFairs: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Fair", default: [] },
+  ],
+  completedFairs: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Fair", default: [] },
   ],
   phone: {
     type: String,
@@ -113,6 +113,26 @@ userSchema.methods.completeEvent = function (eventId) {
     return Promise.reject(new Error("Server Error"));
   }
 };
+
+userSchema.methods.addAssignedFair = function (fairId) {
+  if (!this.assignedFairs.includes(fairId)) {
+    this.assignedFairs.push(fairId);
+    return this.save();
+  } else {
+    return Promise.reject(new Error("Fair already assigned"));
+  }
+};
+
+userSchema.methods.removeAssignedFair = function (fairId) {
+  const index = this.assignedFairs.indexOf(fairId);
+  if (index > -1) {
+    this.assignedFairs.splice(index, 1);
+    return this.save();
+  } else {
+    return Promise.reject(new Error("Fair not assigned"));
+  }
+};
+
 userSchema.methods.applyToFair = function (fairID){
     // To be implemented
 }
