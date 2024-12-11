@@ -26,7 +26,7 @@ router.post("/create",createFair);
 
 //post for admin
 router.post('/:id/assign-guide', adminAuth, assignGuideToFair);
-router.post('/:id/remove-guide', adminAuth, removeGuideFromFair);
+router.post('/:id/remove-guide', auth, removeGuideFromFair);
 
 //post for guide
 router.post("/apply", auth, applyToFair);

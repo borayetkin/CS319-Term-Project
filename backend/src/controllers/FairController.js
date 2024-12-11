@@ -174,7 +174,7 @@ exports.assignGuideToFair = async (req, res) => {
     await fair.save();
 
     try {
-      await guide.addAssignedEvent(fairID);
+      await guide.addAssignedFair(fairID);
       await guide.save();
     } catch (error) {
       return res
@@ -204,23 +204,40 @@ exports.assignGuideToFair = async (req, res) => {
 // Remove guide from a fair
 exports.removeGuideFromFair = async (req, res) => {
   try {
+    console.log("Request received to remove guide from fair.");
+    console.log("Fair ID:", req.params.id);
+    console.log("User ID from body:", req.body.userID);
+
     const { id: fairID } = req.params;
     const { userID } = req.body;
 
     const fair = await Fair.findById(fairID);
+    console.log("Fair fetched:", fair);
+
     if (!fair) {
+      console.log("Fair not found with ID:", fairID);
       return res.status(404).json({ message: "Fair not found" });
     }
 
     if (!fair.assignedUsers.includes(userID)) {
+      console.log(`User ID ${userID} is not assigned to the fair.`);
       return res.status(400).json({ message: "Guide is not assigned to this fair." });
     }
 
     fair.assignedUsers = fair.assignedUsers.filter(
       assignedUserID => assignedUserID.toString() !== userID
     );
+    console.log("Updated assignedUsers list:", fair.assignedUsers);
+
     const guide = await User.findById(userID);
-    await guide.removeAssignedEvent(fairID);
+    console.log("Guide fetched:", guide);
+    if (!guide) {
+      console.log("Guide not found with ID:", userID);
+      return res.status(404).json({ message: "Guide not found" });
+    }
+    await guide.removeAssignedFair(fairID);
+    console.log(`Fair ID ${fairID} removed from guide's assigned fairs.`);
+
     await fair.save();
     await guide.save();
     const notifactionProps = {

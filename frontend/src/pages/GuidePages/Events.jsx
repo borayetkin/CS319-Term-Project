@@ -64,7 +64,12 @@ const Events = () => {
 
       if (response.ok) {
         setMessage("Applied to Fair successfully.");
-        window.location.reload();
+        //window.location.reload();
+        setEvents((prevEvents) =>
+          prevEvents.map((fair) =>
+            fair._id === fairId ? { ...fair, isAssigned: true } : fair
+          )
+        );
       } else {
         const errorData = await response.json();
         setMessage(`Failed to apply: ${errorData.message}`);
@@ -73,6 +78,7 @@ const Events = () => {
       setMessage("Error: " + error.message);
     }
   };
+
 
 
 
@@ -172,6 +178,52 @@ const Events = () => {
       setMessage("Error: " + error.message);
     }
   };
+
+  const removeAssignedFair = async (fairId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      console.log("Token:", token); // Debug: Log token
+      console.log("User ID:", user?._id); // Debug: Log user ID
+      console.log("Fair ID:", fairId); // Debug: Log fair ID being removed
+
+      if (!token) {
+        setMessage("Authentication token is missing. Please log in again.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:3000/api/fairs/${fairId}/remove-guide`,
+        {
+          method: "POST", // Ensure method matches backend expectations
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Proper Bearer token header
+          },
+          body: JSON.stringify({ userID: user._id }), // Sending user ID in body
+        }
+      );
+
+    const data = await response.json();
+    console.log("Backend response:", data);
+
+      if (response.ok) {
+        // Successfully removed
+        setMessage("Removed from Fair successfully.");
+        window.location.reload(); // Optional: Reloads the page to reflect changes
+      } else {
+        // Handle backend error messages
+        const errorData = await response.json();
+        setMessage(
+          `Failed to remove from fair: ${errorData.message || "Unknown error"}`
+        );
+      }
+    } catch (error) {
+      // Handle network or other errors
+      setMessage(`An error occurred: ${error.message}`);
+    }
+  };
+
 
   const sortEvents = (events, option) => {
     return [...events].sort((a, b) => {
@@ -315,6 +367,7 @@ const Events = () => {
                       fair={fair}
                       user={user}
                       applyToFair={applyToFair}
+                      removeAssignedFair={removeAssignedFair}
                     />
                   ))
                 : sortedEvents.map((event) => (
