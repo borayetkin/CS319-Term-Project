@@ -4,40 +4,36 @@ dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  service: "gmail", // Replace with your email service provider
+  service: "gmail",
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASSWORD, // Your app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
-exports.sendConfirmationEmail = async (email, name) => {
+exports.sendConfirmationEmail = async (email, name, status = "processing") => {
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER, // Sender address
-      to: email, // Recipient address
-      subject: "Tour Application Confirmation", // Email subject
-      text: `Dear ${name},\n\nThank you for submitting your tour application! We have received your request and will process it shortly.\n\nBest regards,\nYour Team`, // Plain text body
-    });
-    console.log(`Confirmation email sent to ${email}`);
-  } catch (error) {
-    console.error(`Failed to send confirmation email to ${email}:`, error);
-  }
-};
+    let subject = "Tour Application Update";
+    let text = `Dear ${name},\n\nThank you for submitting your tour application! Your application is currently being processed. We will notify you once a decision has been made.\n\nBest regards,\nAtom Team`;
 
-exports.sendReviewEmail = async (email, name, reviewLink) => {
-  try {
+    if (status === "accepted") {
+      subject = "Tour Application Accepted";
+      text = `Dear ${name},\n\nWe are pleased to inform you that your tour application has been accepted! We will contact you soon, we look forward to your visit.\n\nBest regards,\nAtom Team`;
+    } else if (status === "rejected") {
+      subject = "Tour Application Rejected";
+      text = `Dear ${name},\n\nWe regret to inform you that your tour application has been rejected. Please apply again in the future.\n\nBest regards,\nAtom Team`;
+    }
+
     await transporter.sendMail({
-      from: process.env.EMAIL_USER, // Sender email
-      to: email, // Recipient email
-      subject: "Submit Your Review", // Subject line
-      text: `Dear ${name},\n\nPlease submit your review for the event. Click the link: ${reviewLink}\n\nBest regards,\nYour Team`, // Plain text email body
-      html: `<p>Dear ${name},</p><p>Please submit your review for the event. Click the link: <a href="${reviewLink}">Submit Review</a></p><p>Best regards,<br>Your Team</p>`, // HTML email body
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject,
+      text,
     });
-    console.log(`Review email sent to ${email}`);
+
+    console.log(`Email sent to ${email} with status: ${status}`);
   } catch (error) {
-    console.error(`Failed to send review email to ${email}:`, error.message);
-    throw new Error("Email sending failed.");
+    console.error(`Failed to send email to ${email}:`, error);
   }
 };

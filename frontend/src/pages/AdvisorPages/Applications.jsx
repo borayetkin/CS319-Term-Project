@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "../../styles/AdvisorPages/Applications.css";
-import { FaEye, FaCheck, FaTimes, FaTrash } from 'react-icons/fa'; // Import icons
+import { FaEye, FaCheck, FaTimes, FaTrash } from "react-icons/fa"; // Import icons
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 const Applications = () => {
@@ -16,14 +16,13 @@ const Applications = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       console.log(isLoading);
-      
+
       fetchUserProfile(token);
     }
   }, []);
@@ -39,11 +38,9 @@ const Applications = () => {
         const data = await response.json();
         setUser(data);
         fetchApplications(token, data);
-        
-
       } else {
         setIsLoading(false);
-        
+
         setMessage("Failed to fetch user profile");
       }
     } catch (error) {
@@ -79,7 +76,7 @@ const Applications = () => {
     }
   };
 
-  const handleAction = async (eventId,event, status) => {
+  const handleAction = async (eventId, event, status) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -92,12 +89,14 @@ const Applications = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status ,event }),
+          body: JSON.stringify({ status, event }),
         }
       );
 
       if (response.ok) {
-        setMessage(`Application ${status} successfully.`);
+        setMessage(
+          `Application ${status} successfully. An email notification has been sent to the applicant.`
+        );
         fetchApplications(token, user); // Refresh applications
       } else {
         const errData = await response.json();
@@ -148,10 +147,14 @@ const Applications = () => {
       const priority = application.applicant.priority;
       if (!priority) return 0;
       switch (priority) {
-        case "High": return 3;   // Preferred schools
-        case "Medium": return 2; // Focus schools
-        case "General": return 1;
-        default: return 0;
+        case "High":
+          return 3; // Preferred schools
+        case "Medium":
+          return 2; // Focus schools
+        case "General":
+          return 1;
+        default:
+          return 0;
       }
     };
     // Apply sorting based on selected option
@@ -161,12 +164,12 @@ const Applications = () => {
           // First, sort by pending status
           if (a.status === "pending" && b.status !== "pending") return -1;
           if (b.status === "pending" && a.status !== "pending") return 1;
-          
+
           // If both are pending, sort by school priority
           if (a.status === "pending" && b.status === "pending") {
             return getPriorityScore(b) - getPriorityScore(a);
           }
-          
+
           // If neither is pending, sort by date
           return new Date(b.visitDate) - new Date(a.visitDate);
         });
@@ -175,7 +178,9 @@ const Applications = () => {
         filtered.sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate));
         break;
       case "schoolName":
-        filtered.sort((a, b) => (a.schoolName || "").localeCompare(b.schoolName || ""));
+        filtered.sort((a, b) =>
+          (a.schoolName || "").localeCompare(b.schoolName || "")
+        );
         break;
       case "status":
         filtered.sort((a, b) => a.status.localeCompare(b.status));
@@ -196,14 +201,20 @@ const Applications = () => {
   };
 
   // Calculate counts for the slider
-  const pendingApplicationsCount = applications.filter(app => app.status === "pending").length;
-  const pendingSchoolToursCount = applications.filter(app => app.status === "pending" && app.__t === "SchoolTour").length;
-  const pendingIndividualToursCount = applications.filter(app => app.status === "pending" && app.__t === "IndividualTour").length;
+  const pendingApplicationsCount = applications.filter(
+    (app) => app.status === "pending"
+  ).length;
+  const pendingSchoolToursCount = applications.filter(
+    (app) => app.status === "pending" && app.__t === "SchoolTour"
+  ).length;
+  const pendingIndividualToursCount = applications.filter(
+    (app) => app.status === "pending" && app.__t === "IndividualTour"
+  ).length;
 
   const sliderContent = [
     `Pending Applications: ${pendingApplicationsCount}`,
     `Pending School Tours: ${pendingSchoolToursCount}`,
-    `Pending Individual Tours: ${pendingIndividualToursCount}`
+    `Pending Individual Tours: ${pendingIndividualToursCount}`,
   ];
 
   const handleSlide = () => {
@@ -212,56 +223,55 @@ const Applications = () => {
 
   const DetailsModal = ({ application, onClose }) => {
     if (!application) return null;
-   
+
     return (
       <div className="modal-overlay">
         <div className="modal-content">
           <h2>Application Details</h2>
-  
+
           <div className="details-grid">
-          
             {application.__t === "SchoolTour" ? (
               <>
                 <div className="detail-item">
                   <label>School Name:</label>
                   <p>{application.schoolName || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>School Priority:</label>
                   <p>{application.applicant.priority || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>City:</label>
                   <p>{application.city || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Visit Date:</label>
                   <p>{new Date(application.visitDate).toLocaleDateString()}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Visit Time:</label>
                   <p>{application.visitTime || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Student Count:</label>
                   <p>{application.studentCount || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Contact Person:</label>
                   <p>{application.contactPerson || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Email:</label>
                   <p>{application.email || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Phone Number:</label>
                   <p>{application.phoneNumber || "N/A"}</p>
@@ -273,49 +283,52 @@ const Applications = () => {
                   <label>Student Name:</label>
                   <p>{application.studentName || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Student High School:</label>
                   <p>{application.studentHighSchool || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Visit Date:</label>
                   <p>{new Date(application.visitDate).toLocaleDateString()}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Visit Time:</label>
                   <p>{application.visitTime || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Email:</label>
                   <p>{application.applicant.email || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Phone Number:</label>
                   <p>{application.applicant.phoneNumber || "N/A"}</p>
                 </div>
-                
+
                 <div className="detail-item">
                   <label>Major of Interest:</label>
                   <p>{application.majorOfInterest || "N/A"}</p>
                 </div>
               </>
             )}
-            
+
             <div className="detail-item">
               <label>Status:</label>
               <p className={`status-badge ${application.status}`}>
-                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                {application.status.charAt(0).toUpperCase() +
+                  application.status.slice(1)}
               </p>
             </div>
-            
+
             <div className="detail-item full-width">
               <label>Additional Notes:</label>
-              <p className="notes">{application.additionalNotes || "No additional notes"}</p>
+              <p className="notes">
+                {application.additionalNotes || "No additional notes"}
+              </p>
             </div>
           </div>
 
@@ -379,40 +392,40 @@ const Applications = () => {
           </select>
         </div>
       </div>
-      
-        <table>
-          <thead>
-            <tr>
-              {tourType === "SchoolTour" ? (
-                <>
-                  <th>High School Name</th>
-                  <th>High School Priority</th>
-                  <th>City</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Student Amount</th>
-                  <th>Applicant Name</th>
-                  <th>Applicant Email</th>
-                  <th>Applicant Number</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </>
-              ) : (
-                <>
-                  <th>Applicant Name</th>
-                  <th>Student High School</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Person Email</th>
-                  <th>Person Number</th>
-                  <th>Major of Interest</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </>
-              )}
-            </tr>
-          </thead>
-          <tbody>
+
+      <table>
+        <thead>
+          <tr>
+            {tourType === "SchoolTour" ? (
+              <>
+                <th>High School Name</th>
+                <th>High School Priority</th>
+                <th>City</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Student Amount</th>
+                <th>Applicant Name</th>
+                <th>Applicant Email</th>
+                <th>Applicant Number</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </>
+            ) : (
+              <>
+                <th>Applicant Name</th>
+                <th>Student High School</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Person Email</th>
+                <th>Person Number</th>
+                <th>Major of Interest</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody>
           {filteredApplications.length > 0 ? (
             filteredApplications.map((app) => {
               let className = "";
@@ -452,7 +465,7 @@ const Applications = () => {
                               <button
                                 className="accept"
                                 onClick={() =>
-                                  handleAction(app._id,app, "accepted")
+                                  handleAction(app._id, app, "accepted")
                                 }
                                 title="Accept"
                               >
@@ -461,7 +474,7 @@ const Applications = () => {
                               <button
                                 className="decline"
                                 onClick={() =>
-                                  handleAction(app._id,app, "rejected")
+                                  handleAction(app._id, app, "rejected")
                                 }
                                 title="Decline"
                               >
@@ -503,7 +516,7 @@ const Applications = () => {
                               <button
                                 className="accept"
                                 onClick={() =>
-                                  handleAction(app._id, app,"accepted")
+                                  handleAction(app._id, app, "accepted")
                                 }
                                 title="Accept"
                               >
@@ -512,7 +525,7 @@ const Applications = () => {
                               <button
                                 className="decline"
                                 onClick={() =>
-                                  handleAction(app._id, app,"rejected")
+                                  handleAction(app._id, app, "rejected")
                                 }
                                 title="Decline"
                               >
@@ -534,32 +547,35 @@ const Applications = () => {
                 </tr>
               );
             })
-
-      ) :( isLoading ? (
-        <tr>
-          <td colSpan="100" style={{ textAlign: "center",  background : "none" }}>
-            <div >
-          <LoadingSpinner
-          loading="Applications" 
-          style={{maxHeight: "100px"}}/>
-          </div>
-          </td>
-        </tr>
-        ):(
-          <tr>
-            <td colSpan="100" style={{ textAlign: "center" }}>
-              No applications found.
-            </td>
-          </tr>)
-        )}
-      {showDetailsModal && (
-        <DetailsModal
-          application={selectedApplication}
-          onClose={() => setShowDetailsModal(false)}
-        />
-      )}
-                </tbody>
-                </table>
+          ) : isLoading ? (
+            <tr>
+              <td
+                colSpan="100"
+                style={{ textAlign: "center", background: "none" }}
+              >
+                <div>
+                  <LoadingSpinner
+                    loading="Applications"
+                    style={{ maxHeight: "100px" }}
+                  />
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr>
+              <td colSpan="100" style={{ textAlign: "center" }}>
+                No applications found.
+              </td>
+            </tr>
+          )}
+          {showDetailsModal && (
+            <DetailsModal
+              application={selectedApplication}
+              onClose={() => setShowDetailsModal(false)}
+            />
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

@@ -4,11 +4,16 @@ const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
-// Get events with status "accepted"
+const { sendConfirmationEmail } = require("../config/EmailService");
 
+// Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
   try {
-    const acceptedEvents = await Event.find({ status: "accepted" }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+    const acceptedEvents = await Event.find({ status: "accepted" })
+      .populate("assignedAdvisor")
+      .populate("assignedUsers")
+      .populate("applicant")
+      .populate("appliedUsers");
 
     res.status(200).json(acceptedEvents);
   } catch (error) {
@@ -25,8 +30,12 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({
         _id: { $in: user2.assignedEvents },
-      }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
-    
+      })
+        .populate("assignedAdvisor")
+        .populate("assignedUsers")
+        .populate("applicant")
+        .populate("appliedUsers");
+
       res.status(200).json(acceptedEvents);
     } else {
       res.status(400).json({ message: "Access Forbidden" });
@@ -41,7 +50,11 @@ exports.getApplicationsOfAdvisor = async (req, res) => {
 
     if (userparams.role === "advisor") {
       const user2 = await User.findById(userparams.id);
-      const acceptedEvents = await Event.find({ weekday: user2.assignedDay }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+      const acceptedEvents = await Event.find({ weekday: user2.assignedDay })
+        .populate("assignedAdvisor")
+        .populate("assignedUsers")
+        .populate("applicant")
+        .populate("appliedUsers");
 
       res.status(200).json(acceptedEvents);
     } else {
@@ -158,7 +171,6 @@ exports.createIndividualTour = async (req, res) => {
   }
 };
 
-
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {
@@ -180,34 +192,59 @@ exports.getAllEvents = async (req, res) => {
         query.status = "accepted";
       }
 
-      const events = await Event.find(query).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+      const events = await Event.find(query)
+        .populate("assignedAdvisor")
+        .populate("assignedUsers")
+        .populate("applicant")
+        .populate("appliedUsers");
 
       return res.status(200).json(events);
     }
 
     // If accepted events are requested
     if (accepted === "true") {
-      const events = await Event.find({ status: "accepted" }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+      const events = await Event.find({ status: "accepted" })
+        .populate("assignedAdvisor")
+        .populate("assignedUsers")
+        .populate("applicant")
+        .populate("appliedUsers");
 
       return res.status(200).json(events);
     }
 
     // Default case: Fetch all events
-    const events = await Event.find().populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+    const events = await Event.find()
+      .populate("assignedAdvisor")
+      .populate("assignedUsers")
+      .populate("applicant")
+      .populate("appliedUsers");
 
     return res.status(200).json(events);
   } catch (error) {
     console.error("Error in getAllEvents:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
-
 
 //gets completed events
 exports.getCompletedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: { $in: ["completed-non-verified", "completed-verified","canceled-verified","canceled-non-verified"] } }).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
-      
+    const events = await Event.find({
+      status: {
+        $in: [
+          "completed-non-verified",
+          "completed-verified",
+          "canceled-verified",
+          "canceled-non-verified",
+        ],
+      },
+    })
+      .populate("assignedAdvisor")
+      .populate("assignedUsers")
+      .populate("applicant")
+      .populate("appliedUsers");
 
     res.status(200).json(events);
   } catch (error) {
@@ -220,16 +257,18 @@ exports.getCompletedEvents = async (req, res) => {
 // Get a specific event
 exports.getEvent = async (req, res) => {
   try {
-
     const { id } = req.params;
 
     // Fetch the event by ID
-    let event = await Event.findById(id).populate("assignedAdvisor").populate("assignedUsers").populate("applicant").populate("appliedUsers");
+    let event = await Event.findById(id)
+      .populate("assignedAdvisor")
+      .populate("assignedUsers")
+      .populate("applicant")
+      .populate("appliedUsers");
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    
     res.status(200).json(event);
   } catch (error) {
     console.error("Error in getEvent:", error.message);
@@ -238,30 +277,34 @@ exports.getEvent = async (req, res) => {
 };
 const acceptTourApplicationByCoordinator = async (req, res) => {
   try {
-
-  
     const { eventId } = req.params;
     const { userrole, userid } = req.headers;
     const weeakday = req.body.event.weekday;
     const advisors = await Advisor.find({ assignedDay: weeakday });
     const randomAdvisor = advisors[Math.floor(Math.random() * advisors.length)];
     if (!randomAdvisor) {
-
-      return res.status(404).json({ message: "No Advisor with the weekday found" });
+      return res
+        .status(404)
+        .json({ message: "No Advisor with the weekday found" });
     }
 
     await randomAdvisor.acceptTourApplication(eventId);
     await randomAdvisor.save();
-    return res.status(200).json({ message: "Tour application accepted and a random advisor has been assigned!" });
+    return res.status(200).json({
+      message:
+        "Tour application accepted and a random advisor has been assigned!",
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
-}
+};
 const acceptTourApplication = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { userrole, userid } = req.headers;
-   if (userrole === "coordinator") {
+    if (userrole === "coordinator" || userrole === "admin") {
       return await acceptTourApplicationByCoordinator(req, res);
     } else if (userrole !== "advisor") {
       return res.status(401).json({
@@ -275,34 +318,42 @@ const acceptTourApplication = async (req, res) => {
 
     return res.status(200).json({ message: "Tour application accepted" });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
-}
+};
+
 // Update an event
 exports.updateEvent = async (req, res) => {
   try {
-    const { userrole, userid } = req.headers;
     const { eventId } = req.params;
-    if (req.body.status && req.body.status == "accepted") {
-      await acceptTourApplication(req, res);
-    } else {
-      const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
-        new: true,
-      });
+    const { status, event } = req.body;
 
-      if (!updatedEvent) {
-        return res.status(404).json({ message: "Event not found" });
+    if (status === "accepted" || status === "rejected") {
+      const applicant = await Applicant.findById(event.applicant);
+      if (applicant) {
+        await sendConfirmationEmail(applicant.email, applicant.name, status);
       }
-
-      res.status(200).json({
-        message: "Event updated successfully",
-        event: updatedEvent,
-      });
     }
+
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
+      new: true,
+    });
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({
+      message: "Event updated successfully",
+      event: updatedEvent,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 const deleteEventFromUsers = async (eventId) => {
   const users = await User.find();
   for (let i = 0; i < users.length; i++) {
@@ -313,8 +364,7 @@ const deleteEventFromUsers = async (eventId) => {
       await user.save();
     }
   }
-}
-
+};
 
 // Delete an event
 exports.deleteEvent = async (req, res) => {
@@ -422,7 +472,7 @@ exports.assignGuideToEvent = async (req, res) => {
 exports.removeAssignedGuideFromEvent = async (req, res) => {
   try {
     const { userID, eventID } = req.body;
-    
+
     const event = await Event.findById(eventID);
     const user = await User.findById(userID);
     if (!event) {
@@ -441,7 +491,7 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
     }
     res.status(200).json({ message: "Guide removed successfully" });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res
       .status(500)
       .json({ message: "Failed to remove guide", error: error.message });
@@ -529,7 +579,7 @@ exports.markEventAsCompleted = async (req, res) => {
     await Event.findByIdAndUpdate(eventId, {
       status: "completed-non-verified",
     });
-    
+
     try {
       await sendReviewEmail({ body: { eventId } }, res);
     } catch (emailError) {
@@ -539,8 +589,9 @@ exports.markEventAsCompleted = async (req, res) => {
         .json({ message: "Event completed, but failed to send review email." });
     }
 
-    res.status(200).json({ message: "Event marked as completed successfully, review email sent." });
-    
+    res.status(200).json({
+      message: "Event marked as completed successfully, review email sent.",
+    });
   } catch (error) {
     res
       .status(500)
@@ -604,9 +655,8 @@ exports.confirmEventAction = async (req, res) => {
     });
   }
 };
-exports. applyToEvent = async (req, res) => {
+exports.applyToEvent = async (req, res) => {
   try {
-
     const { eventID } = req.body;
     const { userrole, userid } = req.headers;
     const user = await User.findById(userid || req.user.id);
@@ -626,17 +676,16 @@ exports. applyToEvent = async (req, res) => {
 
     // Assign the guide to the event
     event.appliedUsers.push(userid);
-   
 
     await event.save();
 
     // Add the event to the guide's list of assigned events
     res.status(200).json({ message: "Applied to event successfully" });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
-}
+};
 
 exports.isReviewSubmitted = async (req, res) => {
   const { eventId } = req.params; // Get eventId from the request parameters
@@ -649,9 +698,12 @@ exports.isReviewSubmitted = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    return res.status(200).json({ isReviewAlreadySubmitted: event.reviewSubmitted });
-
+    return res
+      .status(200)
+      .json({ isReviewAlreadySubmitted: event.reviewSubmitted });
   } catch (error) {
-    res.status(500).json({ message: "Error checking review status.", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error checking review status.", error: error.message });
   }
 };
