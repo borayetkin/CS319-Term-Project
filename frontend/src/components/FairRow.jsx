@@ -15,7 +15,7 @@ const FairRow = ({ fair, user, applyToFair, removeAssignedFair }) => {
 
   const checkIfUserHasApplied = () => {
     return fair.appliedUsers?.some(
-      (appliedUser) => appliedUser._id === user?._id
+      (appliedUser) => appliedUser === user?._id
     );
   };
 

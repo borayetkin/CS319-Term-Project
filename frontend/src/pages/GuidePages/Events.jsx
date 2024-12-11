@@ -64,7 +64,7 @@ const Events = () => {
 
       if (response.ok) {
         setMessage("Applied to Fair successfully.");
-        //window.location.reload();
+        window.location.reload();
         setEvents((prevEvents) =>
           prevEvents.map((fair) =>
             fair._id === fairId ? { ...fair, isAssigned: true } : fair
