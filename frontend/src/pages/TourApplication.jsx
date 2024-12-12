@@ -664,22 +664,118 @@ const TourApplication = () => {
                       required
                     >
                       <option value="">Select a major</option>
-                      <option value="Computer Science">Computer Science</option>
-                      <option value="Electrical Engineering">
-                        Electrical Engineering
-                      </option>
-                      <option value="Mechanical Engineering">
-                        Mechanical Engineering
-                      </option>
-                      <option value="Civil Engineering">
-                        Civil Engineering
-                      </option>
-                      <option value="Business Administration">
-                        Business Administration
-                      </option>
-                      <option value="Economics">Economics</option>
-                      <option value="Psychology">Psychology</option>
-                      <option value="Architecture">Architecture</option>
+                      {/* EĞİTİM FAKÜLTESİ */}
+                      <optgroup label="EĞİTİM FAKÜLTESİ">
+                        <option value="Temel Eğitim (Sınıf Öğretmenliği)">
+                          Temel Eğitim (Sınıf Öğretmenliği)
+                        </option>
+                        <option value="Eğitim Bilimleri">
+                          Eğitim Bilimleri
+                        </option>
+                        <option value="Öğretmen Yetiştirme">
+                          Öğretmen Yetiştirme
+                        </option>
+                        <option value="Yabancı Dil Olarak İngilizce Öğretimi">
+                          Yabancı Dil Olarak İngilizce Öğretimi
+                        </option>
+                      </optgroup>
+
+                      {/* FEN FAKÜLTESİ */}
+                      <optgroup label="FEN FAKÜLTESİ">
+                        <option value="Fizik">Fizik</option>
+                        <option value="Kimya">Kimya</option>
+                        <option value="Matematik">Matematik</option>
+                        <option value="Moleküler Biyoloji ve Genetik">
+                          Moleküler Biyoloji ve Genetik
+                        </option>
+                      </optgroup>
+
+                      {/* GÜZEL SANATLAR, TASARIM VE MİMARLIK FAKÜLTESİ */}
+                      <optgroup label="GÜZEL SANATLAR, TASARIM VE MİMARLIK FAKÜLTESİ">
+                        <option value="Grafik Tasarımı">Grafik Tasarımı</option>
+                        <option value="Güzel Sanatlar">Güzel Sanatlar</option>
+                        <option value="İç Mimarlık ve Çevre Tasarımı">
+                          İç Mimarlık ve Çevre Tasarımı
+                        </option>
+                        <option value="İletişim ve Tasarımı">
+                          İletişim ve Tasarımı
+                        </option>
+                        <option value="Kentsel Tasarım ve Peyzaj Mimarlığı">
+                          Kentsel Tasarım ve Peyzaj Mimarlığı
+                        </option>
+                        <option value="Mimarlık">Mimarlık</option>
+                      </optgroup>
+
+                      {/* İKTİSADİ, İDARİ VE SOSYAL BİLİMLER FAKÜLTESİ */}
+                      <optgroup label="İKTİSADİ, İDARİ VE SOSYAL BİLİMLER FAKÜLTESİ">
+                        <option value="İktisat">İktisat</option>
+                        <option value="Psikoloji">Psikoloji</option>
+                        <option value="Siyaset Bilimi ve Kamu Yönetimi">
+                          Siyaset Bilimi ve Kamu Yönetimi
+                        </option>
+                        <option value="Tarih">Tarih</option>
+                        <option value="Uluslararası İlişkiler">
+                          Uluslararası İlişkiler
+                        </option>
+                      </optgroup>
+
+                      {/* İNSANİ BİLİMLER VE EDEBİYAT FAKÜLTESİ */}
+                      <optgroup label="İNSANİ BİLİMLER VE EDEBİYAT FAKÜLTESİ">
+                        <option value="Amerikan Kültürü ve Edebiyatı">
+                          Amerikan Kültürü ve Edebiyatı
+                        </option>
+                        <option value="Arkeoloji">Arkeoloji</option>
+                        <option value="Felsefe">Felsefe</option>
+                        <option value="İngiliz Dili ve Edebiyatı">
+                          İngiliz Dili ve Edebiyatı
+                        </option>
+                        <option value="İngilizce, Fransızca Mütercim ve Tercümanlık">
+                          İngilizce, Fransızca Mütercim ve Tercümanlık
+                        </option>
+                        <option value="Türk Edebiyatı">Türk Edebiyatı</option>
+                      </optgroup>
+
+                      {/* İŞLETME FAKÜLTESİ */}
+                      <optgroup label="İŞLETME FAKÜLTESİ">
+                        <option value="İşletme">İşletme</option>
+                      </optgroup>
+
+                      {/* HUKUK FAKÜLTESİ */}
+                      <optgroup label="HUKUK FAKÜLTESİ">
+                        <option value="Hukuk Fakültesi">Hukuk Fakültesi</option>
+                      </optgroup>
+
+                      {/* MÜHENDİSLİK FAKÜLTESİ */}
+                      <optgroup label="MÜHENDİSLİK FAKÜLTESİ">
+                        <option value="Bilgisayar Mühendisliği">
+                          Bilgisayar Mühendisliği
+                        </option>
+                        <option value="Elektrik – Elektronik Mühendisliği">
+                          Elektrik – Elektronik Mühendisliği
+                        </option>
+                        <option value="Endüstri Mühendisliği">
+                          Endüstri Mühendisliği
+                        </option>
+                        <option value="Makine Mühendisliği">
+                          Makine Mühendisliği
+                        </option>
+                      </optgroup>
+
+                      {/* MÜZİK VE SAHNE SANATLARI FAKÜLTESİ */}
+                      <optgroup label="MÜZİK VE SAHNE SANATLARI FAKÜLTESİ">
+                        <option value="Müzik">Müzik</option>
+                        <option value="Tiyatro">Tiyatro</option>
+                      </optgroup>
+
+                      {/* UYGULAMALI BİLİMLER FAKÜLTESİ */}
+                      <optgroup label="UYGULAMALI BİLİMLER FAKÜLTESİ">
+                        <option value="Bilişim Sistemleri ve Teknolojileri">
+                          Bilişim Sistemleri ve Teknolojileri
+                        </option>
+                        <option value="Turizm ve Otel İşletmeciliği">
+                          Turizm ve Otel İşletmeciliği
+                        </option>
+                      </optgroup>
                     </select>
                   </>
                 )}
