@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaCalendarAlt, FaClock, FaEdit, FaSave } from 'react-icons/fa';
 import { MdWork, MdSchool, MdLocationOn, MdLanguage } from 'react-icons/md';
 import '../styles/Profile.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -86,7 +87,7 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <div className="profile-loading">Loading profile...</div>;
+  if (loading) return <LoadingSpinner loading='profile'/>;
   if (error) return <div className="profile-error">{error}</div>;
   if (!profile) return null;
 

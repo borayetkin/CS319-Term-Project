@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "../styles/Event.css";
 import "../styles/TourApplication.css";
 import UserSearch from "../components/UserSearch";
-
+import LoadingSpinner from "../components/LoadingSpinner";
 const Event = ({assignGuideOpened = false}) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
@@ -155,16 +155,14 @@ const Event = ({assignGuideOpened = false}) => {
       setError(error.message)
     }
   };
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
+ 
 
   return (
    
 
     <>
-     {isLoading && (<div>Loading...</div>)}
+     {isLoading && <LoadingSpinner loading="Event"/>}
     {error && <div>{error}</div>}
     {!isLoading &&
       (

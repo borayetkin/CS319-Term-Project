@@ -1,4 +1,4 @@
-const LoadingSpinner = ({loading = "Events"}) => {
+const LoadingSpinner = ({loading = ""}) => {
   return (
     <div className="loading-container">
       <div className="loading-spinner">
