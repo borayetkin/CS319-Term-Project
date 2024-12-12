@@ -26,7 +26,7 @@ const eventSchema = new mongoose.Schema({
   },
   status : {
     type: String,
-    enum : ["pending", "accepted", "rejected","canceled-non-verified","canceled-verified","completed-non-verified","completed-verified"],
+    enum : ["pending", "scheduled", "accepted", "rejected","canceled-resubmission-requested","completed-non-verified","completed-verified"],
     default: "pending"
   },
   hoursOfWork : {
@@ -61,7 +61,11 @@ const eventSchema = new mongoose.Schema({
   reviewSubmitted: {
     type: Boolean,
     default: false
-  }
+  },
+  cancellationTimes: {
+    type: Number,
+    default: 0
+  },
 
 });
 

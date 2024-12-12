@@ -558,7 +558,25 @@ exports.markEventAsCancelled = async (req, res) => {
         .json({ message: "User not assigned to this event" });
     }
 
-    await Event.findByIdAndUpdate(eventId, { status: "canceled-non-verified" });
+    event.cancellationTimes++;
+
+    /*
+    const reviewLink = `http://localhost:5173/review/${eventId}`;
+
+    // Populate the applicant data from the event
+    await event.populate('applicant'); // Wait for population to complete
+    const applicant = event.applicant;
+
+    if (!applicant) {
+      return res.status(404).json({ message: "Applicant not found" });
+    }
+
+    // Send the review email
+    await sendReviewEmail(applicant.email, applicant.name, reviewLink);
+    */
+
+
+    await Event.findByIdAndUpdate(eventId, { status: "canceled-resubmission-requested" });
     res.status(200).json({ message: "Event marked as cancelled successfully" });
   } catch (error) {
     res
