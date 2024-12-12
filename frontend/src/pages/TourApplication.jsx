@@ -607,6 +607,7 @@ const TourApplication = () => {
               <p><strong>Email:</strong> {formData.email}</p>
               <p><strong>Phone Number:</strong> {formData.phoneNumber}</p>
               <p><strong>Visit Date:</strong> {formData.visitDate}</p>
+              {formData.tourType === "school" && ( formData.reserveDates.map((date) => ( <p style={{color : "gray"}}> Reserve Visit Date And Time :{date.date} {date.time}</p>)))}
               <p><strong>Visit Time:</strong> {formData.visitTime}</p>
               <p><strong>City:</strong> {formData.city}</p>
               <p><strong>District:</strong> {formData.district}</p>
