@@ -28,14 +28,9 @@
   border-bottom: 1px solid #ddd;
 }
 
-.event-row .view-details {
-  color: #007bff;
-  text-decoration: none;
-}
 
-.event-row .view-details:hover {
-  text-decoration: underline;
-}
+
+
 
 .event-row .assign-button {
   background-color: #28a745;

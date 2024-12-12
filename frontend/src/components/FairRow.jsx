@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/FairRow.css"; // Import the CSS file
 
-const FairRow = ({ fair, user, applyToFair, removeAssignedFair }) => {
+const FairRow = ({ fair, user, FairRowActions, setMessage, showExtraProperties = [] }) => {
   if (!fair) return null;
 
   const personIconUrl =
@@ -21,78 +21,55 @@ const FairRow = ({ fair, user, applyToFair, removeAssignedFair }) => {
 
   const getFairType = () => "Fair"; // Placeholder, update if different types exist
 
+  const renderExtraProperty = (property) => {
+    if (property === "assignedUsers") {
+      return (
+        <td>
+          {fair.assignedUsers?.length || 0}
+          {fair.assignedUsers?.map((user) => (
+            <div key={user._id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <img
+                src={personIconUrl}
+                alt={user.name}
+                title={user.name}
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+              />
+              {user.name}
+            </div>
+          ))}
+        </td>
+      );
+    } else{
+      return (
+        <td key={property}>
+          {fair[property] || "N/A"}
+        </td>
+      );
+    }
+  };
+
+  const existingProperties = ["schoolName", "fairDate", "status"];
+  const renderExtraProperties = () => {
+    if (showExtraProperties.length === 0) return null;
+    return showExtraProperties.map((property) => {
+      if (existingProperties.includes(property)) return null;
+      return renderExtraProperty(property);
+    });
+  };
+
   return (
     <tr key={fair._id} className="fair-row">
       <td>{fair.schoolName || "N/A"}</td>
       <td>{getFairType()}</td>
       <td>{fair.fairDate ? new Date(fair.fairDate).toLocaleDateString() : "N/A"}</td>
-      <td>
-        {fair.assignedUsers?.length || 0}
-        {fair.assignedUsers?.map((user) => (
-          <div
-            key={user._id}
-            style={{ display: "flex", alignItems: "center", gap: "5px" }}
-          >
-            <img
-              src={personIconUrl}
-              alt={user.name}
-              title={user.name}
-              style={{ width: "20px", height: "20px", cursor: "pointer" }}
-            />
-            {user.name}
-          </div>
-        ))}
-      </td>
-      <td>{fair.requiredNumberOfGuides || "N/A"}</td>
+      {renderExtraProperties()}
       <td>{fair.status || "N/A"}</td>
       <td className="actions-cell">
-        <div className="action-buttons">
-          <Link to={`/fairs/${fair._id}`} className="action-button view">
-            <i className="fas fa-eye"></i>
-            View Details
-          </Link>
-
-          {user && user.role === "advisor" && !fairIsFull && fair.assignedAdvisor === user._id && (
-            <button
-              className="action-button assign"
-              onClick={() => assignGuide(fair._id)}
-            >
-              <i className="fas fa-user-plus"></i>
-              Assign Guide
-            </button>
-          )}
-
-          {user && !checkIfUserHasApplied() && !fairIsFull ? (
-            <button
-              className="action-button apply"
-              onClick={() => applyToFair(fair._id)}
-            >
-              <i className="fas fa-hand-point-up"></i>
-              Apply
-            </button>
-          ) : (
-            user && checkIfUserHasApplied() && !fairIsFull && (
-              <span className="status-badge applied">
-                <i className="fas fa-check"></i>
-                Applied
-              </span>
-            )
-          )}
-
-          {user && user.assignedFairs?.includes(fair._id) && (
-            <button
-              className="action-button unassign"
-              onClick={() => {
-                console.log("Unassign clicked for Fair ID:", fair._id); // Debug: Log Fair ID on click
-                console.log("Current user info:", user); // Debug: Log user info
-                removeAssignedFair(fair._id);
-              }}
-            >
-              <i className="fas fa-user-minus"></i>
-              Unassign
-            </button>
-          )}
-        </div>
+        <FairRowActions
+          fair={fair}
+          user={user}
+          setMessage={setMessage}
+        />
       </td>
     </tr>
   );

@@ -112,7 +112,6 @@ td:last-child {
 }
 
 .button-container button {
-    width: 36px; /* Adjust width */
     height: 36px; /* Adjust height */
     padding: 0;
     border-radius: 4px;
