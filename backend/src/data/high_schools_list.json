@@ -3035,7 +3035,7 @@
     "District": "DOĞUBAYAZIT",
     "SchoolName": "A Takımı-Savaş Ay Anadolu Lisesi",
     "id": 434,
-    "Priority": "General"
+    "Priority": "Medium"
   },
   {
     "City": "AĞRI",
@@ -3329,7 +3329,7 @@
     "District": "PATNOS",
     "SchoolName": "15 Temmuz Şehitleri Anadolu İmam Hatip Lisesi",
     "id": 476,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "AĞRI",

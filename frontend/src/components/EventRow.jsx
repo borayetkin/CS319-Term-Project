@@ -42,7 +42,13 @@ const EventRow = ({
     } else if (property === "phoneNumber") {
       return <td>{event.applicant?.phoneNumber || "N/A"}</td>;
     } else if (property === "priority") {
-      return <td>{event.applicant?.priority || "N/A"}</td>;
+      const priority = event.applicant?.priority || "N/A";
+      let emoji = "";
+      let text = ""
+      if (priority === "High") {emoji = "🚀"; text = "Focus"}
+      else if (priority === "Medium") {emoji = "⭐"; text = "Preferred"}
+      else if (priority === "General") {emoji = "🔵"; text = "General"}
+      return <td>{`${text} ${emoji}`}</td>;
     } else if (property === "applicationDate") {
       return <td>{ formatLocalDate(event.applicationDate) || "N/A"}</td>;
     } else if (property === "assignedAdvisor"){
