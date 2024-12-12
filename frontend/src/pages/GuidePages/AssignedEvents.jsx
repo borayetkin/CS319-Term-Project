@@ -1,38 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import '../../styles/GuidePages/Events.css'
+import "../../styles/GuidePages/Events.css";
 import PastEvents from "./PastEvents";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import GeneralTable from "../../components/GeneralTable";
+import AssignedEventsActions from "../../components/AssignedEventsActions";
 
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
-
+  const [tourType, setTourType] = useState("SchoolTour");
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAssignedEvents(token);
+      fetchUserProfile(token);
     }
   }, []);
-
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user profile");
+      }
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
   const fetchAssignedEvents = async (token) => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/events/user",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("http://localhost:3000/api/events/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         const data = await response.json();
-        const currentDate = new Date();
-        const futureEvents = data.filter(event => new Date(event.visitDate) > currentDate);
-        setAssignedEvents(futureEvents);
+
+        setAssignedEvents(data);
         setIsLoading(false);
       } else {
         setMessage("Failed to fetch assigned events.");
@@ -44,22 +59,29 @@ const AssignedEvents = () => {
     }
   };
 
-  const handleCompleteEvent = async (eventId) => {
+  const handleCompleteEvent = async (eventId, workHours) => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch(`http://localhost:3000/api/events/${eventId}/complete`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:3000/api/events/${eventId}/complete`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ workHours }),
+          }
+        );
 
         if (response.ok) {
           // Update the event status in state to mark it as completed
-          setAssignedEvents(prevEvents => 
-            prevEvents.map(event =>
-              event._id === eventId ? { ...event, status: "completed-non-verified" } : event
+          setAssignedEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId
+                ? { ...event, status: "completed-non-verified" }
+                : event
             )
           );
         } else {
@@ -70,64 +92,121 @@ const AssignedEvents = () => {
       }
     }
   };
-
-  if (showPastEvents === true) return <div> <PastEvents setShowPastEvents={setShowPastEvents} /></div>;
+  const handleMarkCanceled = async (eventId) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/events/${eventId}/cancel`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          // Update the event status in state to mark it as canceled
+          setAssignedEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId
+                ? { ...event, status: "canceled-verified" }
+                : event
+            )
+          );
+        } else {
+          alert("Failed to cancel the event.");
+        }
+      } catch (error) {
+        console.error("Error canceling event:", error);
+      }
+    }
+  };
+  const handleTakeBack = async (eventId) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/events/${eventId}/take-back`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          // Update the event status in state to mark it as accepted
+          setAssignedEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId ? { ...event, status: "accepted" } : event
+            )
+          );
+        } else {
+          alert("Failed to take back the event.");
+        }
+      } catch (error) {
+        console.error("Error taking back event:", error);
+      }
+    }
+  };
+  const filteredEvents = assignedEvents.filter(
+    (event) =>
+      (showPastEvents && new Date(event.visitDate) < new Date()) ||
+      (!showPastEvents && new Date(event.visitDate) > new Date())
+  );
 
   return (
     <div className="events-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
         <h1>Assigned Future Events</h1>
-        <button style={{ width: "auto" }} onClick={() => setShowPastEvents(true)}>
-          View Past Events
+
+        <button
+          style={{ width: "auto" }}
+          onClick={() => {
+            setShowPastEvents((prev) => !prev);
+          }}
+        >
+          {showPastEvents ? "Show Future Events" : "Show Past Events"}
         </button>
       </div>
 
       {message && <p>{message}</p>}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Event Name</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-            <th>Actions</th> {/* New column for actions */}
-          </tr>
-        </thead>
-        <tbody>
-          {assignedEvents.length > 0 ? (
-            assignedEvents.map((event) => (
-              <tr key={event._id}>
-                <td>{event.applicant.name || "N/A"}</td>
-                <td>{new Date(event.visitDate).toLocaleDateString()}</td>
-                <td>{new Date(event.visitDate).toLocaleTimeString()}</td>
-                <td>{event.status}</td>
-                <td>
-                  {/* Button will be disabled if the event is already completed */}
-                  <button 
-                    disabled={event.status.includes("completed")} 
-                    onClick={() => handleCompleteEvent(event._id)}
-                  >
-                    {event.status.includes("completed") ? "Completed" : "Complete"}
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : isLoading ? (
-            <tr>
-              <td colSpan="100" style={{ textAlign: "center", background: "none" }}>
-                <LoadingSpinner loading="Assigned Events" />
-              </td>
-            </tr>
-          ) : (
-            <tr>
-              <td colSpan="100" style={{ textAlign: "center" }}>
-                No events assigned yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <GeneralTable
+        showFairs={false}
+        showTours={true}
+        events={filteredEvents}
+        filter={tourType}
+        setMessage={setMessage}
+        statusFilter="all"
+        searchTerm=""
+        user={user}
+        tourType={tourType}
+        setIsLoading={setIsLoading}
+        EventRowActions={({ event, user, setMessage }) => {
+          return (
+            <AssignedEventsActions
+              event={event}
+              user={user}
+              setMessage={setMessage}
+              handleCompleteEvent={handleCompleteEvent}
+              handleCancelEvent={handleMarkCanceled}
+              handleTakeBackAction={handleTakeBack}
+            />
+          );
+        }}
+        showExtraProperties={{
+          SchoolTour: ["contactPerson", "assignedAdvisor"],
+        }}
+      />
+      {isLoading && <LoadingSpinner />}
     </div>
   );
 };

@@ -45,6 +45,11 @@ const EventRow = ({
       return <td>{event.applicant?.priority || "N/A"}</td>;
     } else if (property === "applicationDate") {
       return <td>{ formatLocalDate(event.applicationDate) || "N/A"}</td>;
+    } else if (property === "assignedAdvisor"){
+      return <td><div style={{display : "flex" , alignItems : "center" ,gap : "5px" , justifyItems : "center" , height : "100%"}}>
+        <img src={personIconUrl} alt = {event.assignedAdvisor.name} title={event.assignedAdvisor.name} style={{ width: "20px", cursor: "pointer" }}/>
+        {event.assignedAdvisor.name}
+      </div></td>;
     }
     else {
       return <td key={property}>{event[property] || "N/A"}</td>;

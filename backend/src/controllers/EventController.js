@@ -495,6 +495,7 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
       await event.save();
       await user.save();
     } catch (error) {
+      console.error(error);
       return res.status(404).json({ message: error.message });
     }
     res.status(200).json({ message: "Guide removed successfully" });
@@ -574,10 +575,12 @@ exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
+    const workHours = req.body.workHours;
     console.log(req.body);
-    // const {workHours}= req.body;
+
+
   
-    
+
     // Fetch event by ID
     let event = await Event.findById(eventId);
     if (!event) {
@@ -590,7 +593,7 @@ exports.markEventAsCompleted = async (req, res) => {
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
-    // event.hoursOfWork = workHours;
+    event.hoursOfWork = workHours;
     // Update event status to "completed-non-verified"
     event.status = "completed-verified";
     await event.save();  // Save the updated event
