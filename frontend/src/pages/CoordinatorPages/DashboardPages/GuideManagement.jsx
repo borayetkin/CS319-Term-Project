@@ -113,20 +113,14 @@ const GuideManagement = () => {
   return (
     <div style={{ padding: "20px" }} className="GuideManagement">
       <div
-        style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        style={{ justifyContent: "space-between", alignItems: "center" }}
       >
-        <h1>Fair Guide Management</h1>
+        <h1> Fair Guide Management</h1>
         <button
           onClick={() => navigate("/dashboard/ManageFairs")}
           style={{ padding: "10px 20px" }}
         >
           Waiting
-        </button>
-        <button
-          onClick={() => navigate("/completed-fairs")}
-          style={{ padding: "10px 20px" }}
-        >
-          View Completed Fairs
         </button>
       </div>
       {message && <p>{message}</p>}
@@ -142,7 +136,6 @@ const GuideManagement = () => {
             <th>Assigned Guides</th>
             <th>Assign New Guide</th>
             <th>Remove Guide</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -225,9 +218,6 @@ const GuideManagement = () => {
                 >
                   Remove Guide
                 </button>
-              </td>
-              <td>
-                {/* Any additional actions, if required */}
               </td>
             </tr>
           ))}

@@ -97,7 +97,6 @@ const ManageFairs = () => {
 
       if (response.ok) {
         setMessage(`Fair application ${status} successfully.`);
-        // Refresh the fairs list
         await fetchFairs(token, user);
 
         // Clear the message after 3 seconds
@@ -241,13 +240,9 @@ const ManageFairs = () => {
       <button
         onClick={sendDebugNotification}
         style={{
-          backgroundColor: "#6366f1",
-          color: "white",
+          width: "auto",
           padding: "8px 16px",
-          borderRadius: "4px",
-          border: "none",
-          cursor: "pointer",
-          marginBottom: "20px"
+          marginLeft: "10px",
         }}
       >
         Send Debug Notification
@@ -276,6 +271,7 @@ const ManageFairs = () => {
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
+            <option value="completed">completed</option>
           </select>
         </div>
       </div>
@@ -306,8 +302,10 @@ const ManageFairs = () => {
                 className = "accepted";
               } else if (app.status === "rejected") {
                 className = "rejected";
-              } else {
+              } else if (app.status === "pending"){
                 className = "pending";
+              } else {
+                className = "completed";
               }
 
 
