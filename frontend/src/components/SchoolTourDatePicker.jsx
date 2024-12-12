@@ -3,7 +3,7 @@ import "../styles/CustomDatePicker.css";
 import "../styles/TourApplication.css";
 import { FaTimes, FaRedo } from "react-icons/fa"; // Import FaRedo icon
 
-const CustomDateTimePicker = ({ handleChange ,reserveDatesImp }) => {
+const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [applications, setApplications] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -163,8 +163,6 @@ const CustomDateTimePicker = ({ handleChange ,reserveDatesImp }) => {
     return false;
   };
   const handleOnChange = (date, reserveDates) => {
-    console.log("date: ", date);
-
     handleChange({
       target: {
         name: "combinedDateTimeUpdate",
@@ -270,35 +268,8 @@ const CustomDateTimePicker = ({ handleChange ,reserveDatesImp }) => {
 
   return (
     <>
-      
       <div className={`custom-date-picker large`}>
-        <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignContent: "center",
-            }}
-          >
-            <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
-            <button
-              type="button"
-              onClick={resetSelections}
-              style={resetButtonStyles}
-            >
-              <FaRedo style={resetIconStyles} /> Reset
-            </button>
-          </div>
-          {reserveDates.length > 0 ? (
-            reserveDates.map((reserve, index) => (
-              <div key={index} style={reservedDateStyles}>
-                {reserve.date} - {reserve.time}
-              </div>
-            ))
-          ) : (
-            <></>
-          )}
-        </div>
+
         {isOpen && (
           <div className="calendar">
             <div className="calendar-header">
@@ -346,6 +317,33 @@ const CustomDateTimePicker = ({ handleChange ,reserveDatesImp }) => {
             </div>
           </div>
         )}
+                <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignContent: "center",
+            }}
+          >
+            <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
+            <button
+              type="button"
+              onClick={resetSelections}
+              style={resetButtonStyles}
+            >
+              <FaRedo style={resetIconStyles} /> Reset
+            </button>
+          </div>
+          {reserveDates.length > 0 ? (
+            reserveDates.map((reserve, index) => (
+              <div key={index} style={reservedDateStyles}>
+                {reserve.date} - {reserve.time}
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
       <p className="restriction-message">
         *Sadece bugünden iki hafta sonraki tarihler seçilebilir.
