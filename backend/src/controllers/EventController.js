@@ -287,6 +287,7 @@ const acceptTourApplicationByCoordinator = async (req, res) => {
     const advisors = await Advisor.find({ assignedDay: weeakday });
     const randomAdvisor = advisors[Math.floor(Math.random() * advisors.length)];
     if (!randomAdvisor) {
+      
       return res
         .status(404)
         .json({ message: "No Advisor with the weekday found" });
@@ -338,6 +339,9 @@ exports.updateEvent = async (req, res) => {
       const applicant = await Applicant.findById(event.applicant);
       if (applicant) {
         await sendConfirmationEmail(applicant.email, applicant.name, status);
+      }
+      if (status === "accepted") {
+        return await acceptTourApplication(req, res);
       }
     }
 
@@ -570,7 +574,10 @@ exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
-
+    console.log(req.body);
+    // const {workHours}= req.body;
+  
+    
     // Fetch event by ID
     let event = await Event.findById(eventId);
     if (!event) {
@@ -583,9 +590,9 @@ exports.markEventAsCompleted = async (req, res) => {
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
-
+    // event.hoursOfWork = workHours;
     // Update event status to "completed-non-verified"
-    event.status = "completed-non-verified";
+    event.status = "completed-verified";
     await event.save();  // Save the updated event
 
     // Generate review link
