@@ -130,17 +130,6 @@ const Applications = () => {
     }
   };
 
-  const getPriorityScore = (application) => {
-    const priority = application?.applicant?.priority;
-    if (!priority) return 0;
-    switch (priority) {
-      case "High": return 3;   // Preferred schools
-      case "Medium": return 2; // Focus schools
-      case "General": return 1;
-      default: return 0;
-    }
-  };
-
   const getFilteredAndSortedApplications = () => {
     let filtered = applications.filter((app) => {
       if (filterStatus !== "all" && app.status !== filterStatus) {
@@ -154,7 +143,6 @@ const Applications = () => {
       }
       return true;
     });
-<<<<<<< HEAD
     const getPriorityScore = (application) => {
       const priority = application.applicant.priority;
       if (!priority) return 0;
@@ -169,8 +157,6 @@ const Applications = () => {
           return 0;
       }
     };
-=======
->>>>>>> 94aabc1 (Fixed the bug that makex applications now show up for coordinators)
     // Apply sorting based on selected option
     switch (sortOption) {
       case "default":
@@ -256,7 +242,7 @@ const Applications = () => {
 
                 <div className="detail-item">
                   <label>School Priority:</label>
-                  <p>{application?.applicant?.priority || "N/A"}</p>
+                  <p>{application.applicant.priority || "N/A"}</p>
                 </div>
 
                 <div className="detail-item">
@@ -455,7 +441,7 @@ const Applications = () => {
                   {tourType === "SchoolTour" ? (
                     <>
                       <td>{app.schoolName || "N/A"}</td>
-                      <td>{app?.applicant?.priority || "N/A"}</td>
+                      <td>{app.applicant.priority || "N/A"}</td>
                       <td>{app.city || "N/A"}</td>
                       <td>{new Date(app.visitDate).toLocaleDateString()}</td>
                       <td>{app.visitTime || "N/A"}</td>
