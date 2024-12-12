@@ -343,18 +343,20 @@ const Events = () => {
         </div>
       </div>
 
-      {sortedEvents.length > 0 ? (
-        <div className="table-container">
+      <div className="table-container">
+        {isLoading ? (
+          <LoadingSpinner loading={viewType === "fairs" ? "Fairs" : "Events"} />
+        ) : sortedEvents.length > 0 ? (
           <table>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>{viewType === "fairs" ? "Fair Name" : "Name"}</th>
                 <th>Type</th>
                 <th>Date</th>
                 <th>Current Guides</th>
                 <th>Required Guides</th>
                 <th>Status</th>
-                <th className="actions-column">Actions</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
