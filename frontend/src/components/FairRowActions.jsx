@@ -1,9 +1,9 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 
 const FairRowActions = ({ fair, user, setMessage }) => {
-  const personIconUrl = "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+  const personIconUrl =
+    "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const fairIsFull = fair.currentGuides >= fair.requiredNumberOfGuides;
 
   const applyToFair = async (fairId) => {
@@ -32,6 +32,7 @@ const FairRowActions = ({ fair, user, setMessage }) => {
       setMessage("Error: " + error.message);
     }
   };
+  const rolesThatApply = ["guide", "advisor"];
 
   const removeAssignedFair = async (fairId) => {
     try {
@@ -59,7 +60,9 @@ const FairRowActions = ({ fair, user, setMessage }) => {
         window.location.reload();
       } else {
         const errorData = await response.json();
-        setMessage(`Failed to remove from fair: ${errorData.message || "Unknown error"}`);
+        setMessage(
+          `Failed to remove from fair: ${errorData.message || "Unknown error"}`
+        );
       }
     } catch (error) {
       setMessage(`An error occurred: ${error.message}`);
@@ -67,7 +70,7 @@ const FairRowActions = ({ fair, user, setMessage }) => {
   };
 
   const checkIfUserHasApplied = () => {
-    return fair.appliedUsers?.some(appliedUser => appliedUser === user?._id);
+    return fair.appliedUsers?.some((appliedUser) => appliedUser === user?._id);
   };
 
   return (
@@ -76,31 +79,51 @@ const FairRowActions = ({ fair, user, setMessage }) => {
         <i className="fas fa-eye"></i>
         View Details
       </Link>
-      {user && user.role === "advisor" && !fairIsFull && fair.assignedAdvisor === user._id && (
-        <button className="action-button assign" onClick={() => assignGuide(fair._id)}>
-          <i className="fas fa-user-plus"></i>
-          Assign Guide
-        </button>
-      )}
-      {user && !checkIfUserHasApplied() && !fairIsFull ? (
-        <button className="action-button apply" onClick={() => applyToFair(fair._id)}>
+      {user &&
+        user.role === "advisor" &&
+        !fairIsFull &&
+        fair.assignedAdvisor === user._id && (
+          <button
+            className="action-button assign"
+            onClick={() => assignGuide(fair._id)}
+          >
+            <i className="fas fa-user-plus"></i>
+            Assign Guide
+          </button>
+        )}
+      {user &&
+      rolesThatApply.includes(user.role) &&
+      !checkIfUserHasApplied() &&
+      !fairIsFull ? (
+        <button
+          className="action-button apply"
+          onClick={() => applyToFair(fair._id)}
+        >
           <i className="fas fa-hand-point-up"></i>
           Apply
         </button>
       ) : (
-        user && checkIfUserHasApplied() && !fairIsFull && (
+        user &&
+        rolesThatApply.includes(user.role) &&
+        checkIfUserHasApplied() &&
+        !fairIsFull && (
           <span className="status-badge applied">
             <i className="fas fa-check"></i>
             Applied
           </span>
         )
       )}
-      {user && user.assignedFairs?.includes(fair._id) && (
-        <button className="action-button unassign" onClick={() => removeAssignedFair(fair._id)}>
-          <i className="fas fa-user-minus"></i>
-          Unassign
-        </button>
-      )}
+      {user &&
+        rolesThatApply.includes(user.role) &&
+        user.assignedFairs?.includes(fair._id) && (
+          <button
+            className="action-button unassign"
+            onClick={() => removeAssignedFair(fair._id)}
+          >
+            <i className="fas fa-user-minus"></i>
+            Unassign
+          </button>
+        )}
     </div>
   );
 };
