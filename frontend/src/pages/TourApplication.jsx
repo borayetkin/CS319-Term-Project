@@ -110,69 +110,74 @@ const TourApplication = () => {
   };
 
   const handleChange = (e) => {
-    if (e.target.name === "email") {
-      const email = e.target.value;
-      setFormData({ ...formData, email: email });
-      setIsTyping(true);
+    const { name, value } = e.target;
 
-      // Clear any existing timeout
-      if (emailTimeoutRef.current) {
-        clearTimeout(emailTimeoutRef.current);
+    // Handle email validation with immediate feedback
+    if (name === "email") {
+      setFormData({ ...formData, email: value });
+      if (!isValidEmail(value)) {
+        setEmailError("Please enter a valid email address.");
+      } else {
+        setEmailError(""); // Clear the error if valid
       }
+      return;
+    }
 
-      // Set new timeout to validate email after user stops typing
-      emailTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false);
-        if (email && !isValidEmail(email)) {
-          setEmailError("Please enter a valid email address");
-        } else {
-          setEmailError("");
-        }
-      }, 1000); // Wait 1 second after user stops typing
-    } else if (e.target.name === "phoneNumber") {
-      const phone = e.target.value;
-      const formattedPhone = formatPhoneNumber(phone);
+    // Handle phone number validation with immediate feedback
+    if (name === "phoneNumber") {
+      const formattedPhone = formatPhoneNumber(value);
       setFormData({ ...formData, phoneNumber: formattedPhone });
-      setIsTypingPhone(true);
 
-      if (phoneTimeoutRef.current) {
-        clearTimeout(phoneTimeoutRef.current);
+      const digitsOnly = formattedPhone.replace(/\D/g, ""); // Extract only digits
+      if (!isValidPhone(digitsOnly)) {
+        setPhoneError(
+          "Please enter a valid phone number starting with 0 (11 digits)."
+        );
+      } else {
+        setPhoneError(""); // Clear the error if valid
       }
+      return;
+    }
 
-      phoneTimeoutRef.current = setTimeout(() => {
-        setIsTypingPhone(false);
-        const digitsOnly = phone.replace(/\D/g, "");
-        if (digitsOnly && !isValidPhone(digitsOnly)) {
-          setPhoneError("Please enter a valid phone number");
-        } else {
-          setPhoneError("");
-        }
-      }, 1000);
-    } else if (e.target.name === "combinedDateTimeUpdate") {
-      const { visitDate, visitTime, reserveDates } = e.target.value;
+    // Handle studentCount validation (must be greater than 0)
+    if (name === "studentCount") {
+      const studentCount = parseInt(value, 10);
+      if (studentCount > 0) {
+        setFormData({ ...formData, studentCount }); // Update state if valid
+        setMessage(""); // Clear any previous error message
+      } else {
+        setMessage("Number of students must be greater than 0.");
+      }
+      return;
+    }
 
+    // Handle combined date and time updates
+    if (name === "combinedDateTimeUpdate") {
+      const { visitDate, visitTime, reserveDates } = value;
       setFormData({
         ...formData,
-        visitDate: visitDate,
-        visitTime: visitTime,
-        reserveDates: reserveDates,
+        visitDate,
+        visitTime,
+        reserveDates,
       });
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      return;
     }
+
+    // Default case: update other fields
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleNextStep = () => {
-    if (validateStep()) {
-      setMessage("");
-      setStep(step + 1);
-    } else {
-      setMessage("Please fill in all required fields");
-      const messageElement = document.getElementById("message");
-      if (messageElement) {
-        messageElement.focus();
-      }
+    // Validate the current step before proceeding
+    if (!validateStep()) {
+      return; // Block navigation if validation fails
     }
+
+    // Clear all errors and proceed
+    setMessage("");
+    setEmailError("");
+    setPhoneError("");
+    setStep(step + 1);
   };
 
   const handlePreviousStep = () => {
@@ -183,21 +188,51 @@ const TourApplication = () => {
   const validateStep = () => {
     switch (step) {
       case 0:
-        return formData.tourType;
+        if (!formData.tourType) {
+          setMessage("Please select a tour type.");
+          return false;
+        }
+        break;
       case 1:
-        return formData.contactPerson && formData.email && formData.phoneNumber;
+        if (
+          !formData.contactPerson ||
+          !formData.email ||
+          !formData.phoneNumber
+        ) {
+          setMessage("Please complete all contact information.");
+          return false;
+        }
+        if (emailError || phoneError) {
+          setMessage("Please fix the errors before proceeding.");
+          return false;
+        }
+        break;
       case 2:
-        return formData.visitDate && formData.visitTime;
+        if (!formData.visitDate || !formData.visitTime) {
+          setMessage("Please select a valid date and time.");
+          return false;
+        }
+        break;
       case 3:
-        return (
-          formData.city &&
-          formData.district &&
-          ((formData.tourType === "individual" && formData.studentHighSchool) ||
-            (formData.studentCount && formData.schoolName))
-        );
+        if (
+          !formData.city ||
+          !formData.district ||
+          (!formData.schoolName && formData.tourType === "school")
+        ) {
+          setMessage("Please provide complete school information.");
+          return false;
+        }
+        if (formData.studentCount <= 0 && formData.tourType === "school") {
+          setMessage("Number of students must be greater than 0.");
+          return false;
+        }
+        break;
       default:
-        return true;
+        break;
     }
+    // Clear any previous message if validation passes
+    setMessage("");
+    return true;
   };
 
   // Clean up the timeout when component unmounts
@@ -737,6 +772,7 @@ const TourApplication = () => {
                 type="button"
                 onClick={handleNextStep}
                 className="navigation-button"
+                disabled={isTyping || isTypingPhone} // Prevent navigation while user is typing
               >
                 <FaArrowRight />
               </button>
