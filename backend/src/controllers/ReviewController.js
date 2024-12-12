@@ -88,7 +88,7 @@ exports.getReview = async (req, res) => {
   }
 };
 
-// Fetch all reviews for a specific user
+// Not working
 exports.getReviewsByApplicant = async (req, res) => {
   const { applicantId } = req.params;
 
@@ -102,12 +102,12 @@ exports.getReviewsByApplicant = async (req, res) => {
   }
 };
 
+//Not working
 exports.getReviewsByUser = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const reviews = await Review.find({ applicant: applicantId })
-      .populate("event", "visitDate visitTime");
+    const reviews = await User.populate("reviews");
 
     res.status(200).json(reviews);
   } catch (error) {
@@ -115,7 +115,7 @@ exports.getReviewsByUser = async (req, res) => {
   }
 };
 
-// Delete a review
+// Delete a review (NOT WORKING)
 exports.deleteReview = async (req, res) => {
   const { reviewId } = req.params;
 
