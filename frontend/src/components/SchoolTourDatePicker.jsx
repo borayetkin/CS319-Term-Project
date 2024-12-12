@@ -3,14 +3,14 @@ import "../styles/CustomDatePicker.css";
 import "../styles/TourApplication.css";
 import { FaTimes, FaRedo } from "react-icons/fa"; // Import FaRedo icon
 
-const CustomDateTimePicker = ({ handleChange }) => {
+const CustomDateTimePicker = ({ handleChange ,reserveDatesImp }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [applications, setApplications] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isTimeSelectionOpen, setIsTimeSelectionOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [reserveDates, setReserveDates] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const fetchDateCounts = async (date) => {
     try {
@@ -28,6 +28,7 @@ const CustomDateTimePicker = ({ handleChange }) => {
 
   useEffect(() => {
     fetchDateCounts(currentDate);
+    setReserveDates(reserveDatesImp);
   }, [currentDate]);
 
   const formatLocalDate = (date) => {
@@ -36,8 +37,6 @@ const CustomDateTimePicker = ({ handleChange }) => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
-
 
   const getAvailability = (time, date) => {
     if (!date) return "white";
@@ -61,16 +60,14 @@ const CustomDateTimePicker = ({ handleChange }) => {
           key={time}
           className={`time-slot ${availability}`}
           disabled={availability === "disabled"}
-          onClick={() => handleCompleteSelection(date,time)}
+          onClick={() => handleCompleteSelection(date, time)}
         >
           {time}
         </button>
       );
     });
   };
-  const handleCompleteSelection = (date,time) => {
-            
-    
+  const handleCompleteSelection = (date, time) => {
     const newReserveDates = [
       ...reserveDates,
       { date: formatLocalDate(date), time },
@@ -78,7 +75,7 @@ const CustomDateTimePicker = ({ handleChange }) => {
     if (newReserveDates.length > 4) {
       newReserveDates.shift();
     }
-    handleOnChange(newReserveDates[0],newReserveDates);
+    handleOnChange(newReserveDates[0], newReserveDates);
     setReserveDates(newReserveDates);
     setIsTimeSelectionOpen(false);
   };
@@ -165,9 +162,9 @@ const CustomDateTimePicker = ({ handleChange }) => {
     }
     return false;
   };
-  const handleOnChange = (date,reserveDates) => {
-    console.log("date: ",date);
-    
+  const handleOnChange = (date, reserveDates) => {
+    console.log("date: ", date);
+
     handleChange({
       target: {
         name: "combinedDateTimeUpdate",
@@ -210,9 +207,9 @@ const CustomDateTimePicker = ({ handleChange }) => {
       return acc;
     }, 0);
 
-    if (totalTours > 6) return "disabled";
-    if (totalTours > 1) return "red";
-    if (totalTours > 0) return "yellow";
+    if (totalTours > 7) return "disabled";
+    if (totalTours > 5) return "red";
+    if (totalTours > 3) return "yellow";
     return "";
   };
 
@@ -273,17 +270,35 @@ const CustomDateTimePicker = ({ handleChange }) => {
 
   return (
     <>
-      <label htmlFor="visitDate">Visit Date:</label>
+      
       <div className={`custom-date-picker large`}>
-        <input
-          readOnly
-          name="visitDate"
-          style={{ cursor: "pointer", caretColor: "transparent" }}
-          value={selectedDate ? formatLocalDate(selectedDate) : ""}
-          onClick={() => setIsOpen(!isOpen)}
-          placeholder="Select a date"
-          required
-        />
+        <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignContent: "center",
+            }}
+          >
+            <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
+            <button
+              type="button"
+              onClick={resetSelections}
+              style={resetButtonStyles}
+            >
+              <FaRedo style={resetIconStyles} /> Reset
+            </button>
+          </div>
+          {reserveDates.length > 0 ? (
+            reserveDates.map((reserve, index) => (
+              <div key={index} style={reservedDateStyles}>
+                {reserve.date} - {reserve.time}
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
         {isOpen && (
           <div className="calendar">
             <div className="calendar-header">
@@ -354,6 +369,7 @@ const CustomDateTimePicker = ({ handleChange }) => {
               style={closeButtonStyles}
               onClick={() => setIsTimeSelectionOpen(false)}
             />
+            Select A Time Slot:
             <div className="time-slots">{renderTimeSlots(selectedDate)}</div>
             <p className="restriction-message">
               *Sarı:Orta Yoğunluk. Kırmızı: Yüksek Yoğunluk.
@@ -361,28 +377,6 @@ const CustomDateTimePicker = ({ handleChange }) => {
           </div>
         </>
       )}
-      <div>
-        <div style={{"display" : "flex" , "justifyContent" : "space-between", alignContent :"center"}}>
-          
-          <h3 style={ {alignSelf : "center"}}>Reserved Dates:</h3>{" "}
-          <button
-            type="button"
-            onClick={resetSelections}
-            style={resetButtonStyles}
-          >
-            <FaRedo style={resetIconStyles} /> Reset
-          </button>
-        </div>
-        {reserveDates.length > 0 ? (
-          reserveDates.map((reserve, index) => (
-            <div key={index} style={reservedDateStyles}>
-              {reserve.date} - {reserve.time}
-            </div>
-          ))
-        ) : (
-          <p>No reserved dates.</p>
-        )}
-      </div>
     </>
   );
 };

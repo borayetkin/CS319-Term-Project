@@ -1,16 +1,14 @@
 .tour-application-section {
   position: relative;
   width: 100%;
-  min-height: calc(
-    100vh - 54.5px
-  ); /* Set min-height to ensure initial full viewport coverage */
+  min-height: calc(100vh - 54.5px); /* Set min-height to ensure initial full viewport coverage */
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 54.5px;
   padding: 2rem;
   z-index: 1;
-
+}
 
 .tour-application-container {
   padding: 3rem;
@@ -170,8 +168,23 @@
 }
 
 /* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .tour-application-container {
+    padding: 1.5rem;
+  }
 
+  .tour-application-container h1 {
+    font-size: 2rem;
+  }
 
+  .tour-type-button,
+  .tour-application-submit {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}
+
+/* Error states (can be combined with existing error styles) */
 .form-group {
   position: relative;
   margin-bottom: 1.5rem;
@@ -195,8 +208,6 @@ input.error {
   transform: translateY(-10px);
   animation: slideIn 0.3s ease-out forwards;
 }
-
-
 
 input {
   width: 100%;
@@ -228,54 +239,79 @@ input[type="tel"]::placeholder {
   font-family: inherit;
 }
 
-/* Error states (can be combined with existing error styles) */
-.form-group {
-  position: relative;
-  margin-bottom: 1.5rem;
+/* Step indicator styling */
+.step-indicator {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease;
+.step-indicator p {
+  margin: 0;
+  font-size: 1rem;
+  color: #2b3349;
 }
 
-.form-group input.error {
-  border-color: #dc2626;
-  background-color: #fef2f2;
+/* Navigation button styling */
+.navigation-button {
+  background-color: #21253d;
+  color: white;
+  padding: .75rem ;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 6px 15px rgba(90, 103, 179, 0.3);
 }
 
-.error-message {
-  color: #dc2626;
-  font-size: 0.875rem;
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: slideIn 0.3s ease-out forwards;
+.navigation-button:hover {
+  background-color: #1a1c2c;
+  transform: scale(1.02);
 }
+
+/* Animation for step transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.step-enter {
+  animation: fadeIn 0.5s forwards;
+}
+
+.step-exit {
+  animation: fadeOut 0.5s forwards;
+}
+
 @keyframes slideIn {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-@media (max-width: 600px) {
-  .tour-application-container {
-    padding: 1.5rem;
-  }
-
-  .tour-application-container h1 {
-    font-size: 2rem;
-  }
-
-  .tour-type-button,
-  .tour-application-submit {
-    font-size: 0.9rem;
-    padding: 10px 20px;
-  }
+.form-navigation {
+  
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
