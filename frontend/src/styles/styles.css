@@ -86,7 +86,7 @@ body {
 
 .primary-button:hover {
   background-color: #444e98;
-  transform: scale(1.02);
+  
 }
 
 /* Form container styling */
@@ -154,7 +154,7 @@ button,
 button:hover,
 .primary-button:hover {
   background-color: #444e98;
-  transform: scale(1.05);
+
 }
 
 /* Table styling */

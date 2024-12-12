@@ -7,6 +7,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import EventRowActions from "../../components/EventRowActions";
 import FairRowActions from "../../components/FairRowActions";
 import GeneralTable from "../../components/GeneralTable";
+import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -14,7 +15,7 @@ const Events = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
   const [sortOption, setSortOption] = useState("visitDate");
-  const [filterType, setFilterType] = useState("SchoolTour"); // Filter for tour type
+  const [showType, setShowType] = useState("SchoolTour"); // Filter for tour type
   const [user, setUser] = useState(null);
   const [fairs, setFairs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +31,13 @@ const Events = () => {
     setError(null);
     setMessage("");
   }, [viewType]);
-
+  useEffect(() => {
+    if(showType === "Fair") {
+      setViewType("fairs");
+    } else {
+      setViewType("tours");
+    }
+  }, [showType]);
   const fetchAcceptedFairs = async () => {
     try {
       setIsLoading(true);
@@ -131,7 +138,7 @@ const Events = () => {
   }
   const sortedFairs = sortFairs(fairs, sortOption);
   const filteredEvents = events.filter((event) => {
-    const matchesType = filterType ? event.__t === filterType : true;
+    const matchesType = showType ? event.__t === showType : true;
     const matchesSearch =
       searchTerm.trim() === "" ||
       (event.applicant?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -172,49 +179,13 @@ const Events = () => {
       {message && <div className="alert-message">{message}</div>}
 
       <div className="controls-container">
-        <div>
-          <button
-            onClick={() => {
-              setFilterType("SchoolTour");
-              setViewType("tours");
-            }}
-            style={{
-              padding: "5px 30px",
-              width: "auto",
-              backgroundColor: filterType === "SchoolTour" ? "#ddd" : "",
-            }}
-          >
-            School Tours
-          </button>
-          <button
-            onClick={() => {
-              setFilterType("IndividualTour");
-              setViewType("tours");
-            }}
-            style={{
-              marginRight: "10px",
-              marginLeft: "10px",
-              padding: "5px 30px",
-              width: "auto",
-              backgroundColor: filterType === "IndividualTour" ? "#ddd" : "",
-            }}
-          >
-            Individual Tours
-          </button>
-          <button
-            onClick={() => {
-              setFilterType("fairs");
-              setViewType("fairs");
-            }}
-            style={{
-              marginLeft: "10px",
-              padding: "5px 30px",
-              backgroundColor: viewType === "fairs" ? "#ddd" : "",
-            }}
-          >
-            Fairs
-          </button>
-        </div>
+        <TypeSelectionTrio
+          setShowType={setShowType}
+          haveFairButton={true}
+          haveSchoolTourButton={true}
+          haveIndividualTourButton={true}
+          showType={showType}
+        />
         <div className="filter-sort-controls">
           <div className="control-group">
             <label htmlFor="sortOption">
@@ -249,7 +220,7 @@ const Events = () => {
             user={user}
             fairs={sortedFairs}
             events={sortedEvents}
-            filter={filterType}
+            showType={showType}
             searchTerm={searchTerm}
             EventRowActions={EventRowActions}
             FairRowActions={FairRowActions}

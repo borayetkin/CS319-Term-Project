@@ -4,6 +4,7 @@ import "../../styles/AdvisorPages/Applications.css";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
+import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -127,10 +128,11 @@ const Applications = () => {
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
-      <div className="slider-box" onClick={handleSlide}>
-        {sliderContent[slideIndex]}
-      </div>
+      <TypeSelectionTrio setShowType={ setTourType} haveFairButton={false} haveSchoolTourButton={true} haveIndividualTourButton={true} showType={tourType} />
+
+      
       {message && <p>{message}</p>}
+
       <div className="controls-container">
         <div className="filter-controls">
           <label htmlFor="filter">Filter by Status:</label>
@@ -145,22 +147,9 @@ const Applications = () => {
             <option value="rejected">Rejected</option>
           </select>
         </div>
-        <div className="tour-type-controls">
-          <h2 className="tour-type-heading">
-            Showing {tourType === "SchoolTour" ? "School" : "Individual"} Tours
-          </h2>
-          <button
-            onClick={() =>
-              setTourType(
-                tourType === "SchoolTour" ? "IndividualTour" : "SchoolTour"
-              )
-            }
-          >
-            {tourType === "SchoolTour"
-              ? "Show Individual Tours"
-              : "Show School Tours"}
-          </button>
-        </div>
+        <div className="slider-box" onClick={handleSlide}>
+        {sliderContent[slideIndex]}
+      </div>
         <div className="sort-controls">
           <label htmlFor="sort">Sort by:</label>
           <select
@@ -187,9 +176,10 @@ const Applications = () => {
         setMessage={setMessage}
         user={user}
         events={sortedApplications}
-        filter={tourType}
+
         statusFilter= {filterStatus}
         searchTerm=""
+        showType={tourType}
         setIsLoading={setIsLoading}
         EventRowActions={ApplicationsRowActions}
       />

@@ -14,7 +14,7 @@ const GeneralTable = ({
   filter = "",
   statusFilter = "all",
   searchTerm = "",
-  tourType = "SchoolTour",
+  showType = "SchoolTour",
   setIsLoading = () => {},
   EventRowActions = () => {},
   FairRowActions = () => {},
@@ -147,17 +147,17 @@ const GeneralTable = ({
     <>
       <table>
         <thead>
-          {filter === "SchoolTour" && renderSchoolTourTableHeader()}
-          {filter === "IndividualTour" && renderIndividualTourTableHeader()}
-          {filter === "fairs" && renderFairTableHeader()}
+          {showType === "SchoolTour" && renderSchoolTourTableHeader()}
+          {showType === "IndividualTour" && renderIndividualTourTableHeader()}
+          {showType === "Fair" && renderFairTableHeader()}
         </thead>
         <tbody>
-          {filter === "fairs" && showFairs && renderFairs(filteredFairs)}
+          {showType === "Fair" && showFairs && renderFairs(filteredFairs)}
           {showTours &&
-            filter === "SchoolTour" &&
+            showType === "SchoolTour" &&
             renderSchoolTours(filteredEvents)}
           {showTours &&
-            filter === "IndividualTour" &&
+            showType === "IndividualTour" &&
             renderIndividualTours(filteredEvents)}
         </tbody>
       </table>

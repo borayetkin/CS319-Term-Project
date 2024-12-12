@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/GuidePages/Events.css";
-import PastEvents from "./PastEvents";
+
 import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import AssignedEventsActions from "../../components/AssignedEventsActions";
+import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
@@ -152,8 +153,8 @@ const AssignedEvents = () => {
   };
   const filteredEvents = assignedEvents.filter(
     (event) =>
-      (showPastEvents && new Date(event.visitDate) < new Date()) ||
-      (!showPastEvents && new Date(event.visitDate) > new Date())
+      ((showPastEvents && new Date(event.visitDate) < new Date()) ||
+      (!showPastEvents && new Date(event.visitDate) > new Date())) && (event.__t === tourType)
   );
 
   return (
@@ -176,7 +177,7 @@ const AssignedEvents = () => {
           {showPastEvents ? "Show Future Events" : "Show Past Events"}
         </button>
       </div>
-
+      <TypeSelectionTrio showType={tourType} setShowType={setTourType} haveFairButton= {false}/>
       {message && <p>{message}</p>}
 
       <GeneralTable
@@ -188,7 +189,7 @@ const AssignedEvents = () => {
         statusFilter="all"
         searchTerm=""
         user={user}
-        tourType={tourType}
+        showType={tourType}
         setIsLoading={setIsLoading}
         EventRowActions={({ event, user, setMessage }) => {
           return (
@@ -204,6 +205,7 @@ const AssignedEvents = () => {
         }}
         showExtraProperties={{
           SchoolTour: ["contactPerson", "assignedAdvisor"],
+          IndividualTour: [ "studentHighSchool", "majorOfInterest"],
         }}
       />
       {isLoading && <LoadingSpinner />}
