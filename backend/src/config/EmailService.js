@@ -12,24 +12,62 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-exports.sendConfirmationEmail = async (email, name, status = "processing") => {
+exports.sendConfirmationEmail = async (
+  email,
+  name,
+  status = "processing",
+  tourData
+) => {
   try {
     let subject = "Tour Application Update";
     let statusMessage = "Thank you for submitting your tour application!";
-    let color = "#0056b3";  // Default color for processing
-    let actionMessage = "Your application is currently being processed. We will notify you once a decision has been made.";
+    let color = "#0056b3"; // Default color for processing
+    let actionMessage =
+      "Your application is currently being processed. We will notify you once a decision has been made.";
 
     if (status === "accepted") {
       subject = "Tour Application Accepted";
-      statusMessage = "We are pleased to inform you that your tour application has been accepted! We will contact you soon, and we look forward to your visit.";
-      color = "#4CAF50";  // Green for accepted
+      statusMessage =
+        "We are pleased to inform you that your tour application has been accepted! We will contact you soon, and we look forward to your visit.";
+      color = "#4CAF50"; // Green for accepted
       actionMessage = "Congratulations, your application has been accepted!";
     } else if (status === "rejected") {
       subject = "Tour Application Rejected";
-      statusMessage = "We regret to inform you that your tour application has been rejected. Please apply again in the future.";
-      color = "#f44336";  // Red for rejected
-      actionMessage = "We regret to inform you that your application has been rejected.";
+      statusMessage =
+        "We regret to inform you that your tour application has been rejected. Please apply again in the future.";
+      color = "#f44336"; // Red for rejected
+      actionMessage =
+        "We regret to inform you that your application has been rejected.";
     }
+    console.log(`Tour Data: ${tourData}`);
+    const tourDetails = `
+      <p><strong>Tour Type:</strong> ${tourData.__t}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone Number:</strong> ${tourData.applicant?.phoneNumber}</p>
+      <p><strong>Visit Date:</strong> ${tourData.visitDate}</p>
+      <p><strong>Visit Time:</strong> ${tourData.visitTime}</p>
+
+      ${
+        tourData.__t === "SchoolTour"
+          ? `
+        <p><strong>Contact Person:</strong> ${tourData.contactPerson}</p>
+        <p><strong>School Name:</strong> ${tourData.city} ${tourData.schoolName} ${tourData.district}</p>
+        <p><strong>Number of Students:</strong> ${tourData.studentCount}</p>
+        ${tourData.reserveDates
+          .map(
+            (date,index) =>
+            { if (index !== 0) return`<p style="color: gray;">Reserve Visit Date And Time: ${date.visitDate} ${date.visitTime}</p>`}
+          )
+          .join("")}
+      `
+          : `
+        <p><strong>Contact Person:</strong> ${tourData.applicant.name}</p>
+        <p><strong>High School:</strong> ${tourData.city} ${tourData.studentHighSchool} ${tourData.district}</p>
+        <p><strong>Major of Interest:</strong> ${tourData.majorOfInterest}</p>
+      `
+      }
+      <p><strong>Additional Notes:</strong> ${tourData.additionalNotes}</p>
+    `;
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -41,7 +79,7 @@ exports.sendConfirmationEmail = async (email, name, status = "processing") => {
           ${actionMessage}
         </p>
         <p style="text-align: left; margin: 20px 0;">
-          "Application Details Will Be Placed Here"
+          ${tourDetails}
         </p>
         <p>
           Thank you for your patience!<br />
@@ -66,8 +104,6 @@ exports.sendConfirmationEmail = async (email, name, status = "processing") => {
     console.error(`Failed to send email to ${email}:`, error);
   }
 };
-
-
 
 exports.sendReviewEmail = async (email, name, reviewLink) => {
   console.log(`I AM TRIGGERED`);
@@ -114,4 +150,40 @@ exports.sendReviewEmail = async (email, name, reviewLink) => {
     throw new Error("Failed to send email");
   }
 };
+exports.sendNewUserEmail = async (user) => {
+  const email = user.email;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: `Welcome to ATOM!`,
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0056b3;">Hello ${user.name},</h2>
+        <p>
+          Welcome to ATOM! We are excited to have you on board. You are now part of a community that values your insights and experiences, to help us represent Bilkent better. 
+          You have been assigned as a ${user.role} in our system.
+        </p>
+        <p>
+          Your account has been successfully created. You can now log in to your account and start exploring the platform with the following credentials:
+        <p>
+          <strong>Email:</strong> ${email}<br />
+          <strong>Password:</strong> ${user.password}<br />
 
+          If you have any questions or need assistance, feel free to reach out to us. We are here to help!
+        </p>
+        <p>
+          Best regards,<br />
+          ATOM Team
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Signup email sent to ${email}`);
+  } catch (error) {
+    console.error(`Error sending email to ${email}: ${error.message}`);
+    throw new Error("Failed to send email");
+  }
+};

@@ -62,6 +62,14 @@ const eventSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  city : {
+    type: String,
+    default: ""
+  },
+  district : {
+    type: String,
+    default: ""
+  },
   cancellationTimes: {
     type: Number,
     default: 0

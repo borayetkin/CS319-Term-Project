@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const Advisor = require("../models/Advisor");
 const Event = require("../models/Event");
 const Coordinator = require("../models/Coordinator");
+const {sendNewUserEmail} = require("../config/EmailService");
 const saveUser = async ({ name, email, password, role }) =>{
     // Create new user with conditional role
     const user = new User({ name, email, password, role });
@@ -116,7 +117,9 @@ exports.updateUserRole = async (req, res) => {
 // Register a new user
 exports.signupUser = async (req, res) => {
   const { name, email, password, role } = req.body;
-
+  const {sendEmail} = req.query;
+  const sendEmailBool = sendEmail === 'true';
+  const userToSendEmail = {name, email,password,role };
   if (!name || !email || !password || !role) {
     return res.status(400).json({ message: "Please provide all fields." });
   }
@@ -146,7 +149,7 @@ exports.signupUser = async (req, res) => {
       }
        newUser = new Advisor({...req.body, password: hashedPassword});
        await newUser.save()
-    }else if(user.role === 'coordinator'){
+    }else if(userRole === 'coordinator'){
       newUser = new Coordinator({...req.body, password: hashedPassword});
       await newUser.save()
     }
@@ -160,7 +163,9 @@ exports.signupUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
+    if (sendEmailBool) {
+      await sendNewUserEmail(userToSendEmail);
+    }
     res.status(201).json({ token, message: "User registered successfully." });
   } catch (err) {
     console.error(err);

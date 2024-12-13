@@ -94,6 +94,7 @@ exports.createSchoolTour = async (req, res) => {
       visitDate,
       visitTime,
       city,
+      district,
       studentCount,
       additionalNotes,
       phoneNumber,
@@ -121,6 +122,7 @@ exports.createSchoolTour = async (req, res) => {
       visitDate: new Date(visitDate),
       visitTime,
       city,
+      district,
       studentCount,
       additionalNotes,
       phoneNumber,
@@ -130,7 +132,9 @@ exports.createSchoolTour = async (req, res) => {
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
 
-    await schoolTour.save();
+    const savedTour = await schoolTour.save();
+    await savedTour.populate("applicant")
+    await sendConfirmationEmail(email, contactPerson, "", savedTour);
     res.status(201).json({
       message: "School tour created successfully",
       schoolTour,
@@ -157,7 +161,8 @@ exports.createIndividualTour = async (req, res) => {
       additionalNotes = "",
       hoursOfWork = 3,
       requiredNumberOfGuides = 1,
-
+      city,
+      district,
       status = "pending",
     } = req.body;
 
@@ -172,13 +177,16 @@ exports.createIndividualTour = async (req, res) => {
       hoursOfWork,
       requiredNumberOfGuides,
       status,
+      city,
+      district,
       typeStr: "Individual Tour",
     });
     individualTour.addToApplicantEvents();
     individualTour.setWeekday();
 
-    const savedTour = await individualTour.save();
-
+    const savedTour = await individualTour.save()
+    await savedTour.populate("applicant")
+    await sendConfirmationEmail(savedTour.applicant.email, savedTour.applicant.name, "", savedTour);
     res.status(201).json({
       message: "Individual tour created successfully",
       tour: savedTour,
@@ -351,23 +359,21 @@ exports.updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { status, event } = req.body;
-
+    let updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
+      new: true,
+    });
+    updatedEvent =await updatedEvent.populate("applicant");
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
     if (status === "accepted" || status === "rejected") {
       const applicant = await Applicant.findById(event.applicant);
       if (applicant) {
-        await sendConfirmationEmail(applicant.email, applicant.name, status);
+        await sendConfirmationEmail(applicant.email, applicant.name, status, updatedEvent);
       }
       if (status === "accepted") {
         return await acceptTourApplication(req, res);
       }
-    }
-
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
-      new: true,
-    });
-
-    if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found" });
     }
 
     res.status(200).json({
@@ -375,6 +381,7 @@ exports.updateEvent = async (req, res) => {
       event: updatedEvent,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

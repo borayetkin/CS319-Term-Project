@@ -31,7 +31,7 @@ const majors = [
   { label: "İKTİSADİ, İDARİ VE SOSYAL BİLİMLER FAKÜLTESİ", options: ["İktisat", "Psikoloji", "Siyaset Bilimi ve Kamu Yönetimi", "Tarih", "Uluslararası İlişkiler"] },
   { label: "İNSANİ BİLİMLER VE EDEBİYAT FAKÜLTESİ", options: ["Amerikan Kültürü ve Edebiyatı", "Arkeoloji", "Felsefe", "İngiliz Dili ve Edebiyatı", "İngilizce, Fransızca Mütercim ve Tercümanlık", "Türk Edebiyatı"] },
   { label: "İŞLETME FAKÜLTESİ", options: ["İşletme"] },
-  { label: "HUKUK FAKÜLTES��", options: ["Hukuk Fakültesi"] },
+  { label: "HUKUK FAKÜLTESİ", options: ["Hukuk Fakültesi"] },
   { label: "MÜHENDİSLİK FAKÜLTESİ", options: ["Bilgisayar Mühendisliği", "Elektrik – Elektronik Mühendisliği", "Endüstri Mühendisliği", "Makine Mühendisliği"] },
   { label: "MÜZİK VE SAHNE SANATLARI FAKÜLTESİ", options: ["Müzik", "Tiyatro"] },
   { label: "UYGULAMALI BİLİMLER FAKÜLTESİ", options: ["Bilişim Sistemleri ve Teknolojileri", "Turizm ve Otel İşletmeciliği"] }
@@ -350,6 +350,7 @@ const TourApplication = () => {
             email: formData.email,
             phoneNumber: formData.phoneNumber,
             city: formData.city,
+            district: formData.district,
             additionalNotes: formData.additionalNotes,
             majorOfInterest: formData.majorOfInterest,
             typeStr: "Individual Tour",
