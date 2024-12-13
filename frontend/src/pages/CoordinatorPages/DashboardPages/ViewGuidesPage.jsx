@@ -39,12 +39,46 @@ const ViewGuidesPage = () => {
 
   const filteredGuides = guides.filter(guide =>
     guide.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    guide.email.toLowerCase().includes(searchQuery.toLowerCase())
+    guide.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    guide.department?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const GuideDetailsModal = ({ guide, onClose }) => {
     if (!guide) return null;
     
+    const formatEventInfo = (event) => {
+      if (!event) return null;
+      
+      let title = event.schoolName || event.applicant?.name || "Unnamed Event";
+      return (
+        <div key={event._id} className="event-item">
+          <div className="event-header">
+            <strong>{title}</strong>
+            <span className="event-status">{event.status}</span>
+          </div>
+          <div className="event-details">
+            <p>
+              <span>Date:</span> {event.visitDate ? new Date(event.visitDate).toLocaleDateString() : 'N/A'}
+            </p>
+            <p>
+              <span>Time:</span> {event.visitTime || 'N/A'}
+            </p>
+            <p>
+              <span>Location:</span> {event.location || 'N/A'}
+            </p>
+            <p>
+              <span>City:</span> {event.city || 'N/A'}
+            </p>
+            {event.studentCount && (
+              <p>
+                <span>Students:</span> {event.studentCount}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className="modal-overlay">
         <div className="modal-content">
@@ -70,39 +104,46 @@ const ViewGuidesPage = () => {
               <label>Department:</label>
               <p>{guide.department || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
-              <label>Available Days:</label>
-              <p>{guide.availableDays?.join(', ') || "Not set"}</p>
+              <label>Bilkent ID:</label>
+              <p>{guide.bilkentId || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
-              <label>Preferred Hours:</label>
-              <p>{guide.preferredHours || "Not set"}</p>
+              <label>Year:</label>
+              <p>{guide.year || "N/A"}</p>
             </div>
-            
+
             <div className="detail-item">
-              <label>Languages:</label>
-              <p>{guide.languages?.join(', ') || "Not specified"}</p>
+              <label>Total Work Hours:</label>
+              <p>{guide.totalWorkHours || "0"}</p>
             </div>
-            
+
             <div className="detail-item">
-              <label>Tours Completed:</label>
-              <p>{guide.toursCompleted || "0"}</p>
+              <label>Average Rating:</label>
+              <p>{guide.averageRating?.toFixed(1) || "No ratings yet"}</p>
             </div>
+
 
             <div className="detail-item full-width">
               <label>Assigned Events:</label>
-              <div className="assigned-events-list">
+              <div className="events-list">
                 {guide.assignedEvents?.length > 0 ? (
-                  guide.assignedEvents.map(event => (
-                    <div key={event._id} className="event-item">
-                      <p>{new Date(event.date).toLocaleDateString()} - {event.time}</p>
-                      <p>{event.title || "Unnamed Event"}</p>
-                    </div>
-                  ))
+                  guide.assignedEvents.map(event => formatEventInfo(event))
                 ) : (
                   <p>No assigned events</p>
+                )}
+              </div>
+            </div>
+
+            <div className="detail-item full-width">
+              <label>Completed Events:</label>
+              <div className="events-list">
+                {guide.completedEvents?.length > 0 ? (
+                  guide.completedEvents.map(event => formatEventInfo(event))
+                ) : (
+                  <p>No completed events</p>
                 )}
               </div>
             </div>
@@ -128,7 +169,7 @@ const ViewGuidesPage = () => {
           <FiSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search guides by name or email..."
+            placeholder="Search guides by name, email, or department..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -143,8 +184,9 @@ const ViewGuidesPage = () => {
               <th>Email</th>
               <th>Phone</th>
               <th>Department</th>
-              <th>Available Days</th>
-              <th>Tours Completed</th>
+              <th>Year</th>
+              <th>Work Hours</th>
+              <th>Rating</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -170,8 +212,9 @@ const ViewGuidesPage = () => {
                   </div>
                 </td>
                 <td>{guide.department || "N/A"}</td>
-                <td>{guide.availableDays?.join(', ') || "Not set"}</td>
-                <td>{guide.toursCompleted || "0"}</td>
+                <td>{guide.year || "N/A"}</td>
+                <td>{guide.totalWorkHours || 0}</td>
+                <td>{guide.averageRating?.toFixed(1) || "N/A"}</td>
                 <td>
                   <div className="action-buttons">
                     <button
