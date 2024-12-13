@@ -51,13 +51,15 @@ exports.sendConfirmationEmail = async (
         tourData.__t === "SchoolTour"
           ? `
         <p><strong>Contact Person:</strong> ${tourData.contactPerson}</p>
-        <p><strong>School Name:</strong> ${tourData.city} ${tourData.schoolName} ${tourData.district}</p>
+        <p><strong>School Name:</strong> ${tourData.city} ${
+              tourData.schoolName
+            } ${tourData.district}</p>
         <p><strong>Number of Students:</strong> ${tourData.studentCount}</p>
         ${tourData.reserveDates
-          .map(
-            (date,index) =>
-            { if (index !== 0) return`<p style="color: gray;">Reserve Visit Date And Time: ${date.visitDate} ${date.visitTime}</p>`}
-          )
+          .map((date, index) => {
+            if (index !== 0)
+              return `<p style="color: gray;">Reserve Visit Date And Time: ${date.visitDate} ${date.visitTime}</p>`;
+          })
           .join("")}
       `
           : `
@@ -185,5 +187,85 @@ exports.sendNewUserEmail = async (user) => {
   } catch (error) {
     console.error(`Error sending email to ${email}: ${error.message}`);
     throw new Error("Failed to send email");
+  }
+};
+
+exports.sendGuideAssignmentEmail = async (guide, event) => {
+  try {
+    const subject = "You have been assigned to a new event";
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0056b3;">Hello ${guide.name},</h2>
+        <p>
+          You have been assigned to a new event. Here are the event details:
+        </p>
+        <ul>
+          <li><strong>Event ID:</strong> ${event._id}</li>
+          <li><strong>Event Type:</strong> ${event.typeStr}</li>
+          <li><strong>Visit Date:</strong> ${new Date(
+            event.visitDate
+          ).toLocaleDateString()}</li>
+          <li><strong>Visit Time:</strong> ${event.visitTime}</li>
+          <li><strong>Location:</strong> ${event.city}, ${event.district}</li>
+        </ul>
+        <p>
+          Please review the event details and prepare accordingly. For any queries, feel free to reach out to the coordinator.
+        </p>
+        <p>
+          Best regards,<br />
+          ATOM Team
+        </p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: guide.email,
+      subject,
+      html: htmlContent,
+    });
+
+    console.log(`Guide assignment email sent to ${guide.email}`);
+  } catch (error) {
+    console.error(
+      `Failed to send guide assignment email to ${guide.email}:`,
+      error
+    );
+  }
+};
+
+exports.sendFairAssignmentEmail = async (guide, fair) => {
+  try {
+    const subject = "You have been assigned to a new fair";
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0056b3;">Hello ${guide.name},</h2>
+        <p>You have been assigned to a new fair. Here are the details:</p>
+        <ul>
+          <li><strong>Fair Name:</strong> ${fair.schoolName}</li>
+          <li><strong>Date:</strong> ${new Date(
+            fair.fairDate
+          ).toLocaleDateString()}</li>
+          <li><strong>Time:</strong> ${fair.fairTime}</li>
+          <li><strong>Location:</strong> ${fair.location}, ${fair.city}</li>
+        </ul>
+        <p>Thank you for your commitment to this event. If you have any questions, please contact the organizer.</p>
+        <p>Best regards,<br />ATOM Team</p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: guide.email,
+      subject,
+      html: htmlContent,
+    });
+
+    console.log(`Fair assignment email sent to ${guide.email}`);
+  } catch (error) {
+    console.error(
+      `Failed to send fair assignment email to ${guide.email}:`,
+      error
+    );
   }
 };
