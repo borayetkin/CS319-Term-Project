@@ -102,7 +102,7 @@ userSchema.methods.completeEvent = function (eventId, workHour) {
       if (ind > -1) {
         this.assignedEvents.splice(ind, 1);
         this.completedEvents.push(eventId);
-        this.totalWorkHours += workHour;
+        this.totalWorkHours += parseFloat(workHour);
         return this.save();
       } else {
         return Promise.reject(new Error("Event not assigned"));

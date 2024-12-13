@@ -419,9 +419,13 @@ exports.deleteEvent = async (req, res) => {
     const { eventId } = req.params;
     const event = await Event.findByIdAndDelete(eventId);
     try {
-      const applicant = await Applicant.findByIdAndDelete(
+      const applicant = await Applicant.findById(
         event.applicant.applicantID
       );
+      applicant.events = applicant.events.filter(
+        (event) => event._id != eventId
+      );
+      await applicant.save();
       await deleteEventFromUsers(eventId);
     } catch (error) {
       console.error(error);
@@ -639,7 +643,7 @@ exports.markEventAsCompleted = async (req, res) => {
     const workHours = req.body.workHours;
 
     // Fetch event by ID
-    let event = await Event.findById(eventId);
+    let event = await Event.findById(eventId).populate("assignedUsers");
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -648,14 +652,21 @@ exports.markEventAsCompleted = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // Check if the user is assigned to the event
-    if (!event.isUserAssigned(userId)) {
+    if (!event.appliedUsers.some((user) => user._id == userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
     try {
-      await user.completeEvent(eventId, workHours);
+        const assignedUsers = event.assignedUsers;
+        for (let i = 0; i < assignedUsers.length; i++) {
+          let user = assignedUsers[i];
+          // user = new User(user);
+          await user.completeEvent(eventId, workHours);
+        }
+
     } catch (error) {
+      console.error(error);
       return res.status(400).json({ message: error.message });
     }
 
@@ -693,11 +704,11 @@ exports.markEventAsCompleted = async (req, res) => {
 
 exports.takeBackEventAction = async (req, res) => {
   try {
-    console.log("takeBackEventAction");
+   
     const { eventId } = req.params;
     const userId = req.user.id;
-    const event = await Event.findById(eventId);
-    if (!event.isUserAssigned(userId)) {
+    const event = await Event.findById(eventId).populate("assignedUsers");
+    if (!event.assignedUsers.some((user) => user._id == userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
@@ -708,12 +719,16 @@ exports.takeBackEventAction = async (req, res) => {
     try {
       await event.takeBackAction();
     } catch (error) {
-      res.status(400).json({ message: "Event status not eligible for action" });
+      return res.status(400).json({ message: "Event status not eligible for action" });
     }
-    let user = await User.findById(userId);
 
-    await user.takeBackCompletedEvent(eventId, event.hoursOfWork);
 
+   for (let i = 0; i < event.assignedUsers.length; i++) {
+      let user = event.assignedUsers[i];
+      await user.takeBackCompletedEvent(eventId, event.hoursOfWork);
+      await user.save();
+    }
+   
     res.status(200).json({ message: "Event status set back to accepted" });
   } catch (error) {
     console.error(error);

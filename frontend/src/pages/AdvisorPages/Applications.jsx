@@ -48,7 +48,12 @@ const Applications = () => {
   const sortApplications = (applications) => {
     
     if (sortOption === "default") return applications.sort((a, b) => {
-        return new Date(a.visitDate)-new Date(b.visitDate) ;
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (b.status === "pending" && a.status !== "pending") return 1;
+        if (a.status === "pending" && b.status === "pending") {
+          return getPriortyScore(b) -getPriortyScore(a)
+        }
+        return new Date(b.visitDate) - new Date(a.visitDate)
     });
     return applications.sort((a, b) => {
 
@@ -166,7 +171,7 @@ const Applications = () => {
           </select>
         </div>
       </div>
-      <GeneralTable
+      {!isLoading &&<GeneralTable
         showFairs={false}
         showTours={true}
         showExtraProperties={{
@@ -182,7 +187,7 @@ const Applications = () => {
         showType={tourType}
         setIsLoading={setIsLoading}
         EventRowActions={ApplicationsRowActions}
-      />
+      />}
        {isLoading && <LoadingSpinner />}         
 
     </div>
