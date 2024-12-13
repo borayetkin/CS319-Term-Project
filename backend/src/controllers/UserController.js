@@ -300,24 +300,19 @@ exports.updateContactInfo = async (req, res) => {
 
 exports.getGuidesWithDetails = async (req, res) => {
   try {
-    const guides = await User.find({ 
-      role: "guide" 
-    }).select("-password")
-      .populate('assignedEvents')
+    const guides = await User.find({ role: "guide" })
+      .select("-password")
+      .populate({
+        path: 'assignedEvents',
+        select: 'title visitDate visitTime location status applicant schoolName city studentCount'
+      })
+      .populate({
+        path: 'completedEvents',
+        select: 'title visitDate visitTime location status applicant schoolName city studentCount'
+      })
       .lean();
 
-    const guidesWithStats = await Promise.all(guides.map(async (guide) => {
-      const completedTours = guide.assignedEvents?.filter(event => 
-        event.status.includes('completed')
-      ).length || 0;
-
-      return {
-        ...guide,
-        toursCompleted: completedTours
-      };
-    }));
-
-    res.status(200).json(guidesWithStats);
+    res.status(200).json(guides);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch guides", error: err.message });
