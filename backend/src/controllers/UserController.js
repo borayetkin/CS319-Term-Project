@@ -275,7 +275,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getAllGuides = async (req,res) => {
   try {
-    const guides = await User.find({ role: "guide" }).select("-password");
+    const guides = await User.find({ role: "guide" }).select("-password").populate('assignedEvents').populate('completedEvents');
     //console.log("Fetched guides:", guides);
     res.status(200).json(guides);
   } catch (err) {
@@ -366,7 +366,7 @@ exports.getAdvisorInfo = async (req, res) => {
 exports.updateUserFromProfile = async (req, res) => {
   try {
     const { email, phoneNumber, major, password, assignedDay } = req.body;
-    console.log(phoneNumber);
+
     
     const user = await User.findById(req.user.id );
     if (!user) {
@@ -376,8 +376,6 @@ exports.updateUserFromProfile = async (req, res) => {
     user.phoneNumber = phoneNumber || user.phoneNumber;
     user.major = major || user.major;
     if(password){
-      console.log("noooo");
-      
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       user.password = hashedPassword;

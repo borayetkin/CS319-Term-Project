@@ -258,7 +258,7 @@ const AssignedEvents = () => {
       <TypeSelectionTrio showType={tourType} setShowType={setTourType} haveFairButton= {false}/>
       {message && <p>{message}</p>}
 
-      <GeneralTable
+      {!isLoading &&<GeneralTable
         showFairs={false}
         showTours={true}
         events={filteredEvents}
@@ -285,7 +285,7 @@ const AssignedEvents = () => {
         }}
         showExtraProperties={extraProperties}
 
-      />
+      />}
       {isLoading && <LoadingSpinner />}
     </div>
   );
