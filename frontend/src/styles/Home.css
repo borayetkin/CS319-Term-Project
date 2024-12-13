@@ -8,26 +8,29 @@
 
 /* Hero Section */
 .hero-section {
-  height: 90vh;
+  height: 100vh;
   background: linear-gradient(
-    rgba(0, 0, 0, 0.4),
-    rgba(0, 0, 0, 0.4)
-  ), url('/images/bilkent3.jpeg');
+    to right,
+    rgba(15, 98, 206, 0.61),
+    rgba(0, 0, 40, 0.8)
+  ), url('/images/bilkent4.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
+  overflow: hidden;
 }
 
 .hero-content {
   max-width: 1200px;
   text-align: center;
-  padding: 2rem;
+  padding: 4rem;
   position: relative;
   z-index: 2;
+  margin: 0 auto;
 }
 
 .hero-title-container {
@@ -50,21 +53,21 @@
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-  animation: backgroundPulse 3s ease-in-out infinite;
+
 }
 
 .hero-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(4rem, 8vw, 7rem);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: clamp(4rem, 10vw, 7rem);
   line-height: 1.1;
-  letter-spacing: 2px;
+  font-weight: 600;
   color: white;
-  margin: 0;
-  position: relative;
-  text-shadow: 
-    2px 2px 0 rgba(0, 0, 0, 0.1),
-    -2px -2px 0 rgba(255, 255, 255, 0.1);
-  animation: titleReveal 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  animation: fadeSlideUpTitle 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.5s backwards;
 }
 
 .hero-title::before {
@@ -89,13 +92,14 @@
 }
 
 .hero-subtitle {
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
-  margin-top: 1.5rem;
-  opacity: 0;
-  color: white;
-  font-weight: 300;
-  animation: fadeIn 0.8s ease forwards;
-  animation-delay: 1s;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+  font-weight: 400;
+  animation: fadeSlideUp 1s ease-out 1.2s backwards;
 }
 
 .hero-buttons {
@@ -112,18 +116,26 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeSlideUp 1s ease-out 0.4s backwards;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-cta {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+  background: white;
+  color: #000;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
 .hero-cta:hover {
   transform: translateY(-2px);
-  background: #1d4ed8;
-  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
 .hero-secondary {
@@ -136,6 +148,27 @@
 .hero-secondary:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+}
+
+/* Modern hover effect for CTA */
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.7s ease;
+}
+
+.hero-cta:hover::before {
+  left: 100%;
 }
 
 /* Stats Section */
@@ -164,6 +197,7 @@
     0 4px 20px rgba(0, 0, 0, 0.05),
     0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .stat-card:hover {
@@ -178,6 +212,12 @@
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;
   display: block;
+  animation: shine 8s linear infinite;
+  background: linear-gradient(90deg, #fff, #4f46e5, #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .stat-label {
@@ -189,6 +229,8 @@
 .featured-section {
   padding: 6rem 2rem;
   background: white;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .featured-container {
@@ -204,6 +246,7 @@
   border-radius: 24px;
   background: #f8fafc;
   transition: all 0.3s ease;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .featured-card:hover {
@@ -230,8 +273,24 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
 }
-.main-wrapper {
+
+.featured-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.featured-link:hover::after {
+  width: 100%;
+}
+
 /* Events Section */
 .events-section {
   padding: 6rem 2rem;
@@ -256,6 +315,22 @@
   color: #2563eb;
   text-decoration: none;
   font-weight: 600;
+  position: relative;
+}
+
+.view-all::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.view-all:hover::after {
+  width: 100%;
 }
 
 .events-grid {
@@ -273,6 +348,7 @@
   display: flex;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .event-card:hover {
@@ -298,11 +374,13 @@
 .event-content {
   padding: 1.5rem;
 }
-}
+
 /* News Section */
 .news-section {
   padding: 6rem 2rem;
   background: white;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .news-grid {
@@ -319,6 +397,7 @@
   background: white;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .news-card:hover {
@@ -344,6 +423,8 @@
 .campus-life-section {
   padding: 6rem 2rem;
   background: #f8fafc;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .campus-grid {
@@ -363,6 +444,7 @@
   color: #1e293b;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.8s ease-out;
 }
 
 .campus-card:hover {
@@ -388,11 +470,9 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -447,6 +527,7 @@
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .action-card:hover {
@@ -475,7 +556,7 @@
   gap: 1rem;
   margin-top: auto;
 }
-.main-wrapper {
+
 .action-button {
   display: inline-flex;
   align-items: center;
@@ -556,7 +637,7 @@
 .action-button.secondary:active {
   transform: translateY(1px) scale(0.98);
 }
-}
+
 /* Add these keyframe animations */
 @keyframes shine {
   0% {
@@ -584,7 +665,7 @@
     opacity: 0;
   }
 }
-.main-wrapper {
+
 /* Add loading state animations */
 .action-button.primary.loading {
   background: linear-gradient(
@@ -596,7 +677,7 @@
   background-size: 200% 100%;
   animation: gradientShift 2s infinite;
 }
-}
+
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -647,7 +728,7 @@
     font-size: 1.5rem;
   }
 }
-.main-wrapper {
+
 /* Button animation styles */
 .action-button {
   position: relative;
@@ -680,7 +761,7 @@
 .button-clicked {
   animation: buttonClick 0.3s forwards;
 }
-}
+
 @keyframes buttonClick {
   0% {
     transform: scale(1);
@@ -750,6 +831,181 @@
 @media (max-width: 768px) {
   .hero-title {
     letter-spacing: 1px;
+  }
+}
+
+/* Add floating animation for background elements */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Add a decorative element that floats */
+.hero-section::after {
+  content: '';
+  position: absolute;
+  right: 10%;
+  top: 20%;
+  width: 400px;
+  height: 400px;
+  background: url('/images/satellite.png') no-repeat center center;
+  background-size: contain;
+  animation: float 6s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* Adjust the navigation bar */
+.nav-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  background: transparent;
+}
+
+/* Add subtle gradient overlay */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(66, 133, 244, 0.1),
+    rgba(219, 68, 55, 0.1),
+    rgba(244, 180, 0, 0.1)
+  );
+  z-index: 1;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Modern animations */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Parallax effect for sections */
+.featured-section,
+.news-section {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Floating animation for decorative elements */
+.featured-section::after,
+.news-section::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: float 6s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+/* Gradient animation */
+.stat-number {
+  background: linear-gradient(90deg, #fff, #4f46e5, #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 8s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Hover effect for links */
+.featured-link,
+.view-all {
+  position: relative;
+}
+
+.featured-link::after,
+.view-all::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.featured-link:hover::after,
+.view-all:hover::after {
+  width: 100%;
+}
+
+/* Intersection Observer animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth transition for all interactive elements */
+a, button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add this new animation keyframe */
+@keyframes fadeSlideUpTitle {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.98);
+    filter: blur(8px);
+  }
+  50% {
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
