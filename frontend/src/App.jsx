@@ -34,6 +34,7 @@ import NotificationsPage from './pages/GuidePages/Notifications';
 import ViewGuidesPage from "./pages/CoordinatorPages/DashboardPages/ViewGuidesPage";
 import ReviewForm from "./pages/ReviewForm";
 import ReviewSubmitted from "./pages/ReviewSubmitted";
+import AdvisorInformation from "./pages/AdvisorInformation";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/invite" element={<FairApplication />} />
         <Route path="/review/:eventId" element={<ReviewForm />} />
         <Route path="/review/submitted" element={<ReviewSubmitted />} />
+        <Route path="/advisor-info" element={<AdvisorInformation />} />
 
         {/* Private Routes */}
         <Route

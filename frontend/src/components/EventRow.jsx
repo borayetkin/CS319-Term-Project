@@ -44,26 +44,50 @@ const EventRow = ({
     } else if (property === "priority") {
       const priority = event.applicant?.priority || "N/A";
       let emoji = "";
-      let text = ""
-      if (priority === "High") {emoji = "🚀"; text = "Focus"}
-      else if (priority === "Medium") {emoji = "⭐"; text = "Preferred"}
-      else if (priority === "General") {emoji = "🔵"; text = "General"}
+      let text = "";
+      if (priority === "High") {
+        emoji = "🚀";
+        text = "Focus";
+      } else if (priority === "Medium") {
+        emoji = "⭐";
+        text = "Preferred";
+      } else if (priority === "General") {
+        emoji = "🔵";
+        text = "General";
+      }
       return <td>{`${text} ${emoji}`}</td>;
     } else if (property === "applicationDate") {
-      return <td>{ formatLocalDate(event.applicationDate) || "N/A"}</td>;
-    } else if (property === "assignedAdvisor"){
-      return <td><div style={{display : "flex" , alignItems : "center" ,gap : "5px" , justifyItems : "center" , height : "100%"}}>
-        <img src={personIconUrl} alt = {event.assignedAdvisor.name} title={event.assignedAdvisor.name} style={{ width: "20px", cursor: "pointer" }}/>
-        {event.assignedAdvisor.name}
-      </div></td>;
-    }
-    else {
+      return <td>{formatLocalDate(event.applicationDate) || "N/A"}</td>;
+    } else if (property === "assignedAdvisor") {
+      return (
+        <td>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              justifyItems: "center",
+              height: "100%",
+            }}
+          >
+            <img
+              src={personIconUrl}
+              alt={event.assignedAdvisor.name}
+              title={event.assignedAdvisor.name}
+              style={{ width: "20px", cursor: "pointer" }}
+              onClick={() => {window.location.href = `/advisor-info?id=${event.assignedAdvisor._id}`}}
+            />
+            {event.assignedAdvisor.name}
+          </div>
+        </td>
+      );
+    } else {
       return <td key={property}>{event[property] || "N/A"}</td>;
     }
   };
   const formatLocalDate = (date) => {
     return new Date(date).toLocaleDateString();
-  }
+  };
   const existingProperties = ["applicant", "visitTime", "visitDate", "status"];
   const renderExtraProperties = () => {
     if (showExtraProperties.length === 0) return null;
@@ -73,26 +97,23 @@ const EventRow = ({
     });
   };
   return (
-   
-    (
-      <tr key={event._id} className="event-row">
-        <td>{event.applicant?.name || "N/A"}</td>
-        <td>
-          {" "}
-          <div className="time">{event.visitTime}</div>
-        </td>
-        <td>
-          {event.visitDate
-            ? new Date(event.visitDate).toLocaleDateString()
-            : "N/A"}
-        </td>
-        {renderExtraProperties()}
-        <td>{event.status || "N/A"}</td>
-        <td className="actions-cell">
-          <EventRowActions event={event} user={user} setMessage={setMessage} />
-        </td>
-      </tr>
-    )
+    <tr key={event._id} className="event-row">
+      <td>{event.applicant?.name || "N/A"}</td>
+      <td>
+        {" "}
+        <div className="time">{event.visitTime}</div>
+      </td>
+      <td>
+        {event.visitDate
+          ? new Date(event.visitDate).toLocaleDateString()
+          : "N/A"}
+      </td>
+      {renderExtraProperties()}
+      <td>{event.status || "N/A"}</td>
+      <td className="actions-cell">
+        <EventRowActions event={event} user={user} setMessage={setMessage} />
+      </td>
+    </tr>
   );
 };
 

@@ -213,7 +213,7 @@ const Event = ({assignGuideOpened = false}) => {
           <div className="assigned-user">
             
            
-            <img src={personIconUrl} alt="Profile" />
+            <img src={personIconUrl} alt="Profile" onClick={() => {window.location.href = `/advisor-info?id=${event.assignedAdvisor._id}`}} />
             <span>{event.assignedAdvisor.name} </span>
          
           </div>

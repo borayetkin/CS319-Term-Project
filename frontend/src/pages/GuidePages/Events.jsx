@@ -174,6 +174,7 @@ const Events = () => {
           />
           <i className="fas fa-search search-icon"></i>
         </div>
+        <Link to="/advisor-info" className="advisor-info-link">View Advisors</Link>
       </div>
 
       {message && <div className="alert-message">{message}</div>}

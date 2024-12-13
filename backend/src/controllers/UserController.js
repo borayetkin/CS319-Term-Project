@@ -323,3 +323,13 @@ exports.getGuidesWithDetails = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch guides", error: err.message });
   }
 };
+
+exports.getAdvisorInfo = async (req, res) => {
+  try {
+    const advisors = await User.find({ role: "advisor" }).select("-password").populate('dayApplications');
+    res.status(200).json(advisors);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while fetching advisors." });
+  }
+};
