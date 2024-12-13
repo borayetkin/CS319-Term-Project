@@ -6,7 +6,6 @@ const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
 const { sendConfirmationEmail } = require("../config/EmailService");
 const { sendReviewEmail } = require("../config/EmailService");
-const { findApplicantById } = require("./ApplicantController")
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -594,7 +593,7 @@ exports.markEventAsCompleted = async (req, res) => {
     const { eventId } = req.params;
     const userId = req.user.id;
     const workHours = req.body.workHours;
-    console.log(req.body);
+   
 
 
   
@@ -604,13 +603,22 @@ exports.markEventAsCompleted = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-
+    let user = await User.findById (userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     // Check if the user is assigned to the event
     if (!event.isUserAssigned(userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
+    try {
+        await user.completeEvent(eventId, workHours);
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+
     event.hoursOfWork = workHours;
     // Update event status to "completed-non-verified"
     event.status = "completed-verified";
@@ -645,6 +653,7 @@ exports.markEventAsCompleted = async (req, res) => {
 
 exports.takeBackEventAction = async (req, res) => {
   try {
+    console.log("takeBackEventAction");
     const { eventId } = req.params;
     const userId = req.user.id;
     const event = await Event.findById(eventId);
@@ -661,8 +670,13 @@ exports.takeBackEventAction = async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: "Event status not eligible for action" });
     }
+    let user = await User.findById(userId);
+
+    await user.takeBackCompletedEvent(eventId, event.hoursOfWork);
+   
     res.status(200).json({ message: "Event status set back to accepted" });
   } catch (error) {
+    console.error(error);
     res
       .status(500)
       .json({ message: "Failed to take back event", error: error.message });

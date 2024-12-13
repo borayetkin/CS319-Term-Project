@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FaCheck, FaUserMinus,FaMinus } from "react-icons/fa";
 
 
-const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,handleCancelEvent, handleTakeBackAction }) => {
+const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,handleCancelEvent, handleTakeBackAction ,actionInProcess = false, setActionInProcess = ()=>{} }) => {
   const isPast = new Date(event.visitDate) < new Date();
   const isCompleted = event.status.includes("completed") || event.status.includes("canceled");
   const [workHours, setWorkHours] = useState(0);
@@ -24,6 +24,7 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
     setWorkHours(e.target.value);
   };
   const removeAssignedEvent = async (eventId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
     console.log(user)
@@ -49,6 +50,7 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
 
 
@@ -71,14 +73,16 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
               placeholder=""
               value={workHours}
               onChange={handleWorkHours}
-              style={{ maxWidth: "80px" }}
+              style={{ maxWidth: "80px",cursor: actionInProcess ? "not-allowed" : "pointer" }}
+              disabled={actionInProcess}
             />
           </div>
           
           <div style={ {display : "flex" , flexDirection : "row" , gap: "20px", maxHeight :"50px"}}>
           <button
             className={"action-button apply"}
-            disabled={event.status.includes("completed")}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
             onClick={() => handleCompleteEvent(event._id , workHours)}
           >
             <FaCheck/>
@@ -86,7 +90,8 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
           </button>
           <button
             className={"action-button unassign"}
-            disabled={event.status.includes("completed")}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
             onClick={() => handleCancelEvent(event._id)}
           >
             <FaMinus/>
@@ -98,6 +103,8 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
       {!isPast && !isCompleted && (
         <button
           className={"action-button unassign"}
+          disabled={actionInProcess}
+          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
           onClick={() => removeAssignedEvent(event._id)}
         >
            <FaUserMinus/>
@@ -107,6 +114,8 @@ const AssignedEventsActions = ({ event ,user,setMessage, handleCompleteEvent ,ha
       {isCompleted &&  <button
             className={"action-button unassign"}
             onClick={() => handleTakeBackAction(event._id)}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
           >
             <FaMinus/>
             Take Back

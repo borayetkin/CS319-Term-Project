@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
 const EventRowActions = ({ event, user, setMessage }) => {
+  const [actionInProcess, setActionInProcess] = useState(false);
   const personIconUrl =
     "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const eventIsFull =
     event.assignedUsers?.length >= event.requiredNumberOfGuides;
 
   const applyToEvent = async (eventId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -30,9 +32,11 @@ const EventRowActions = ({ event, user, setMessage }) => {
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
   const rolesThatApply = ["guide", "advisor"];
   const removeAssignedEvent = async (eventId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -58,6 +62,7 @@ const EventRowActions = ({ event, user, setMessage }) => {
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
   const checkIfUserHasApplied = () => {
     return event.appliedUsers?.some(
@@ -79,6 +84,8 @@ const EventRowActions = ({ event, user, setMessage }) => {
         <button
           className="action-button apply"
           onClick={() => applyToEvent(event._id)}
+          disabled={actionInProcess}
+          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
         >
           <i className="fas fa-hand-point-up"></i>
           Apply
@@ -98,6 +105,8 @@ const EventRowActions = ({ event, user, setMessage }) => {
         <button
           className="action-button unassign"
           onClick={() => removeAssignedEvent(event._id)}
+          disabled={actionInProcess}
+          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
         >
           <i className="fas fa-user-minus"></i>
           Unassign

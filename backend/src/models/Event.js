@@ -138,9 +138,9 @@ eventSchema.methods.setWeekday = function () {
   this.weekday = daysOfWeek[this.visitDate.getDay()];
 }
 eventSchema.methods.takeBackAction = function () {
-  if(this.status === "completed-non-verified"){
+  if(this.status === "completed-verified"){
     this.status = "accepted"
-  }else if(this.status === "canceled-non-verified"){
+  }else if(this.status === "canceled-verified"){
     this.status = "accepted"
   } else {
     return new Error("Event is not eligible for action")

@@ -7,6 +7,7 @@ import GeneralTable from "../../components/GeneralTable";
 import AssignedEventsActions from "../../components/AssignedEventsActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 
+
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
   const [message, setMessage] = useState("");
@@ -14,6 +15,7 @@ const AssignedEvents = () => {
   const [user, setUser] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [tourType, setTourType] = useState("SchoolTour");
+  const [actionInProcess, setActionInProcess] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -38,6 +40,7 @@ const AssignedEvents = () => {
     }
   };
   const fetchAssignedEvents = async (token) => {
+  
     try {
       const response = await fetch("http://localhost:3000/api/events/user", {
         headers: {
@@ -58,9 +61,12 @@ const AssignedEvents = () => {
       setIsLoading(false);
       setMessage("Error fetching assigned events: " + error.message);
     }
+
   };
 
   const handleCompleteEvent = async (eventId, workHours) => {
+    setActionInProcess(true);
+
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -88,13 +94,16 @@ const AssignedEvents = () => {
         } else {
           alert("Failed to complete the event.");
         }
+        
       } catch (error) {
         console.error("Error completing event:", error);
       }
     }
+      setActionInProcess(false);
   };
   const handleMarkCanceled = async (eventId) => {
     const token = localStorage.getItem("token");
+    setActionInProcess(true);
     if (token) {
       try {
         const response = await fetch(
@@ -122,8 +131,10 @@ const AssignedEvents = () => {
         console.error("Error canceling event:", error);
       }
     }
+    setActionInProcess(false);
   };
   const handleTakeBack = async (eventId) => {
+    setActionInProcess(true);
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -150,6 +161,7 @@ const AssignedEvents = () => {
         console.error("Error taking back event:", error);
       }
     }
+    setActionInProcess(false);
   };
   const filteredEvents = assignedEvents.filter(
     (event) =>
@@ -200,6 +212,8 @@ const AssignedEvents = () => {
               handleCompleteEvent={handleCompleteEvent}
               handleCancelEvent={handleMarkCanceled}
               handleTakeBackAction={handleTakeBack}
+              actionInProcess={actionInProcess}
+              setActionInProcess={setActionInProcess}
             />
           );
         }}
@@ -207,6 +221,7 @@ const AssignedEvents = () => {
           SchoolTour: ["contactPerson", "assignedAdvisor"],
           IndividualTour: [ "studentHighSchool", "majorOfInterest"],
         }}
+
       />
       {isLoading && <LoadingSpinner />}
     </div>

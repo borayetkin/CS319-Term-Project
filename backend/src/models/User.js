@@ -94,7 +94,7 @@ userSchema.methods.removeAssignedEvent = function (eventId) {
     return Promise.reject(new Error("Event not assigned"));
   }
 };
-userSchema.methods.completeEvent = function (eventId) {
+userSchema.methods.completeEvent = function (eventId, workHour) {
   if (this.assignedEvents.includes(eventId)) {
     let ind2 = this.completedEvents.indexOf(eventId);
     if (ind2 > -1) {
@@ -104,6 +104,7 @@ userSchema.methods.completeEvent = function (eventId) {
       if (ind > -1) {
         this.assignedEvents.splice(ind, 1);
         this.completedEvents.push(eventId);
+        this.totalWorkHours += workHour;
         return this.save();
       } else {
         return Promise.reject(new Error("Event not assigned"));
@@ -113,7 +114,17 @@ userSchema.methods.completeEvent = function (eventId) {
     return Promise.reject(new Error("Server Error"));
   }
 };
-
+userSchema.methods.takeBackCompletedEvent = function (eventId,workHours) {
+  if (this.completedEvents.includes(eventId)) {
+    let ind = this.completedEvents.indexOf(eventId);
+    this.completedEvents.splice(ind, 1);
+    this.totalWorkHours -= workHours;
+    this.assignedEvents.push(eventId);
+    return this.save();
+  } else {
+    return Promise.reject(new Error("Event not completed"));
+  }
+}
 userSchema.methods.addAssignedFair = function (fairId) {
   if (!this.assignedFairs.includes(fairId)) {
     this.assignedFairs.push(fairId);

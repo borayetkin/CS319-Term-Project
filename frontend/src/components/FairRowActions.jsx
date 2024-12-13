@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
 const FairRowActions = ({ fair, user, setMessage }) => {
+  const [actionInProcess, setActionInProcess] = useState(false);
   const personIconUrl =
     "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const fairIsFull = fair.currentGuides >= fair.requiredNumberOfGuides;
 
   const applyToFair = async (fairId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -31,10 +33,12 @@ const FairRowActions = ({ fair, user, setMessage }) => {
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
   const rolesThatApply = ["guide", "advisor"];
 
   const removeAssignedFair = async (fairId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -67,6 +71,7 @@ const FairRowActions = ({ fair, user, setMessage }) => {
     } catch (error) {
       setMessage(`An error occurred: ${error.message}`);
     }
+    setActionInProcess(false);
   };
 
   const checkIfUserHasApplied = () => {
@@ -86,6 +91,8 @@ const FairRowActions = ({ fair, user, setMessage }) => {
           <button
             className="action-button assign"
             onClick={() => assignGuide(fair._id)}
+            disabled={actionInProcess}
+            style= {{cursor : actionInProcess ?  "not-allowed" : ""}}
           >
             <i className="fas fa-user-plus"></i>
             Assign Guide
@@ -98,6 +105,8 @@ const FairRowActions = ({ fair, user, setMessage }) => {
         <button
           className="action-button apply"
           onClick={() => applyToFair(fair._id)}
+          disabled={actionInProcess}
+          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
         >
           <i className="fas fa-hand-point-up"></i>
           Apply
@@ -119,6 +128,8 @@ const FairRowActions = ({ fair, user, setMessage }) => {
           <button
             className="action-button unassign"
             onClick={() => removeAssignedFair(fair._id)}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
           >
             <i className="fas fa-user-minus"></i>
             Unassign
