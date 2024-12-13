@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Advisor = require("../models/Advisor");
 const Event = require("../models/Event");
-
+const Coordinator = require("../models/Coordinator");
 const saveUser = async ({ name, email, password, role }) =>{
     // Create new user with conditional role
     const user = new User({ name, email, password, role });
@@ -13,6 +13,7 @@ const saveUser = async ({ name, email, password, role }) =>{
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
+      
     );
     return token;
 }
@@ -140,22 +141,18 @@ exports.signupUser = async (req, res) => {
     if (userRole === 'advisor') {
 
       const {assignedDay} = req.body;
-       newUser = await new Advisor({
-        name,
-        email,
-        password: hashedPassword,
-        role: userRole,
-        assignedDay: assignedDay
-      });
-      newUser.save()
-    }else {
-       newUser = await saveUser({
-        name,
-        email,
-        password: hashedPassword,
-        role: userRole,
-      });
-
+      if (!assignedDay) {
+        return res.status(400).json({ message: "Please provide assignedDay for advisor." });
+      }
+       newUser = new Advisor({...req.body, password: hashedPassword});
+       await newUser.save()
+    }else if(user.role === 'coordinator'){
+      newUser = new Coordinator({...req.body, password: hashedPassword});
+      await newUser.save()
+    }
+    else {
+       newUser =  new User({...req.body, password: hashedPassword});
+       await newUser.save()
     }
     // Generate token
     const token = jwt.sign(

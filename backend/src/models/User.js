@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  major: {
+    type: String,
+    default: ""
+  },
   assignedEvents: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Event", default: [] },
   ],
@@ -44,11 +46,7 @@ const userSchema = new mongoose.Schema({
   completedFairs: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Fair", default: [] },
   ],
-  phone: {
-    type: String,
-    default: "",
-  },
-  department: {
+  phoneNumber: {
     type: String,
     default: "",
   },

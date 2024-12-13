@@ -25,7 +25,7 @@ import SchoolPriorityPage from "./pages/CoordinatorPages/DashboardPages/SchoolPr
 import AdminDashboard from "./pages/CoordinatorPages/AdminDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import TourApplication from "./pages/TourApplication";
+import {TourApplication} from "./pages/TourApplication";
 import PrivateRoute from "./components/PrivateRoute";
 import AddUser from "./pages/CoordinatorPages/DashboardPages/AddUser";
 import FairApplication from "./pages/FairApplication";

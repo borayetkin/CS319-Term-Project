@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import "../../../styles/CoordinatorPages/AddUser.css"
+import { majors } from "../../TourApplication.jsx"; // Adjust the import path as necessary
 
 const AddUser = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    phoneNumber: "",
+    major: "",
+    year: "",
     role: "guide", // default role
     assignedDay: "", // for advisors
   });
@@ -13,11 +17,34 @@ const AddUser = () => {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
+    setError("");
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validateForm = () => {
+    const { name, email, password, phoneNumber, major, year, role, assignedDay } = formData;
+    const phoneRegex = /^[0-9]{11}$/;
+    if (!name || !email || !password || !phoneNumber || (role !== "coordinator" && (!major || !year))) {
+      return "All fields must be filled.";
+    }
+    if (!phoneRegex.test(phoneNumber)) {
+      return "Phone number must be 10 digits.";
+    }
+    if (role === "advisor" && !assignedDay) {
+      return "Assigned day must be selected for advisors.";
+    }
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    } else{
+      setError("");
+    }
 
     try {
       const response = await fetch("http://localhost:3000/api/auth/signup", {
@@ -37,6 +64,9 @@ const AddUser = () => {
           name: "",
           email: "",
           password: "",
+          phoneNumber: "",
+          major: "",
+          year: "",
           role: "guide",
           assignedDay: "",
         });
@@ -89,6 +119,17 @@ const AddUser = () => {
           />
         </div>
         <div className="form-group">
+          <label htmlFor="phoneNumber">Phone Number:</label>
+          <input
+            type="text"
+            id="phoneNumber"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
           <label htmlFor="role">Role:</label>
           <select
             id="role"
@@ -102,25 +143,60 @@ const AddUser = () => {
             <option value="coordinator">Coordinator</option>
           </select>
         </div>
+        {(formData.role === "guide" || formData.role === "advisor") && (
+          <>
+            <div className="form-group">
+              <label htmlFor="major">Major:</label>
+              <select
+                id="major"
+                name="major"
+                value={formData.major}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select a major</option>
+                {majors.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((major) => (
+                      <option key={major} value={major}>
+                        {major}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="year">Year:</label>
+              <select id="year" name="year" value={formData.year} onChange={handleChange} required>
+                <option value="">Select a year</option>
+                <option value="1">1st year</option>
+                <option value="2">2nd year</option>
+                <option value="3">3rd year</option>
+                <option value="4">4th year</option>
+              </select>
+            </div>
+          </>
+        )}
         {formData.role === "advisor" && (
           <div className="form-group">
             <label htmlFor="assignedDay">Assigned Day:</label>
             <select
-            id="assignedDay"
-            name="assignedDay"
-            value={formData.assignedDay}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select a day</option>
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-            <option value="Sunday">Sunday</option>
-          </select>
+              id="assignedDay"
+              name="assignedDay"
+              value={formData.assignedDay}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a day</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
           </div>
         )}
         <button type="submit">Add User</button>
