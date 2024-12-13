@@ -26,7 +26,25 @@ exports.getAcceptedEvents = async (req, res) => {
 exports.getAssigneddEventsOfUser = async (req, res) => {
   try {
     let userparams = req.user;
+    const {completed} = req.query;
+    
+    if (completed) {
+      if (userparams.role !== "coordinator") {
+        const user2 = await User.findById(userparams.id);
+        const completedEvents = await Event.find({
+          _id: { $in: user2.completedEvents },
+        })
+          .populate("assignedAdvisor")
+          .populate("assignedUsers")
+          .populate("applicant")
+          .populate("appliedUsers");
 
+        
+        return res.status(200).json(completedEvents);
+      } else {
+        return res.status(400).json({ message: "Access Forbidden" });
+      }
+    }
     if (userparams.role !== "coordinator") {
       const user2 = await User.findById(userparams.id);
       const acceptedEvents = await Event.find({
