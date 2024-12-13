@@ -2,10 +2,12 @@
 import React, { useState } from "react";
 import { FaEye, FaCheck, FaTimes, FaTrash } from "react-icons/fa";
 import DetailsModal from "./DetailsModal";
+
 const ApplicationsRowActions = ({ event, user, setMessage }) => {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
-   
+    const [actionInProcess, setActionInProcess] = useState(false);
   const handleAction = async (eventId, event, status) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -34,9 +36,11 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
 
   const handleDelete = async (eventId) => {
+    setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -58,6 +62,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
     } catch (error) {
       setMessage("Error: " + error.message);
     }
+    setActionInProcess(false);
   };
 
   return (
@@ -74,6 +79,8 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
           <button
             className="accept"
             onClick={() => handleAction(event._id, event, "accepted")}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
             title="Accept"
           >
             <FaCheck />
@@ -81,6 +88,8 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
           <button
             className="decline"
             onClick={() => handleAction(event._id, event, "rejected")}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
             title="Decline"
           >
             <FaTimes />
@@ -90,6 +99,8 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       <button
         className="delete"
         onClick={() => handleDelete(event._id)}
+        disabled={actionInProcess}
+        style={{ cursor: actionInProcess ? "not-allowed" : "" }}
         title="Delete"
       >
         <FaTrash />

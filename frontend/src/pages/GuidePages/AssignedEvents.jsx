@@ -123,7 +123,7 @@ const AssignedEvents = () => {
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
               event._id === eventId
-                ? { ...event, status: "completed-non-verified" }
+                ? { ...event, status: "completed-non-verified" , hoursOfWork: workHours}
                 : event
             )
           );
@@ -156,7 +156,7 @@ const AssignedEvents = () => {
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
               event._id === eventId
-                ? { ...event, status: "canceled-verified" }
+                ? { ...event, status: "canceled-verified" , hoursOfWork: 0}
                 : event
             )
           );
@@ -187,7 +187,7 @@ const AssignedEvents = () => {
           // Update the event status in state to mark it as accepted
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
-              event._id === eventId ? { ...event, status: "accepted" } : event
+              event._id === eventId ? { ...event, status: "accepted" , hoursOfWork: 0} : event
             )
           );
         } else {
