@@ -38,4 +38,4 @@ router.get("/user-search",auth,searchUsers)
 router.get("/advisor-info", auth, getAdvisorInfo);
 module.exports = router;
 
-router.put('/update-contact', auth, userController.updateContactInfo);
+router.put('/update-contact', auth, userController.updateUserFromProfile);

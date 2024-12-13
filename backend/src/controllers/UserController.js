@@ -29,17 +29,18 @@ const saveUser = async ({ name, email, password, role }) =>{
 }
 const changeAdvisorToUser = async (advisor) => {
   const {_id, name, email, password, role} = advisor;
-  const user = new User({_id,name, email, password, role});
-  await user.save();
+  const advisorJSON = await advisor.toJSON();
+  
+  const user = new User({...advisorJSON,_id: advisor._id, assignedDay: "", __t : ""});
+
   return user;
 }
 const changeUserToAdvisor = async (user,assignedDay) => {
-  const {_id, name, email, password, role} = user;
+  const userJson = await user.toJSON();
   if (!assignedDay) {
     assignedDay = "Monday";
   }
-  const advisor = new Advisor({_id, name, email, password, role,assignedDay});
-  await advisor.save();
+  const advisor = new Advisor({...userJson,_id: user._id ,assignedDay, __t : "Advisor"});
   return advisor;
 }
 exports.updateUser = async (req, res) => {
@@ -87,10 +88,10 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-exports.updateUserRole = async (req, res) => {
+exports.updateUserAdmin = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { role } = req.body;
+    const { email, role, major, assignedDay } = req.body;
     if (!["guide", "coordinator", "advisor", "admin"].includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
@@ -98,17 +99,49 @@ exports.updateUserRole = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-   
-    if (user.role === "advisor" && req.body.role !== "advisor") {
-      user = await changeAdvisorToUser(user);
-      return res.status(200).json({ message: "User role updated successfully", user });
-    } else if (user.role !== "advisor" && req.body.role === "advisor") {
-      user = await changeUserToAdvisor(user,req.body.assignedDay);
-      return res.status(200).json({ message: "User role updated successfully", user });
+    if (role === "advisor" && !assignedDay) {
+      return res.status(400).json({ message: "Assigned day must be selected for advisors." });
+    }
+    if (user.role !== "advisor" && role === "advisor") {
+
+      
+      const advisor = await changeUserToAdvisor(user,assignedDay);
+      await User.findByIdAndDelete(userId);
+      advisor.email = email || advisor.email;
+      advisor.major = major || advisor.major;
+      advisor.assignedDay = assignedDay || advisor.assignedDay;
+      advisor.role = "advisor";
+      await advisor.save();
+
+      return res.status(200).json(advisor);
+      
+    } 
+    if (user.role === "advisor" && role !== "advisor") {
+      const newUser = await changeAdvisorToUser(user);
+      newUser.email = email || newUser.email;
+      if ( role === "guide") {
+        newUser.major = major || newUser.major;
+        
+      } else{
+        newUser.major = "";
+      }
+      newUser.role = role;
+      await User.findByIdAndDelete(userId);
+      await newUser.save();
+      return res.status(200).json(newUser);
+    }
+    user.email = email || user.email;
+    if (role === "advisor" || role === "guide") {
+      user.major = major || user.major;
+    } else{
+      user.major = "";
     }
     user.role = role;
+    if (role === "advisor") {
+      user.assignedDay = assignedDay;
+    }
     await user.save();
-    res.status(200).json({ message: "User role updated successfully" });
+    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -330,3 +363,35 @@ exports.getAdvisorInfo = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching advisors." });
   }
 };
+exports.updateUserFromProfile = async (req, res) => {
+  try {
+    const { email, phoneNumber, major, password, assignedDay } = req.body;
+    console.log(phoneNumber);
+    
+    const user = await User.findById(req.user.id );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.email = email || user.email;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.major = major || user.major;
+    if(password){
+      console.log("noooo");
+      
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
+    }
+    if (user.role === "advisor") {
+      user.assignedDay = assignedDay || user.assignedDay;
+    }
+    await user.save();
+
+    
+    res.status(200).json(user);
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while updating profile" });
+  }
+}

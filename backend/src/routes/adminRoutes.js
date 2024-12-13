@@ -2,7 +2,8 @@ const express = require("express");
 const {
   getAllUsers,
   deleteUser,
-  updateUserRole,
+  updateUserAdmin,
+  updateUserFromProfile
 } = require("../controllers/UserController");
 const adminAuth = require("../middleware/adminMiddleware"); // Middleware for admin-only access
 const router = express.Router();
@@ -14,7 +15,7 @@ router.get("/admin/users", adminAuth, getAllUsers); // Only admins can access th
 router.delete("/admin/users/:id", adminAuth, deleteUser);
 
 // Admin route to update a user's role
-router.put("/admin/users/:id/role", adminAuth, updateUserRole);
+router.put("/admin/users/:id", adminAuth, updateUserAdmin);
 
 module.exports = router;
  
