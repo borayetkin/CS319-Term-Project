@@ -115,6 +115,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   text-decoration: none;
+  backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeSlideUp 1s ease-out 0.4s backwards;
   position: relative;
@@ -123,7 +124,7 @@
 
 .hero-cta {
   background: rgba(255, 255, 255, 0.85);
-  color: #000000;
+  color: rgb(71, 72, 74);
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 500;
@@ -196,10 +197,6 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
   animation: fadeIn 0.8s ease-out;
-}
-
-.stat-card:hover {
-  transform: translateY(-1px);
 }
 
 .stat-number {
@@ -930,7 +927,7 @@ html {
 
 /* Gradient animation */
 .stat-number {
-  background: linear-gradient(90deg, #fff, #4f46e5, #fff);
+  background: linear-gradient(90deg, #827fde, #4f46e5, #645de7);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
