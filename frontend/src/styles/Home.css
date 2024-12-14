@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 
 .main-wrapper {
   background: #f8fafc;
@@ -10,10 +10,11 @@
 .hero-section {
   height: 100vh;
   background: linear-gradient(
-    to right,
-    rgba(15, 98, 206, 0.61),
-    rgba(0, 0, 40, 0.8)
-  ), url('/images/bilkent4.jpg');
+      to right,
+      rgba(15, 98, 206, 0.61),
+      rgba(0, 0, 40, 0.8)
+    ),
+    url("/images/bilkent4.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -50,14 +51,12 @@
   backdrop-filter: blur(12px);
   border-radius: 30px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-
 }
 
 .hero-title {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: "Inter", -apple-system, sans-serif;
   font-size: clamp(4rem, 10vw, 7rem);
   line-height: 1.1;
   font-weight: 600;
@@ -109,7 +108,8 @@
   margin-top: 2rem;
 }
 
-.hero-cta, .hero-secondary {
+.hero-cta,
+.hero-secondary {
   padding: 1rem 2.5rem;
   border-radius: 12px;
   font-size: 1.1rem;
@@ -122,19 +122,19 @@
 }
 
 .hero-cta {
-  background: white;
-  color: #000;
+  background: rgba(255, 255, 255, 0.85);
+  color: #000000;
   padding: 1rem 2rem;
-  border-radius: 50px;
   font-size: 1.1rem;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
   display: inline-block;
+  border: 2px solid rgba(99, 102, 111, 0.5);
 }
 
 .hero-cta:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
 }
 
@@ -147,12 +147,12 @@
 
 .hero-secondary:hover {
   background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 /* Modern hover effect for CTA */
 .hero-cta::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -193,15 +193,13 @@
   padding: 2rem;
   border-radius: 24px;
   text-align: center;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.05),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
   animation: fadeIn 0.8s ease-out;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .stat-number {
@@ -250,7 +248,7 @@
 }
 
 .featured-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -277,7 +275,7 @@
 }
 
 .featured-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -319,7 +317,7 @@
 }
 
 .view-all::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -352,7 +350,7 @@
 }
 
 .event-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .event-date {
@@ -401,7 +399,7 @@
 }
 
 .news-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .news-image {
@@ -448,7 +446,7 @@
 }
 
 .campus-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -481,17 +479,17 @@
   .hero-buttons {
     flex-direction: column;
   }
-  
+
   .section-header {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .event-card {
     flex-direction: column;
   }
-  
+
   .event-date {
     padding: 1rem;
     flex-direction: row;
@@ -521,9 +519,7 @@
   background: white;
   padding: 2.5rem;
   border-radius: 24px;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.05),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -531,10 +527,7 @@
 }
 
 .action-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .action-card h2 {
@@ -579,7 +572,7 @@
 
 /* Shine effect */
 .action-button.primary::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
@@ -598,7 +591,7 @@
 
 /* Pulse effect */
 .action-button.primary::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 100%;
   height: 100%;
@@ -613,7 +606,7 @@
 
 .action-button.primary:hover {
   background: #1d4ed8;
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-1px) scale(1.01);
   box-shadow: 0 6px 30px rgba(37, 99, 235, 0.5);
 }
 
@@ -668,12 +661,7 @@
 
 /* Add loading state animations */
 .action-button.primary.loading {
-  background: linear-gradient(
-    90deg,
-    #2563eb 0%,
-    #4f46e5 50%,
-    #2563eb 100%
-  );
+  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 50%, #2563eb 100%);
   background-size: 200% 100%;
   animation: gradientShift 2s infinite;
 }
@@ -693,14 +681,11 @@
 /* Hover lift effect for cards */
 .action-card {
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .action-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.12),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Add this for better touch device handling */
@@ -708,7 +693,7 @@
   .action-button.primary::before {
     display: none;
   }
-  
+
   .action-button.primary::after {
     animation: none;
   }
@@ -719,11 +704,11 @@
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .action-card {
     padding: 2rem;
   }
-  
+
   .action-card h2 {
     font-size: 1.5rem;
   }
@@ -749,7 +734,7 @@
 }
 
 .action-button:hover .button-text {
-  transform: translateX(-10px);
+  transform: translateX(-5px);
 }
 
 .action-button:hover .button-icon {
@@ -787,7 +772,8 @@
 }
 
 @keyframes backgroundPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     backdrop-filter: blur(12px);
   }
@@ -798,7 +784,8 @@
 }
 
 @keyframes titleFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -849,13 +836,13 @@
 
 /* Add a decorative element that floats */
 .hero-section::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 10%;
   top: 20%;
   width: 400px;
   height: 400px;
-  background: url('/images/satellite.png') no-repeat center center;
+  background: url("/images/satellite.png") no-repeat center center;
   background-size: contain;
   animation: float 6s ease-in-out infinite;
   z-index: 1;
@@ -877,7 +864,7 @@
 
 /* Add subtle gradient overlay */
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -919,16 +906,21 @@ html {
 /* Floating animation for decorative elements */
 .featured-section::after,
 .news-section::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
   animation: float 6s infinite ease-in-out;
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   50% {
@@ -960,7 +952,7 @@ html {
 
 .featured-link::after,
 .view-all::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -988,7 +980,8 @@ html {
 }
 
 /* Smooth transition for all interactive elements */
-a, button {
+a,
+button {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1008,4 +1001,3 @@ a, button {
     filter: blur(0);
   }
 }
-
