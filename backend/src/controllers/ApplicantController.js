@@ -14,10 +14,10 @@ exports.createApplicant = async (req, res) => {
 
       if (existingApplicant) {
         // Send a notification email even if the applicant exists
-        await sendConfirmationEmail(
-          existingApplicant.email,
-          existingApplicant.name
-        );
+        // await sendConfirmationEmail(
+        //   existingApplicant.email,
+        //   existingApplicant.name
+        // );
         return res.status(201).json(existingApplicant);
       }
     }
@@ -40,7 +40,7 @@ exports.createApplicant = async (req, res) => {
     await applicant.save();
 
     // Send confirmation email
-    await sendConfirmationEmail(email, name);
+    // await sendConfirmationEmail(email, name);
 
     res.status(201).json(applicant);
   } catch (error) {

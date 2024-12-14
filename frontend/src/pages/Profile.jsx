@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaCalendarAlt, FaClock, FaEdit, FaSave } from 'react-icons/fa';
-import { MdWork, MdSchool, MdLocationOn, MdLanguage } from 'react-icons/md';
-import '../styles/Profile.css';
-import LoadingSpinner from '../components/LoadingSpinner';
+import React, { useState, useEffect } from "react";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaGraduationCap,
+  FaCalendarAlt,
+  FaClock,
+  FaEdit,
+  FaSave,
+} from "react-icons/fa";
+import { MdWork, MdSchool, MdLocationOn, MdLanguage } from "react-icons/md";
+import "../styles/Profile.css";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { majors } from "./TourApplication.jsx"; // Adjust the import path as necessary
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -10,10 +20,16 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    email: '',
-    phone: ''
+    email: "",
+    phoneNumber: "",
+    major: "",
+    password: "",
+    assignedDay: "",
   });
-  const [updateMessage, setUpdateMessage] = useState('');
+  const [updateMessage, setUpdateMessage] = useState("");
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -21,19 +37,23 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/auth/profile', {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
-      if (!response.ok) throw new Error('Failed to fetch profile');
+
+      if (!response.ok) throw new Error("Failed to fetch profile");
+
       const data = await response.json();
       setProfile(data);
       setEditForm({
         email: data.email,
-        phone: data.phone || ''
+        phoneNumber: data.phoneNumber || "",
+        major: data.major || "",
+        assignedDay: data.assignedDay || "",
+        password: "",
       });
     } catch (err) {
       setError(err.message);
@@ -44,55 +64,106 @@ const Profile = () => {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
-    setUpdateMessage('');
+    setUpdateMessage("");
+  };
+
+  const handlePasswordEditToggle = () => {
+    setIsEditingPassword(!isEditingPassword);
+    setUpdateMessage("");
   };
 
   const handleInputChange = (e) => {
     setEditForm({
       ...editForm,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/auth/update-contact', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: editForm.email,
-          phone: editForm.phone
-        }),
-      });
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/auth/update-contact",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: editForm.email,
+            phoneNumber: editForm.phoneNumber,
+            major: editForm.major,
+            assignedDay: editForm.assignedDay,
+          }),
+        }
+      );
       const updatedProfile = await response.json();
-      const data = await response.json();
-      setProfile(updatedProfile);
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to update contact info');
+        throw new Error(
+          updatedProfile.message || "Failed to update contact info"
+        );
       }
-      setTimeout(() => {
-        setProfile(data);
-        setIsEditing(false);
-        setUpdateMessage('Contact information updated successfully!');
-        setError(err.message);
-      }, 3000);
+      setProfile(updatedProfile);
+      setUpdateMessage("Info updated successfully");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 2000);
+      setTimeout(() => setUpdateMessage(""), 2000);
+      setIsEditing(false);
     } catch (err) {
       setError(err.message);
-      setUpdateMessage('');
+      setUpdateMessage("");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <LoadingSpinner loading='profile'/>;
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/auth/update-contact",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            password: editForm.password,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update password");
+      }
+      setUpdateMessage("Password updated successfully");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 2000);
+      setTimeout(() => setUpdateMessage(""), 2000);
+      setIsEditingPassword(false);
+    } catch (err) {
+      setError(err.message);
+      setUpdateMessage("");
+    } finally {
+      editForm.password = "";
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) return <LoadingSpinner loading="profile" />;
   if (error) return <div className="profile-error">{error}</div>;
   if (!profile) return null;
 
   return (
     <div className="profile-container">
+      {showSuccessPopup && (
+        <div className="success-popup">Update successful!</div>
+      )}
       <div className="profile-header">
         <div className="profile-avatar">
           <FaUser size={40} />
@@ -102,9 +173,7 @@ const Profile = () => {
       </div>
 
       {updateMessage && (
-        <div className="update-message success">
-          {updateMessage}
-        </div>
+        <div className="update-message success">{updateMessage}</div>
       )}
 
       <div className="profile-grid">
@@ -131,22 +200,122 @@ const Profile = () => {
                 <FaPhone />
               </div>
               <div className="card-content">
-                <h3>Phone</h3>
+                <h3>Phone Number</h3>
                 <input
                   type="tel"
-                  name="phone"
-                  value={editForm.phone}
+                  name="phoneNumber"
+                  value={editForm.phoneNumber}
                   onChange={handleInputChange}
                   placeholder="Enter phone number"
                 />
               </div>
             </div>
 
+            {profile.role !== "admin" && profile.role != "coordinator" && (
+              <div className="info-card editable">
+                <div className="card-icon">
+                  <MdSchool />
+                </div>
+                <div className="card-content">
+                  <label htmlFor="major">Major:</label>
+                  <select
+                    id="major"
+                    name="major"
+                    value={editForm.major}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select a major</option>
+                    {majors.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.options.map((major) => (
+                          <option key={major} value={major}>
+                            {major}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {profile.role === "advisor" && (
+              <div className="info-card editable">
+                <div className="card-icon">
+                  <FaCalendarAlt />
+                </div>
+                <div className="card-content">
+                  <h3>Assigned Day</h3>
+                  <select
+                    name="assignedDay"
+                    value={editForm.assignedDay}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
             <div className="edit-actions">
-              <button type="submit" className="save-button">
+              <button
+                type="submit"
+                className="save-button"
+                disabled={isSubmitting}
+              >
                 <FaSave /> Save Changes
               </button>
-              <button type="button" onClick={handleEditToggle} className="cancel-button">
+              <button
+                type="button"
+                onClick={handleEditToggle}
+                className="cancel-button"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : isEditingPassword ? (
+          <form onSubmit={handlePasswordSubmit} className="edit-form">
+            <div className="info-card editable">
+              <div className="card-icon">
+                <FaEdit />
+              </div>
+              <div className="card-content">
+                <h3>Password</h3>
+                <input
+                  type="password"
+                  name="password"
+                  value={editForm.password}
+                  onChange={handleInputChange}
+                  placeholder="Enter new password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="edit-actions">
+              <button
+                type="submit"
+                className="save-button"
+                disabled={isSubmitting}
+              >
+                <FaSave /> Save Password
+              </button>
+              <button
+                type="button"
+                onClick={handlePasswordEditToggle}
+                className="cancel-button"
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
             </div>
@@ -168,8 +337,8 @@ const Profile = () => {
                 <FaPhone />
               </div>
               <div className="card-content">
-                <h3>Phone</h3>
-                <p>{profile.phone || 'Not provided'}</p>
+                <h3>Phone Number</h3>
+                <p>{profile.phoneNumber || "Not provided"}</p>
               </div>
             </div>
 
@@ -179,7 +348,7 @@ const Profile = () => {
               </div>
               <div className="card-content">
                 <h3>Department</h3>
-                <p>{profile.department || 'Not specified'}</p>
+                <p>{profile.major || "Not specified"}</p>
               </div>
             </div>
 
@@ -189,13 +358,22 @@ const Profile = () => {
               </div>
               <div className="card-content">
                 <h3>Year</h3>
-                <p>{profile.year ? `${profile.year}th year` : 'Not specified'}</p>
+                <p>
+                  {profile.year ? `${profile.year}th year` : "Not specified"}
+                </p>
               </div>
             </div>
-
-            <button onClick={handleEditToggle} className="edit-button">
-              <FaEdit /> Edit Contact Info
-            </button>
+            <div className="profile-edit-button-container">
+              <button onClick={handleEditToggle} className="edit-button">
+                <FaEdit /> Edit Profile
+              </button>
+              <button
+                onClick={handlePasswordEditToggle}
+                className="edit-button"
+              >
+                <FaEdit /> Change Password
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -209,7 +387,7 @@ const Profile = () => {
             </div>
             <div className="card-content">
               <h3>Available Days</h3>
-              <p>{profile.availableDays?.join(', ') || 'Not set'}</p>
+              <p>{profile.availableDays?.join(", ") || "Not set"}</p>
             </div>
           </div>
 
@@ -219,7 +397,7 @@ const Profile = () => {
             </div>
             <div className="card-content">
               <h3>Preferred Hours</h3>
-              <p>{profile.preferredHours || 'Not set'}</p>
+              <p>{profile.preferredHours || "Not set"}</p>
             </div>
           </div>
 
@@ -229,7 +407,7 @@ const Profile = () => {
             </div>
             <div className="card-content">
               <h3>Languages</h3>
-              <p>{profile.languages?.join(', ') || 'Not specified'}</p>
+              <p>{profile.languages?.join(", ") || "Not specified"}</p>
             </div>
           </div>
 
@@ -239,7 +417,7 @@ const Profile = () => {
             </div>
             <div className="card-content">
               <h3>Tours Completed</h3>
-              <p>{profile.toursCompleted || '0'}</p>
+              <p>{profile.toursCompleted || "0"}</p>
             </div>
           </div>
         </div>

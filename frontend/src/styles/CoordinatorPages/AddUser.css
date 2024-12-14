@@ -40,8 +40,10 @@
   }
   
   .error-message {
+    position: relative!important;
+    font-size: medium;
     color: red;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
   }
   
   button {

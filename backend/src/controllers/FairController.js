@@ -2,6 +2,7 @@ const Fair = require("../models/Fair");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { sendNotification } = require("./NotificationController");
+const { sendFairAssignmentEmail } = require("../config/EmailService");
 
 // Create a new fair
 exports.createFair = async (req, res) => {
@@ -50,7 +51,9 @@ exports.createFair = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating fair:", error);
-    res.status(500).json({ message: "Failed to create fair", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create fair", error: error.message });
   }
 };
 
@@ -58,19 +61,21 @@ exports.createFair = async (req, res) => {
 exports.getFairs = async (req, res) => {
   try {
     const fairs = await Fair.find()
-      .populate('assignedUsers', 'name') // Populate the guide's name
+      .populate("assignedUsers", "name") // Populate the guide's name
       .exec();
     res.status(200).json(fairs);
   } catch (error) {
     console.error("Error fetching fairs:", error);
-    res.status(500).json({ message: "Failed to fetch fairs", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch fairs", error: error.message });
   }
 };
 
 exports.getAcceptedFairs = async (req, res) => {
   try {
     const acceptedFairs = await Fair.find({ status: "accepted" })
-      .populate('assignedUsers', 'name') // Populate the guide's name
+      .populate("assignedUsers", "name") // Populate the guide's name
       .exec();
 
     if (acceptedFairs.length === 0) {
@@ -80,7 +85,10 @@ exports.getAcceptedFairs = async (req, res) => {
     res.status(200).json(acceptedFairs);
   } catch (error) {
     console.error("Error fetching accepted fairs:", error);
-    res.status(500).json({ message: "Failed to fetch accepted fairs", error: error.message });
+    res.status(500).json({
+      message: "Failed to fetch accepted fairs",
+      error: error.message,
+    });
   }
 };
 
@@ -89,15 +97,17 @@ exports.getFair = async (req, res) => {
   try {
     const { id } = req.params;
     const fair = await Fair.findById(id)
-          .populate('assignedUsers', 'name') // Populate the guide's name
-          .exec();
+      .populate("assignedUsers", "name") // Populate the guide's name
+      .exec();
     if (!fair) {
       return res.status(404).json({ message: "Fair not found" });
     }
     res.status(200).json(fair);
   } catch (error) {
     console.error("Error fetching fair:", error);
-    res.status(500).json({ message: "Failed to fetch fair", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch fair", error: error.message });
   }
 };
 
@@ -108,7 +118,7 @@ exports.updateFairStatus = async (req, res) => {
     const { status } = req.body;
 
     // Validate status
-    if (!['accepted', 'rejected', 'pending'].includes(status)) {
+    if (!["accepted", "rejected", "pending"].includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
@@ -121,16 +131,20 @@ exports.updateFairStatus = async (req, res) => {
     fair.status = status;
     await fair.save();
 
-    if (status === 'accepted') {
+    if (status === "accepted") {
       // Get all guides
-      const guides = await User.find({ role: 'guide' });
+      const guides = await User.find({ role: "guide" });
 
       // Create notifications for all guides
-      const notifications = guides.map(guide => ({
+      const notifications = guides.map((guide) => ({
         recipient: guide._id,
         title: "New Fair Available",
-        message: `A new fair has been confirmed at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
-        read: false
+        message: `A new fair has been confirmed at ${
+          fair.schoolName
+        } on ${new Date(fair.fairDate).toLocaleDateString()} at ${
+          fair.fairTime
+        }`,
+        read: false,
       }));
 
       await Notification.insertMany(notifications);
@@ -142,7 +156,9 @@ exports.updateFairStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating fair status:", error);
-    res.status(500).json({ message: "Failed to update fair status", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update fair status", error: error.message });
   }
 };
 
@@ -167,7 +183,9 @@ exports.assignGuideToFair = async (req, res) => {
     }
 
     if (fair.assignedUsers.length >= fair.requiredNumberOfGuides) {
-      return res.status(400).json({ message: "Required number of guides already assigned." });
+      return res
+        .status(400)
+        .json({ message: "Required number of guides already assigned." });
     }
 
     fair.assignedUsers.push(userID);
@@ -176,6 +194,7 @@ exports.assignGuideToFair = async (req, res) => {
     try {
       await guide.addAssignedFair(fairID);
       await guide.save();
+      await sendFairAssignmentEmail(guide, fair);
     } catch (error) {
       return res
         .status(400)
@@ -184,20 +203,25 @@ exports.assignGuideToFair = async (req, res) => {
     const notifactionProps = {
       recipient: userID,
       title: "New Fair Assigned",
-      message: `You have been assigned to a new fair at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
-      read: false
-    }
-    
+      message: `You have been assigned to a new fair at ${
+        fair.schoolName
+      } on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+      read: false,
+    };
+
     try {
-      sendNotification(notifactionProps)
+      sendNotification(notifactionProps);
     } catch (error) {
-      
-      return res.status(400).json({ message: "Failed to send notification", error: error.message });
+      return res
+        .status(400)
+        .json({ message: "Failed to send notification", error: error.message });
     }
     res.status(200).json({ message: "Guide assigned successfully.", fair });
   } catch (error) {
     console.error("Error assigning guide:", error);
-    res.status(500).json({ message: "Failed to assign guide", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to assign guide", error: error.message });
   }
 };
 
@@ -221,11 +245,13 @@ exports.removeGuideFromFair = async (req, res) => {
 
     if (!fair.assignedUsers.includes(userID)) {
       console.log(`User ID ${userID} is not assigned to the fair.`);
-      return res.status(400).json({ message: "Guide is not assigned to this fair." });
+      return res
+        .status(400)
+        .json({ message: "Guide is not assigned to this fair." });
     }
 
     fair.assignedUsers = fair.assignedUsers.filter(
-      assignedUserID => assignedUserID.toString() !== userID
+      (assignedUserID) => assignedUserID.toString() !== userID
     );
     console.log("Updated assignedUsers list:", fair.assignedUsers);
 
@@ -243,19 +269,24 @@ exports.removeGuideFromFair = async (req, res) => {
     const notifactionProps = {
       recipient: userID,
       title: "Removed From Fair",
-      message: `You have been removed from a fair at ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
-      read: false
-    }
+      message: `You have been removed from a fair at ${
+        fair.schoolName
+      } on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
+      read: false,
+    };
     try {
-      sendNotification(notifactionProps)
+      sendNotification(notifactionProps);
     } catch (error) {
-      
-      return res.status(400).json({ message: "Failed to send notification", error: error.message });
+      return res
+        .status(400)
+        .json({ message: "Failed to send notification", error: error.message });
     }
     res.status(200).json({ message: "Guide removed successfully.", fair });
   } catch (error) {
     console.error("Error removing guide:", error);
-    res.status(500).json({ message: "Failed to remove guide", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to remove guide", error: error.message });
   }
 };
 
@@ -273,14 +304,20 @@ exports.deleteFair = async (req, res) => {
       const notifactionProps = {
         recipient: recipients[i],
         title: "Fair Deleted",
-        message: `A fair you were assigned to has been deleted : ${fair.schoolName} on ${new Date(fair.fairDate).toLocaleDateString()} at ${fair.fairTime}`,
-        read: false
-      }
+        message: `A fair you were assigned to has been deleted : ${
+          fair.schoolName
+        } on ${new Date(fair.fairDate).toLocaleDateString()} at ${
+          fair.fairTime
+        }`,
+        read: false,
+      };
       try {
-        sendNotification(notifactionProps)
+        sendNotification(notifactionProps);
       } catch (error) {
-        
-        return res.status(400).json({ message: "Failed to send notification", error: error.message });
+        return res.status(400).json({
+          message: "Failed to send notification",
+          error: error.message,
+        });
       }
     }
     res.status(200).json({
@@ -289,7 +326,9 @@ exports.deleteFair = async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting fair:", error);
-    res.status(500).json({ message: "Failed to delete fair", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete fair", error: error.message });
   }
 };
 
@@ -300,7 +339,9 @@ exports.applyToFair = async (req, res) => {
 
     // Ensure only guides can apply
     if (userrole !== "guide") {
-      return res.status(403).json({ message: "Only guides can apply to fairs." });
+      return res
+        .status(403)
+        .json({ message: "Only guides can apply to fairs." });
     }
 
     // Find the guide (user)
@@ -333,5 +374,3 @@ exports.applyToFair = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-
