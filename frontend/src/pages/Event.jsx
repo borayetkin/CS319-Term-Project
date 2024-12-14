@@ -25,8 +25,8 @@ const Event = ({assignGuideOpened = false}) => {
   useEffect(() => {
     const fetchEvent = async (token) => {
       try {
-  
-        
+
+
         const response = await fetch(`http://localhost:3000/api/events/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,13 +52,12 @@ const Event = ({assignGuideOpened = false}) => {
         const assignees = await assigneesRes.json();
 
         setAssignedUsers(assignees);
- 
-        
         setEvent(eventData);
-
+        setStudentCount(eventData.studentCount || ""); // Set initial values
+        setAdditionalNotes(eventData.additionalNotes || "");
         setIsLoading(false);
 
-        
+
       } catch (error) {
         setError(error.message);
         setIsLoading(false);
@@ -112,7 +111,7 @@ const Event = ({assignGuideOpened = false}) => {
           }),
         }
       );
-  
+
       if (!assignResponse.ok) {
         const errorData = await assignResponse.json();
         throw new Error(errorData.message || "Failed to assign guide");
@@ -122,14 +121,14 @@ const Event = ({assignGuideOpened = false}) => {
     } catch (error) {
       setError(error.message)
     }
-    
+
   };
-  
+
   const handleRemoveUser = async (userId) => {
     try {
       const token = localStorage.getItem("token");
       console.log(userId);
-      
+
       const removeResponse = await fetch(
         "http://localhost:3000/api/events/remove-guide",
         {
@@ -144,7 +143,7 @@ const Event = ({assignGuideOpened = false}) => {
           }),
         }
       );
-  
+
       if (!removeResponse.ok) {
         const errorData = await removeResponse.json();
         throw new Error(errorData.message || "Failed to remove guide");
@@ -156,11 +155,7 @@ const Event = ({assignGuideOpened = false}) => {
     }
   };
 
- 
-
   return (
-   
-
     <>
      {isLoading && <LoadingSpinner loading="Event"/>}
     {error && <div>{error}</div>}
@@ -211,11 +206,11 @@ const Event = ({assignGuideOpened = false}) => {
           <>
           <h3>Advisor :</h3>
           <div className="assigned-user">
-            
-           
+
+
             <img src={personIconUrl} alt="Profile" onClick={() => {window.location.href = `/advisor-info?id=${event.assignedAdvisor._id}`}} />
             <span>{event.assignedAdvisor.name} </span>
-         
+
           </div>
           </>
         )}
@@ -235,7 +230,7 @@ const Event = ({assignGuideOpened = false}) => {
               )}
             </div>
           ))}
-        
+
       </div>
     </div>)}
     </>

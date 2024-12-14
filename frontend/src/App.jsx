@@ -7,6 +7,7 @@ import {
 import Layout from "./components/Layout";
 import Event from "./pages/Event";
 import Fair from "./pages/Fair";
+import EditDetails from "./pages/EditDetails";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -147,6 +148,7 @@ function App() {
         />
        
         <Route path="/events/:id" element={<Event />} />
+        <Route path="/edit/:id" element={< EditDetails />} />
         <Route path="/fairs/:id" element={<Fair />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         {/* Catch-all Route */}

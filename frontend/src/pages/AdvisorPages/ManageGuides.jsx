@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../styles/AdvisorPages/ManageGuides.css";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
@@ -136,7 +137,7 @@ const ManageGuides = () => {
             <th>Assigned Guides</th>
             <th>Assign New Guide</th>
             <th>Remove Guide</th>
-            <th>Save Changes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -205,6 +206,10 @@ const ManageGuides = () => {
                 </select>
               </td>
               <td>
+                <Link to={`/edit/${event._id}`} className="action-button view">
+                        <i className="fas fa-eye"></i>
+                        edit details
+                </Link>
                 <button onClick={() => saveChanges(event._id)}>Save Changes</button>
               </td>
             </tr>

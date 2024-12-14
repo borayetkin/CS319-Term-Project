@@ -362,6 +362,32 @@ const acceptTourApplication = async (req, res) => {
   }
 };
 
+exports.updateEventTwo = async (req, res) => {
+  const { eventId } = req.params;
+  const updateData = req.body;
+
+  try {
+    // Find the event by ID
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Update the event's properties with the provided data
+    Object.keys(updateData).forEach((key) => {
+      event[key] = updateData[key];
+    });
+
+    // Save the updated event
+    const updatedEvent = await event.save();
+
+    res.status(200).json(updatedEvent);
+  } catch (error) {
+    res.status(500).json({ message: `Error updating event: ${error.message}` });
+  }
+};
+
 // Update an event
 exports.updateEvent = async (req, res) => {
   try {

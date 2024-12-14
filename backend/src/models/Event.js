@@ -45,13 +45,17 @@ const eventSchema = new mongoose.Schema({
     type: String,
     default : ""
   },
+  advisorNotes :{
+    type: String,
+    default : ""
+  },
   weekday : {
     type : String,
     default: "Monday",
     enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   },
   assignedAdvisor: {
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
   review: {
@@ -106,10 +110,10 @@ eventSchema.methods.removeAssignee = async function (userId){
 
 /**
  * Returns an array of assigned user id's
- * 
  *
- * @returns {Array} 
- * 
+ *
+ * @returns {Array}
+ *
  */
 eventSchema.methods.getAssignees = function () {
     return this.assignedUsers
@@ -130,14 +134,14 @@ eventSchema.methods.getApplicant = function () {
 }
 eventSchema.methods.addToApplicantEvents = function () {
 
-  
+
   return Applicant.findById(this.applicant)
     .then(applicant => {
       if (!applicant) {
         return Promise.reject(new Error('Applicant not found'));
       }
 
-      
+
       return applicant.saveEvent(this._id);
     });
 }

@@ -11,6 +11,7 @@ const {
   getCompletedEvents: getCompletedNonVerifiedEvents,
   getEvent,
   updateEvent,
+  updateEventTwo,
   deleteEvent,
   assignAdvisorToTour,
   assignGuideToEvent,
@@ -51,6 +52,7 @@ router.get("/check-review/:eventId", isReviewSubmitted);
 
 // Routes for updating and deleting events
 router.put("/:eventId", advisorAuth, updateEvent);
+router.put("/edit/:eventId",advisorAuth,updateEventTwo);
 router.delete("/:eventId", advisorAuth, deleteEvent);
 
 router.post("/:eventId/cancel", auth,  markEventAsCancelled);
