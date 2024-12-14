@@ -4,8 +4,11 @@ const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
-const { sendConfirmationEmail } = require("../config/EmailService");
-const { sendReviewEmail } = require("../config/EmailService");
+const {
+  sendConfirmationEmail,
+  sendReviewEmail,
+  sendGuideAssignmentEmail,
+} = require("../config/EmailService");
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -26,8 +29,8 @@ exports.getAcceptedEvents = async (req, res) => {
 exports.getAssigneddEventsOfUser = async (req, res) => {
   try {
     let userparams = req.user;
-    const {completed} = req.query;
-    
+    const { completed } = req.query;
+
     if (completed) {
       if (userparams.role !== "coordinator") {
         const user2 = await User.findById(userparams.id);
@@ -39,7 +42,6 @@ exports.getAssigneddEventsOfUser = async (req, res) => {
           .populate("applicant")
           .populate("appliedUsers");
 
-        
         return res.status(200).json(completedEvents);
       } else {
         return res.status(400).json({ message: "Access Forbidden" });
@@ -94,10 +96,11 @@ exports.createSchoolTour = async (req, res) => {
       visitDate,
       visitTime,
       city,
+      district,
       studentCount,
       additionalNotes,
       phoneNumber,
-      reserveDates
+      reserveDates,
     } = req.body;
 
     if (
@@ -121,22 +124,29 @@ exports.createSchoolTour = async (req, res) => {
       visitDate: new Date(visitDate),
       visitTime,
       city,
+      district,
       studentCount,
       additionalNotes,
       phoneNumber,
-      reserveDates: reserveDates ? reserveDates.map(date => { return {visitDate : new Date(date.date), visitTime : date.time}}) : [],
+      reserveDates: reserveDates
+        ? reserveDates.map((date) => {
+            return { visitDate: new Date(date.date), visitTime: date.time };
+          })
+        : [],
     });
     schoolTour.setRequiredNumberOfGuides();
     schoolTour.addToApplicantEvents();
     schoolTour.setWeekday();
 
-    await schoolTour.save();
+    const savedTour = await schoolTour.save();
+    await savedTour.populate("applicant");
+    await sendConfirmationEmail(email, contactPerson, "", savedTour);
     res.status(201).json({
       message: "School tour created successfully",
       schoolTour,
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({
       message: "Error creating school tour",
       error: error.message,
@@ -157,7 +167,8 @@ exports.createIndividualTour = async (req, res) => {
       additionalNotes = "",
       hoursOfWork = 3,
       requiredNumberOfGuides = 1,
-
+      city,
+      district,
       status = "pending",
     } = req.body;
 
@@ -172,13 +183,21 @@ exports.createIndividualTour = async (req, res) => {
       hoursOfWork,
       requiredNumberOfGuides,
       status,
+      city,
+      district,
       typeStr: "Individual Tour",
     });
     individualTour.addToApplicantEvents();
     individualTour.setWeekday();
 
     const savedTour = await individualTour.save();
-
+    await savedTour.populate("applicant");
+    await sendConfirmationEmail(
+      savedTour.applicant.email,
+      savedTour.applicant.name,
+      "",
+      savedTour
+    );
     res.status(201).json({
       message: "Individual tour created successfully",
       tour: savedTour,
@@ -302,7 +321,6 @@ const acceptTourApplicationByCoordinator = async (req, res) => {
     const advisors = await Advisor.find({ assignedDay: weeakday });
     const randomAdvisor = advisors[Math.floor(Math.random() * advisors.length)];
     if (!randomAdvisor) {
-      
       return res
         .status(404)
         .json({ message: "No Advisor with the weekday found" });
@@ -349,23 +367,26 @@ exports.updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { status, event } = req.body;
-
+    let updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
+      new: true,
+    });
+    updatedEvent = await updatedEvent.populate("applicant");
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
     if (status === "accepted" || status === "rejected") {
       const applicant = await Applicant.findById(event.applicant);
       if (applicant) {
-        await sendConfirmationEmail(applicant.email, applicant.name, status);
+        await sendConfirmationEmail(
+          applicant.email,
+          applicant.name,
+          status,
+          updatedEvent
+        );
       }
       if (status === "accepted") {
         return await acceptTourApplication(req, res);
       }
-    }
-
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, {
-      new: true,
-    });
-
-    if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found" });
     }
 
     res.status(200).json({
@@ -373,6 +394,7 @@ exports.updateEvent = async (req, res) => {
       event: updatedEvent,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -395,9 +417,13 @@ exports.deleteEvent = async (req, res) => {
     const { eventId } = req.params;
     const event = await Event.findByIdAndDelete(eventId);
     try {
-      const applicant = await Applicant.findByIdAndDelete(
+      const applicant = await Applicant.findById(
         event.applicant.applicantID
       );
+      applicant.events = applicant.events.filter(
+        (event) => event._id != eventId
+      );
+      await applicant.save();
       await deleteEventFromUsers(eventId);
     } catch (error) {
       console.error(error);
@@ -478,6 +504,9 @@ exports.assignGuideToEvent = async (req, res) => {
     try {
       await guide.addAssignedEvent(eventID);
       await guide.save();
+
+      // Send guide assignment email
+      await sendGuideAssignmentEmail(guide, event);
     } catch (error) {
       return res
         .status(400)
@@ -595,8 +624,9 @@ exports.markEventAsCancelled = async (req, res) => {
     await sendReviewEmail(applicant.email, applicant.name, reviewLink);
     */
 
-
-    await Event.findByIdAndUpdate(eventId, { status: "canceled-resubmission-requested" });
+    await Event.findByIdAndUpdate(eventId, {
+      status: "canceled-resubmission-requested",
+    });
     res.status(200).json({ message: "Event marked as cancelled successfully" });
   } catch (error) {
     res
@@ -609,42 +639,45 @@ exports.markEventAsCompleted = async (req, res) => {
     const { eventId } = req.params;
     const userId = req.user.id;
     const workHours = req.body.workHours;
-   
-
-
-  
 
     // Fetch event by ID
-    let event = await Event.findById(eventId);
+    let event = await Event.findById(eventId).populate("assignedUsers");
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    let user = await User.findById (userId);
+    let user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     // Check if the user is assigned to the event
-    if (!event.isUserAssigned(userId)) {
+    if (!event.appliedUsers.some((user) => user._id == userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
     try {
-        await user.completeEvent(eventId, workHours);
+        const assignedUsers = event.assignedUsers;
+        for (let i = 0; i < assignedUsers.length; i++) {
+          let user = assignedUsers[i];
+          // user = new User(user);
+          await user.completeEvent(eventId, workHours);
+        }
+
     } catch (error) {
+      console.error(error);
       return res.status(400).json({ message: error.message });
     }
 
     event.hoursOfWork = workHours;
     // Update event status to "completed-non-verified"
     event.status = "completed-verified";
-    await event.save();  // Save the updated event
+    await event.save(); // Save the updated event
 
     // Generate review link
     const reviewLink = `http://localhost:5173/review/${eventId}`;
 
     // Populate the applicant data from the event
-    await event.populate('applicant'); // Wait for population to complete
+    await event.populate("applicant"); // Wait for population to complete
     const applicant = event.applicant;
 
     if (!applicant) {
@@ -669,11 +702,11 @@ exports.markEventAsCompleted = async (req, res) => {
 
 exports.takeBackEventAction = async (req, res) => {
   try {
-    console.log("takeBackEventAction");
+   
     const { eventId } = req.params;
     const userId = req.user.id;
-    const event = await Event.findById(eventId);
-    if (!event.isUserAssigned(userId)) {
+    const event = await Event.findById(eventId).populate("assignedUsers");
+    if (!event.assignedUsers.some((user) => user._id == userId)) {
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
@@ -684,11 +717,15 @@ exports.takeBackEventAction = async (req, res) => {
     try {
       await event.takeBackAction();
     } catch (error) {
-      res.status(400).json({ message: "Event status not eligible for action" });
+      return res.status(400).json({ message: "Event status not eligible for action" });
     }
-    let user = await User.findById(userId);
 
-    await user.takeBackCompletedEvent(eventId, event.hoursOfWork);
+
+   for (let i = 0; i < event.assignedUsers.length; i++) {
+      let user = event.assignedUsers[i];
+      await user.takeBackCompletedEvent(eventId, event.hoursOfWork);
+      await user.save();
+    }
    
     res.status(200).json({ message: "Event status set back to accepted" });
   } catch (error) {

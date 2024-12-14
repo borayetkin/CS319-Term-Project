@@ -139,12 +139,13 @@ const Events = () => {
   const sortedFairs = sortFairs(fairs, sortOption);
   const filteredEvents = events.filter((event) => {
     const matchesType = showType ? event.__t === showType : true;
+    const isPast = new Date(event.visitDate) < new Date();
     const matchesSearch =
       searchTerm.trim() === "" ||
       (event.applicant?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (event.city || "").toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesType && matchesSearch;
+    return matchesType && matchesSearch && !isPast;
   });
 
   const sortedEvents = sortEvents(filteredEvents, sortOption);
@@ -205,7 +206,7 @@ const Events = () => {
         </div>
       </div>
 
-      <div className="table-container">
+     
         {isLoading ? (
           <LoadingSpinner loading={viewType === "fairs" ? "Fairs" : "Events"} />
         ) : (
@@ -228,7 +229,7 @@ const Events = () => {
           />
         )}
       </div>
-    </div>
+   
   );
 };
 

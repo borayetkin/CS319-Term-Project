@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiSearch, FiEye, FiMail, FiPhone } from 'react-icons/fi';
 import { RiTeamLine } from 'react-icons/ri';
 import "../../../styles/CoordinatorPages/ViewGuidesPage.css";
+import LoadingSpinner from '../../../components/LoadingSpinner';
 
 const ViewGuidesPage = () => {
   const [guides, setGuides] = useState([]);
@@ -102,7 +103,7 @@ const ViewGuidesPage = () => {
             
             <div className="detail-item">
               <label>Department:</label>
-              <p>{guide.department || "N/A"}</p>
+              <p>{guide.major || "N/A"}</p>
             </div>
 
             <div className="detail-item">
@@ -157,7 +158,7 @@ const ViewGuidesPage = () => {
     );
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <LoadingSpinner  loading='guides'/>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
@@ -211,7 +212,7 @@ const ViewGuidesPage = () => {
                     {guide.phone || "N/A"}
                   </div>
                 </td>
-                <td>{guide.department || "N/A"}</td>
+                <td>{guide.major || "N/A"}</td>
                 <td>{guide.year || "N/A"}</td>
                 <td>{guide.totalWorkHours || 0}</td>
                 <td>{guide.averageRating?.toFixed(1) || "N/A"}</td>
