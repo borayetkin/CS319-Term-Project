@@ -49,35 +49,6 @@ const Applications = () => {
       setMessage("Error fetching user profile: " + error.message);
     }
   };
-  const sortApplications = (applications) => {
-    
-    if (sortOption === "default") return applications.sort((a, b) => {
-        return new Date(a.visitDate)-new Date(b.visitDate) ;
-    });
-    return applications.sort((a, b) => {
-
-      if (sortOption === "date") {
-        return  new Date(b.visitDate)-new Date(a.visitDate) ;
-      } else if (sortOption === "schoolName") {
-        return a.applicant?.name.localeCompare(b.applicant?.name);
-      } else if (sortOption === "status") {
-        return a.status.localeCompare(b.status);
-      } else if (tourType === "SchoolTour"&& sortOption === "priority") {
-        return getPriortyScore(b) - getPriortyScore(a);
-      } else if(sortOption === "appliedDate") {
-        return new Date(b.createdAt)-new Date(a.createdAt);
-      }
-      
-
-      
-      
-    })};
-  const getPriortyScore = (application) => {
-    if (application.applicant?.priority === "High") return 3;
-    if (application.applicant?.priority === "Medium") return 2;
-    if (application.applicant?.priority === "General") return 1;
-    return 0;
-  };
 
   const fetchApplications = async (token, us) => {
     try {
@@ -271,25 +242,93 @@ const Applications = () => {
           </button>
         </div>
       </div>
-      <GeneralTable
-        showFairs={false}
-        showTours={true}
-        showExtraProperties={{
-          SchoolTour: ["schoolName", "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber","applicationDate"],
-          IndividualTour: ["studentName", "studentHighSchool", "majorOfInterest", "email", "phoneNumber","applicationDate"],
-        }}
-        setMessage={setMessage}
-        user={user}
-        events={sortedApplications}
 
-        statusFilter= {filterStatus}
-        searchTerm=""
-        showType={tourType}
-        setIsLoading={setIsLoading}
-        EventRowActions={ApplicationsRowActions}
-      />
-       {isLoading && <LoadingSpinner />}         
-
+      {showWeeklySchedules ? (
+        <div className="weekly-schedule">
+          <div className="weekly-controls">
+            <button onClick={() => handleWeekChange(-1)}>← Previous</button>
+            <p className="date-range">
+              {new Date(weeklySchedules[currentWeekIndex]?.weekBeginning).toLocaleDateString("en-GB", {
+                timeZone: "UTC",
+              })}{" "}
+              -{" "}
+              {new Date(weeklySchedules[currentWeekIndex]?.weekEnding).toLocaleDateString("en-GB", {
+                timeZone: "UTC",
+              })}
+            </p>
+            <button onClick={() => handleWeekChange(1)}>Next →</button>
+          </div>
+          <div className="schedule-info">
+            <p><span className="legend accepted"></span> Accepted</p>
+            <p><span className="legend scheduled"></span> Scheduled</p>
+          </div>
+          {weeklySchedules.length > 0 && weeklySchedules[currentWeekIndex]?.slots ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                    <th key={day}>{day}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {["09:00", "11:00", "13:30", "16:00"].map((time) => (
+                  <tr key={time}>
+                    <td>{time}</td>
+                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => {
+                      const slot = weeklySchedules[currentWeekIndex].slots.find(
+                        (s) => s.slotDay === day && s.slotTime === time
+                      );
+                      return (
+                        <td key={day}>
+                          {slot && slot.event ? (
+                            <div
+                              className="event"
+                              style={{
+                                backgroundColor:
+                                  slot.event.status === "scheduled"
+                                    ? "#fef3c7" // Soft yellow
+                                    : slot.event.status === "accepted"
+                                    ? "#d1fae5" // Soft green
+                                    : "#edf2f7", // Default
+                              }}
+                            >
+                              {slot.event.schoolName}
+                            </div>
+                          ) : (
+                            <p>No event</p>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No schedules available</p>
+          )}
+        </div>
+      ) : (
+        <GeneralTable
+          showFairs={false}
+          showTours={true}
+          showExtraProperties={{
+            SchoolTour: ["schoolName", "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber", "applicationDate"],
+            IndividualTour: ["studentName", "studentHighSchool", "majorOfInterest", "email", "phoneNumber", "applicationDate"],
+          }}
+          setMessage={setMessage}
+          user={user}
+          events={tourFilteredApplications}
+          statusFilter={filterStatus}
+          searchTerm=""
+          showType={tourType}
+          setIsLoading={setIsLoading}
+          EventRowActions={ApplicationsRowActions}
+        />
+      )}
+      {isLoading && <LoadingSpinner />}
     </div>
   );
 };
