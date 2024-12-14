@@ -257,8 +257,6 @@ exports.getCompletedEvents = async (req, res) => {
         $in: [
           "completed-non-verified",
           "completed-verified",
-          "canceled-verified",
-          "canceled-non-verified",
         ],
       },
     })

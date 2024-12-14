@@ -1,271 +1,383 @@
 .applications-page-container {
-    padding: 20px;
-    width: 100%;
+  padding: 20px;
+  width: 100%;
 }
-.applications-page-container {
+
 .controls-container {
     display: flex;
-    justify-content: space-between; /* Space between filter and tour type */
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: nowrap; /* Prevent wrapping to maintain a single line */
+    overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+  }
+  
+
+/* Filter and Sort Groups */
+.filter-sort-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex: 1 1 auto;
 }
 
-.filter-controls {
-    flex: 0 1 auto; /* Allow the section to be as wide as its content */
-    display: flex;
-    justify-content: flex-start; /* Align to the left */
+.filter-controls,
+.sort-controls {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
-.tour-type-controls {
-    flex: 0 1 auto;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center; /* Align items vertically */
+.filter-controls label,
+.sort-controls label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
-.tour-type-heading {
-    min-width: 200px; /* Increase minimum width to prevent text wrapping */
-    max-width: 250px; /* Set a maximum width to control wrapping */
-    text-align: center; /* Center the text */
-    margin-right: 10px; /* Add some space between the text and the button */
-    white-space: normal; /* Allow text to wrap within the set width */
-}
-
-.filter-controls label {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #4a5568; /* Subtle gray for labels */
-}
-
-.filter-controls select {
-    padding: 8px 12px; /* Comfortable padding */
-    font-size: 1rem;
-    border: 1px solid #d1d5db; /* Light gray border */
-    border-radius: 8px;
-    background-color: #ffffff; /* White background */
-    color: #2d3748; /* Dark gray text */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.filter-controls select,
+.sort-controls select {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #2d3748;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .filter-controls select:hover,
-.filter-controls select:focus {
-    border-color: #3b82f6; /* Primary blue for hover/focus */
-    box-shadow: 0 0 4px rgba(59, 130, 246, 0.4); /* Subtle glow */
-    outline: none; /* No default outline */
+.sort-controls select:hover,
+.filter-controls select:focus,
+.sort-controls select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 4px rgba(59, 130, 246, 0.4);
+  outline: none;
 }
 
-.tour-type-controls button {
-    padding: 10px 16px; /* Slightly smaller padding for balance */
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    border: none;
-    background-color: #3b82f6; /* Primary blue button */
-    color: #ffffff; /* White text */
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.tour-type-controls button:hover {
-    background-color: #2563eb; /* Slightly darker blue for hover */
-    transform: scale(1.03); /* Small scale effect */
-}
-
-/* Add these new table-related styles */
-
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th, td {
-    padding: 8px 12px;
-    text-align: center; /* Center text */
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 0.9rem;
-    white-space: normal;
-    vertical-align: middle; /* Center content vertically */
-    max-width: 200px;
-    overflow-wrap: break-word;
-}
-
-/* Make certain columns narrower */
-th:nth-child(n+8), 
-td:nth-child(n+8) {
-    max-width: 120px; /* Narrower width for less important columns */
-}
-
-/* Make the actions column narrower */
-th:last-child,
-td:last-child {
-    width: 140px;
-    min-width: 140px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    gap: 8px;
-    width: 100%;
-}
-
-.button-container button {
-    height: 36px; /* Adjust height */
-    padding: 0;
-    border-radius: 4px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-/* Individual button styles */
-.view-details {
-    background-color: #3b82f6;
-    color: white;
-}
-
-.accept {
-    background-color: #10b981;
-    color: white;
-}
-
-.decline {
-    background-color: #ef4444;
-    color: white;
-}
-
-.delete {
-    background-color: #dc2626;
-    color: white;
-}
-
-/* Hover effects */
-.button-container button:hover {
-    transform: translateY(-1px);
-    filter: brightness(110%);
-}
-
-/* Optional: Add tooltip styles */
-.button-container button[title] {
-    position: relative;
-}
-
-.button-container button[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 4px 8px;
-    background-color: #1f2937;
-    color: white;
-    font-size: 0.75rem;
-    border-radius: 4px;
-    white-space: nowrap;
-    margin-bottom: 4px;
-}
-
-/* Add ellipsis for very long text */
-td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Make email columns slightly wider */
-td:nth-child(7) {
-    max-width: 180px;
-}
-
-/* Status-based row colors */
-tr.accepted {
-    background-color: rgba(72, 187, 120, 0.1);
-}
-
-tr.rejected {
-    background-color: rgba(245, 101, 101, 0.1);
-}
-
-tr.pending {
-    background-color: rgba(236, 201, 75, 0.1);
-}
-
-td[title] {
-    cursor: help;
-}
-
-/* Make the "Student Amount" column narrower */
-th:nth-child(5), 
-td:nth-child(5) {
-    max-width: 100px; /* Adjusted width for Student Amount column */
-}
-
+/* Slider Box */
 .slider-box {
-    background: linear-gradient(135deg, #a78bfa, #7c3aed); /* Purple-ish gradient */
-    border-radius: 12px;
-    padding: 20px; /* Increase padding for a bit longer appearance */
-    margin: 20px auto; /* Center the box horizontally */
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: white; /* Ensure text is readable on gradient */
-    position: relative; /* For positioning arrows */
-    font-weight: 600; /* Increase font boldness for better UI */
-    width: 80%; /* Set a specific width */
-    max-width: 500px; /* Ensure it doesn't exceed a certain width */
+  position: relative;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  color: white;
+  font-weight: 600;
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .slider-box:hover {
-    background-color: #6d28d9; /* Slightly darker on hover */
+  background-color: #6d28d9;
+  transform: scale(1.03);
 }
 
-.slider-box::before, .slider-box::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    transform: translateY(-50%);
+.slider-arrows {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
 }
 
-.slider-box::before {
-    left: 10px;
-    border-width: 8px 10px 8px 0;
-    border-color: transparent white transparent transparent;
+.slider-arrow {
+  pointer-events: all;
+  font-size: 1.2rem;
+  color: white;
+  cursor: pointer;
+  user-select: none;
 }
 
-.slider-box::after {
-    right: 10px;
-    border-width: 8px 0 8px 10px;
-    border-color: transparent transparent transparent white;
+.slider-left {
+  left: 10px;
 }
 
-/* Alternate row colors */
-tbody tr:nth-child(odd) {
-    background-color: #ffffff; /* White for odd rows */
+.slider-right {
+  right: 10px;
 }
 
-tbody tr:nth-child(even) {
-    background-color: #f7f7f7; /* Light gray for even rows */
+/* Weekly Controls and Date Range */
+.weekly-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
 }
 
-.status.accepted {
-    color: #48bb78; /* Green for accepted */
-    font-weight: bold;
+.date-range {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  background-color: #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #1a202c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.status.rejected {
-    color: #f56565; /* Red for rejected */
-    font-weight: bold;
+/* Buttons */
+.weekly-schedule-toggle,
+.rebuild-schedules-button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.status.pending {
-    color: #ecc94b; /* Yellow for pending */
-    font-weight: bold;
+.weekly-schedule-toggle.green {
+  background-color: #10b981;
+  color: #ffffff;
 }
+
+.weekly-schedule-toggle.green:hover {
+  background-color: #059669;
+  transform: scale(1.03);
+}
+
+.weekly-schedule-toggle.soft-red {
+  background-color: #f87171;
+  color: #ffffff;
+}
+
+.weekly-schedule-toggle.soft-red:hover {
+  background-color: #f87171;
+  transform: scale(1.03);
+}
+
+.rebuild-schedules-button {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.rebuild-schedules-button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* Weekly Schedule */
+.weekly-schedule {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(to bottom right, #f9fafb, #ffffff);
+  border-radius: 20px;
+  box-shadow: 10px 10px 12px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.legend-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-circle.accepted {
+  background-color: rgba(72, 187, 120, 0.3); /* Soft green */
+}
+
+.legend-circle.scheduled {
+  background-color: rgba(234, 179, 8, 0.3); /* Soft yellow */
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  padding: 12px 50px; /* Increased padding for better row height */
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  white-space: normal;
+  vertical-align: middle;
+  max-width: 200px;
+  overflow-wrap: break-word;
+}
+
+td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Row Highlighting */
+.scheduled-event {
+  background-color: rgba(234, 179, 8, 0.3); /* Soft yellow */
+  border-radius: 12px; /* Rounded corners */
+}
+
+.accepted-event {
+  background-color: rgba(72, 187, 120, 0.3); /* Soft green */
+  border-radius: 8px; /* Rounded corners */
+}
+
+.scheduled-event,
+.accepted-event {
+  padding: 8px; /* Add padding for spacing inside table cells */
+}
+
+/* Action Buttons */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.button-container button {
+  height: 36px;
+  padding: 0;
+  border-radius: 4px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-container button:hover {
+  transform: translateY(-1px);
+  filter: brightness(110%);
+}
+
+.view-details {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.accept {
+  background-color: #10b981;
+  color: white;
+}
+
+.decline {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete {
+  background-color: #dc2626;
+  color: white;
+}
+.applications-page-container {
+  padding: 20px;
+  width: 100%;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.slider-and-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-box {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed); /* Purple-ish gradient */
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+  font-weight: 600;
+  width: 60%; /* Adjusted width for side-by-side display */
+  max-width: 500px;
+}
+
+.slider-box:hover {
+  background-color: #6d28d9; /* Slightly darker on hover */
+}
+
+
+.weekly-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.schedule-info {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.legend {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend.accepted {
+  background-color: #d1fae5; /* Soft green */
+}
+
+.legend.scheduled {
+  background-color: #fef3c7; /* Soft yellow */
+}
+
+.weekly-schedule {
+  margin-top: 20px;
+}
+
+.weekly-schedule table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.weekly-schedule th,
+.weekly-schedule td {
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  padding: 10px;
+}
+
+.event {
+  margin: 5px 0;
+  padding: 15px;
+  border-radius: 10px;
+  color: #1a202c; /* Dark text for readability */
 }

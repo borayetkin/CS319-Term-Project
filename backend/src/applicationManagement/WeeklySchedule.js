@@ -9,11 +9,29 @@ const weeklyScheduleSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  slots: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'EventSlot',
-    required: true
-  }],
+  slots: [
+    {
+      slotDay: {
+        type: String,
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        required: true,
+      },
+      slotTime: {
+        type: String,
+        required: true,
+      },
+      event: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
+        required: false,
+      },
+      isEmpty: {
+        type: Boolean,
+        default: true,
+      },
+    },
+  ],
 });
 
-module.exports = mongoose.model("WeeklySchedule", weeklyScheduleSchema);
+const WeeklySchedule = mongoose.model("WeeklySchedule", weeklyScheduleSchema);
+module.exports = WeeklySchedule;

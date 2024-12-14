@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import { FaEye, FaCheck, FaTimes, FaTrash } from "react-icons/fa";
 import DetailsModal from "./DetailsModal";
 
 const ApplicationsRowActions = ({ event, user, setMessage }) => {
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [actionInProcess, setActionInProcess] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [actionInProcess, setActionInProcess] = useState(false);
+
   const handleAction = async (eventId, event, status) => {
     setActionInProcess(true);
     try {
@@ -55,7 +55,6 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       if (response.ok) {
         setMessage("Application deleted successfully.");
         window.location.reload();
-
       } else {
         setMessage("Failed to delete application.");
       }
@@ -74,7 +73,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       >
         <FaEye />
       </button>
-      {event.status === "pending" && (
+      {(event.status === "pending" || event.status === "scheduled") && (
         <>
           <button
             className="accept"
@@ -106,11 +105,11 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
         <FaTrash />
       </button>
       {showDetailsModal && (
-            <DetailsModal
-              application={event}
-              onClose={() => setShowDetailsModal(false)}
-            />
-          )}
+        <DetailsModal
+          application={event}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
     </div>
   );
 };
