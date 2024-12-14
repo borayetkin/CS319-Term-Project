@@ -199,7 +199,7 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
 }
 
 .stat-number {
@@ -248,7 +248,7 @@
 }
 
 .featured-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -350,7 +350,7 @@
 }
 
 .event-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
 }
 
 .event-date {
@@ -399,7 +399,7 @@
 }
 
 .news-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
 }
 
 .news-image {
@@ -446,7 +446,7 @@
 }
 
 .campus-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
