@@ -116,9 +116,14 @@ const Applications = () => {
 
   const sortApplications = (applications) => {
     const sortedApplications = [...applications];
-    if (sortOption === "default") {
-      return sortedApplications.sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate));
-    }
+    if (sortOption === "default") return applications.sort((a, b) => {
+      if (a.status === "pending" && b.status !== "pending") return -1;
+      if (b.status === "pending" && a.status !== "pending") return 1;
+      if (a.status === "pending" && b.status === "pending") {
+        return getPriorityScore(b) -getPriorityScore(a)
+      }
+      return new Date(b.visitDate) - new Date(a.visitDate)
+  });
     return sortedApplications.sort((a, b) => {
       if (sortOption === "date") {
         return new Date(b.visitDate) - new Date(a.visitDate);
