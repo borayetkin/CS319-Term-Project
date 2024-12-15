@@ -1,4 +1,4 @@
-// Applications.jsx
+// Applications.jsx - Part 1
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/AdvisorPages/Applications.css";
@@ -19,6 +19,7 @@ const Applications = () => {
   const [weeklySchedules, setWeeklySchedules] = useState([]);
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
   const [showWeeklySchedules, setShowWeeklySchedules] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState({});
 
   const navigate = useNavigate();
 
@@ -107,6 +108,106 @@ const Applications = () => {
     }
   };
 
+  const handleRemoveEvent = async (slot) => {
+    try {
+      const eventId = slot.event._id;
+      slot.event = null;
+      slot.isEmpty = true;
+  
+      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: true }));
+  
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/api/schedules/remove-from-schedule", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify( { eventId } ), // Send only the eventId
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(`Error removing event: ${errorData.message}`);
+        return;
+      }
+  
+    } catch (error) {
+      setMessage("Error removing event: " + error.message);
+    } finally {
+      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: false }));
+    }
+  };
+  
+
+  const handleAddEvent = async (weekBeginning, slotDay, slotTime) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/schedules/matching-slot",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ weekBeginning, slotDay, slotTime }),
+        }
+      );
+      const schoolNames = await response.json();
+      return schoolNames;
+    } catch (error) {
+      setMessage("Error fetching matching events: " + error.message);
+      return [];
+    }
+  };
+
+  const handlePopupSelections = async (schoolName, slot) => {
+    try {
+      const token = localStorage.getItem("token");
+      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: true }));
+      await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          schoolName,
+          weekBeginning: weeklySchedules[currentWeekIndex]?.weekBeginning,
+          slotDay: slot.slotDay,
+          slotTime: slot.slotTime,
+        }),
+      });
+      await fetchWeeklySchedules(token);
+      setMessage(`Event "${schoolName}" successfully added to the slot.`);
+    } catch (error) {
+      setMessage("Error assigning event: " + error.message);
+    } finally {
+      setPopup({ show: false, slot: null, schoolNames: [] });
+      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: false }));
+    }
+  };
+
+  const handleAssignEvent = async (schoolName, weekBeginning, slotDay, slotTime) => {
+    try {
+      setLoadingSlots((prev) => ({ ...prev, [slotDay + slotTime]: true }));
+      const token = localStorage.getItem("token");
+      await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ schoolName, weekBeginning, slotDay, slotTime }),
+      });
+      await fetchWeeklySchedules(token);
+    } catch (error) {
+      setMessage("Error assigning event: " + error.message);
+    } finally {
+      setLoadingSlots((prev) => ({ ...prev, [slotDay + slotTime]: false }));
+    }
+  };
   const sortApplications = (applications) => {
     const sortedApplications = [...applications];
     if (sortOption === "default") {
@@ -286,20 +387,44 @@ const Applications = () => {
                       );
                       return (
                         <td key={day}>
-                          {slot && slot.event ? (
-                            <div
-                              className="event"
-                              style={{
-                                backgroundColor:
-                                  slot.event.status === "scheduled"
-                                    ? "#fef3c7"
-                                    : slot.event.status === "accepted"
-                                    ? "#d1fae5"
-                                    : "#edf2f7",
-                              }}
-                            >
-                              {slot.event.schoolName}
-                            </div>
+                          {slot ? (
+                            slot.event ? (
+                              <div
+                                className="event"
+                                style={{
+                                  backgroundColor:
+                                    slot.event.status === "scheduled"
+                                      ? "#fef3c7"
+                                      : slot.event.status === "accepted"
+                                      ? "#d1fae5"
+                                      : "#edf2f7",
+                                }}
+                              >
+                                {slot.event.schoolName}
+                                <span
+                                  className="remove-cross"
+                                  onClick={() =>
+                                    handleRemoveEvent(slot)
+                                  }
+                                >
+                                  ✖
+                                </span>
+                              </div>
+                            ) : (
+                              <button
+                                className="add-event-button"
+                                onClick={async () => {
+                                  const schoolNames = await handleAddEvent(
+                                    weeklySchedules[currentWeekIndex].weekBeginning,
+                                    day,
+                                    time
+                                  );
+                                  setPopup({ show: true, slot, schoolNames });
+                                }}
+                              >
+                                +Add Event
+                              </button>
+                            )
                           ) : (
                             <p>No event</p>
                           )}

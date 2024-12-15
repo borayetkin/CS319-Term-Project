@@ -50,11 +50,9 @@ async function assignEventsToSlots(startOfTheWeek) {
     }
 
     const allEvents = await Event.find({
-      status: { $in: ["pending", "scheduled"] },
+      status: "pending" ,
       __t: "SchoolTour"
     }).populate("applicant");
-    
-    console.log(allEvents.length);
     
     const filteredEvents = allEvents.filter((event) =>
       event.reserveDates.some((date) => {
@@ -65,8 +63,6 @@ async function assignEventsToSlots(startOfTheWeek) {
         );
       })
     );
-
-    console.log(filteredEvents.length);
 
     const sortedEvents = await sortEventsByPriority(filteredEvents);
 
@@ -104,8 +100,6 @@ async function sortEventsByPriority(events) {
   return events.sort((a, b) => {
     const priorityA = priorityMap[a.applicant.priority] + a.cancellationTimes / 2;
     const priorityB = priorityMap[b.applicant.priority] + b.cancellationTimes / 2;
-
-    console.log(priorityMap[a.applicant.priority] + "  vs  " + priorityMap[b.applicant.priority])
 
     const priorityDiff = priorityB - priorityA;
     if (priorityDiff !== 0) {
@@ -192,7 +186,6 @@ async function getCurrentMonday() {
   const currentMonday = new Date(now);
   currentMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Adjust to the most recent Monday
   currentMonday.setHours(0, 0, 0, 0);
-  console.log(currentMonday);
   return currentMonday;
 }
 
@@ -262,9 +255,10 @@ exports.loadWeeklySchedules = async (req, res) => {
 };
 
 exports.removeEventFromSchedule = async (req, res) => {
-  const { eventId } = req.params;
+  const {eventId} = req.body;
 
   try {
+
     // Find the weekly schedule containing the event
     const schedule = await WeeklySchedule.findOne({
       "slots.event": eventId,
@@ -313,42 +307,25 @@ exports.getMatchingEventsForSlot = async (req, res) => {
       return res.status(400).json({ message: "Missing required parameters." });
     }
 
+    
     // Convert weekBeginning to a Date object
     const weekStartDate = new Date(weekBeginning);
     weekStartDate.setHours(0, 0, 0, 0);
 
+    
     // Locate the weekly schedule with the given weekBeginning
     const schedule = await WeeklySchedule.findOne({ weekBeginning: weekStartDate });
     if (!schedule) {
       return res.status(404).json({ message: "No matching weekly schedule found." });
     }
 
-    // Locate the specific slot within the schedule
-    const slot = schedule.slots.find(
-      (s) => s.slotDay === slotDay && s.slotTime === slotTime
-    );
-
-    if (!slot) {
-      return res.status(404).json({ message: "No matching slot found." });
-    }
-
     // Find all events with status 'pending'
     const pendingEvents = await Event.find({ status: "pending" });
-
-    const filteredEvents = pendingEvents.filter((event) =>
-      event.reserveDates.some((date) => {
-        const visitDate = new Date(date.visitDate);
-        return (
-          visitDate >= new Date(weeklySchedule.weekBeginning) &&
-          visitDate <= new Date(weeklySchedule.weekEnding)
-        );
-      })
-    );
 
     // Filter events to match those with a reserveDate matching the slot's date
     const matchingEvents = pendingEvents.filter((event) =>
       event.reserveDates.some((date) => {
-        const visitDate = new Date(reserveDate.visitDate);
+        const visitDate = new Date(date.visitDate);
         return (
           visitDate >= new Date(schedule.weekBeginning) &&
           visitDate <= new Date(schedule.weekEnding) &&
