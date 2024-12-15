@@ -1,17 +1,18 @@
+/* Applications.css */
+
 .applications-page-container {
   padding: 20px;
   width: 100%;
 }
 
 .controls-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: nowrap; /* Prevent wrapping to maintain a single line */
-    overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
 
 /* Filter and Sort Groups */
 .filter-sort-group {
@@ -184,31 +185,29 @@
 }
 
 .legend {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.legend-circle {
-  width: 16px;
+  display: inline-block;
+  width: 16px; /* Size of the legend circle */
   height: 16px;
-  border-radius: 50%;
+  border-radius: 50%; /* Makes it circular */
+  background-color: transparent; /* Default background color */
 }
 
-.legend-circle.accepted {
-  background-color: rgba(72, 187, 120, 0.3); /* Soft green */
+.legend.accepted {
+  background-color: rgba(72, 187, 120, 0.3);
 }
 
-.legend-circle.scheduled {
-  background-color: rgba(234, 179, 8, 0.3); /* Soft yellow */
+.legend.scheduled {
+  background-color: rgba(234, 179, 8, 0.3);
+}
+
+/* Styling for the text accompanying the legend */
+.schedule-info p {
+  font-size: 0.9rem; /* Adjust font size */
+  font-weight: bold; /* Make the text bold */
+  margin: 0; /* Remove any default margins */
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between legend and text */
 }
 
 /* Table Styling */
@@ -220,7 +219,7 @@ table {
 
 th,
 td {
-  padding: 12px 50px; /* Increased padding for better row height */
+  padding: 12px 50px;
   text-align: center;
   border-bottom: 1px solid #e2e8f0;
   font-size: 0.9rem;
@@ -237,18 +236,18 @@ td {
 
 /* Row Highlighting */
 .scheduled-event {
-  background-color: rgba(234, 179, 8, 0.3); /* Soft yellow */
-  border-radius: 12px; /* Rounded corners */
+  background-color: rgba(234, 179, 8, 0.3);
+  border-radius: 12px;
 }
 
 .accepted-event {
-  background-color: rgba(72, 187, 120, 0.3); /* Soft green */
-  border-radius: 8px; /* Rounded corners */
+  background-color: rgba(72, 187, 120, 0.3);
+  border-radius: 8px;
 }
 
 .scheduled-event,
 .accepted-event {
-  padding: 8px; /* Add padding for spacing inside table cells */
+  padding: 8px;
 }
 
 /* Action Buttons */
@@ -295,16 +294,6 @@ td {
   background-color: #dc2626;
   color: white;
 }
-.applications-page-container {
-  padding: 20px;
-  width: 100%;
-}
-
-.controls-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
 .slider-and-toggle {
   display: flex;
@@ -313,54 +302,8 @@ td {
 }
 
 .slider-box {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed); /* Purple-ish gradient */
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  color: white;
-  font-weight: 600;
-  width: 60%; /* Adjusted width for side-by-side display */
+  width: 60%;
   max-width: 500px;
-}
-
-.slider-box:hover {
-  background-color: #6d28d9; /* Slightly darker on hover */
-}
-
-
-.weekly-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 0;
-}
-
-.schedule-info {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
-}
-
-.legend {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-.legend.accepted {
-  background-color: #d1fae5; /* Soft green */
-}
-
-.legend.scheduled {
-  background-color: #fef3c7; /* Soft yellow */
-}
-
-.weekly-schedule {
-  margin-top: 20px;
 }
 
 .weekly-schedule table {
@@ -379,5 +322,5 @@ td {
   margin: 5px 0;
   padding: 15px;
   border-radius: 10px;
-  color: #1a202c; /* Dark text for readability */
+  color: #1a202c;
 }

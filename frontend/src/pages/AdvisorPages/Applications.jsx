@@ -1,3 +1,4 @@
+// Applications.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/AdvisorPages/Applications.css";
@@ -32,9 +33,7 @@ const Applications = () => {
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
         const data = await response.json();
@@ -52,18 +51,13 @@ const Applications = () => {
 
   const fetchApplications = async (token, us) => {
     try {
-      const response =
+      const url =
         us.role === "advisor"
-          ? await fetch(`http://localhost:3000/api/events/advisor`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-          : await fetch(`http://localhost:3000/api/events/`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
+          ? "http://localhost:3000/api/events/advisor"
+          : "http://localhost:3000/api/events/";
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) {
         const data = await response.json();
         setApplications(data);
@@ -78,10 +72,8 @@ const Applications = () => {
 
   const fetchWeeklySchedules = async (token) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/events/schedules`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await fetch("http://localhost:3000/api/schedules/load", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
         const data = await response.json();
@@ -96,12 +88,13 @@ const Applications = () => {
 
   const handleRebuildSchedules = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/events/schedules/rebuild`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3000/api/schedules/rebuild",
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setWeeklySchedules(data);
@@ -116,46 +109,52 @@ const Applications = () => {
 
   const sortApplications = (applications) => {
     const sortedApplications = [...applications];
-    if (sortOption === "default") return applications.sort((a, b) => {
-      if (a.status === "pending" && b.status !== "pending") return -1;
-      if (b.status === "pending" && a.status !== "pending") return 1;
-      if (a.status === "pending" && b.status === "pending") {
-        return getPriorityScore(b) -getPriorityScore(a)
-      }
-      return new Date(b.visitDate) - new Date(a.visitDate)
-  });
-    return sortedApplications.sort((a, b) => {
-      if (sortOption === "date") {
+    if (sortOption === "default") {
+      return applications.sort((a, b) => {
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (b.status === "pending" && a.status !== "pending") return 1;
+        if (a.status === "pending" && b.status === "pending") {
+          return getPriorityScore(b) - getPriorityScore(a);
+        }
         return new Date(b.visitDate) - new Date(a.visitDate);
-      } else if (sortOption === "schoolName") {
-        return a.applicant?.name.localeCompare(b.applicant?.name);
-      } else if (sortOption === "status") {
-        return a.status.localeCompare(b.status);
-      } else if (tourType === "SchoolTour" && sortOption === "priority") {
-        return getPriorityScore(b) - getPriorityScore(a);
-      } else if (sortOption === "appliedDate") {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
+    return sortedApplications.sort((a, b) => {
+      switch (sortOption) {
+        case "date":
+          return new Date(b.visitDate) - new Date(a.visitDate);
+        case "schoolName":
+          return a.applicant?.name.localeCompare(b.applicant?.name);
+        case "status":
+          return a.status.localeCompare(b.status);
+        case "priority":
+          return getPriorityScore(b) - getPriorityScore(a);
+        case "appliedDate":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        default:
+          return 0;
       }
     });
   };
 
   const getPriorityScore = (application) => {
-    if (application.applicant?.priority === "High") return 3;
-    if (application.applicant?.priority === "Medium") return 2;
-    if (application.applicant?.priority === "General") return 1;
-    return 0;
+    switch (application.applicant?.priority) {
+      case "High":
+        return 3;
+      case "Medium":
+        return 2;
+      case "General":
+        return 1;
+      default:
+        return 0;
+    }
   };
 
   const handleWeekChange = (direction) => {
     setCurrentWeekIndex((prevIndex) => {
       const newIndex = prevIndex + direction;
-      if (newIndex < 0) return weeklySchedules.length - 1;
-      if (newIndex >= weeklySchedules.length) return 0;
-      return newIndex;
+      return newIndex < 0 ? weeklySchedules.length - 1 : newIndex % weeklySchedules.length;
     });
-  };
-  const handleSlide = () => {
-    setSlideIndex((prevIndex) => (prevIndex + 1) % sliderContent.length);
   };
 
   const toggleWeeklySchedules = () => {
@@ -171,6 +170,10 @@ const Applications = () => {
       (app) => app.status === "pending" && app.__t === "IndividualTour"
     ).length}`,
   ];
+
+  const handleSlide = () => {
+    setSlideIndex((prevIndex) => (prevIndex + 1) % sliderContent.length);
+  };
 
   const tourFilteredApplications = sortApplications(
     applications.filter((app) => app.__t === tourType)
@@ -200,6 +203,8 @@ const Applications = () => {
             >
               <option value="all">All</option>
               <option value="pending">Pending</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="canceled-resubmission-requested">Canceled</option>
               <option value="accepted">Accepted</option>
               <option value="rejected">Rejected</option>
             </select>
@@ -243,7 +248,7 @@ const Applications = () => {
             {showWeeklySchedules ? "Show Applications" : "Show Weekly Schedules"}
           </button>
           <button onClick={handleRebuildSchedules} className="rebuild-schedules-button">
-            Rebuild Schedules
+            Auto Reschedule
           </button>
         </div>
       </div>
@@ -253,19 +258,13 @@ const Applications = () => {
           <div className="weekly-controls">
             <button onClick={() => handleWeekChange(-1)}>← Previous</button>
             <p className="date-range">
-              {new Date(weeklySchedules[currentWeekIndex]?.weekBeginning).toLocaleDateString("en-GB", {
-                timeZone: "UTC",
-              })}{" "}
-              -{" "}
-              {new Date(weeklySchedules[currentWeekIndex]?.weekEnding).toLocaleDateString("en-GB", {
-                timeZone: "UTC",
-              })}
+              {new Date(weeklySchedules[currentWeekIndex]?.weekBeginning).toLocaleDateString("en-GB")} - 
+              {new Date(weeklySchedules[currentWeekIndex]?.weekEnding).toLocaleDateString("en-GB")}
             </p>
-            <button onClick={() => handleWeekChange(1)}>Next →</button>
-          </div>
+            <button onClick={() => handleWeekChange(1)}>Next →</button></div>
           <div className="schedule-info">
             <p><span className="legend accepted"></span> Accepted</p>
-            <p><span className="legend scheduled"></span> Scheduled</p>
+            <p><span className="legend scheduled"></span> Scheduled</p> 
           </div>
           {weeklySchedules.length > 0 && weeklySchedules[currentWeekIndex]?.slots ? (
             <table>
@@ -293,10 +292,10 @@ const Applications = () => {
                               style={{
                                 backgroundColor:
                                   slot.event.status === "scheduled"
-                                    ? "#fef3c7" // Soft yellow
+                                    ? "#fef3c7"
                                     : slot.event.status === "accepted"
-                                    ? "#d1fae5" // Soft green
-                                    : "#edf2f7", // Default
+                                    ? "#d1fae5"
+                                    : "#edf2f7",
                               }}
                             >
                               {slot.event.schoolName}

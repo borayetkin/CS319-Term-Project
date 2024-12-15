@@ -24,10 +24,10 @@ async function createWeeklySchedule(startOfTheWeek) {
     }
   }
 
-  startOfTheWeek.setUTCHours(0, 0, 0, 0);
+  startOfTheWeek.setHours(0, 0, 0, 0);
   const endOfTheWeek = new Date(startOfTheWeek);
   endOfTheWeek.setDate(endOfTheWeek.getDate() + 4);
-  endOfTheWeek.setUTCHours(23, 59, 59, 999);
+  endOfTheWeek.setHours(23, 59, 59, 999);
 
   // Create the weekly schedule object
   const weeklySchedule = new WeeklySchedule({
@@ -50,10 +50,10 @@ async function assignEventsToSlots(startOfTheWeek) {
     }
 
     const allEvents = await Event.find({
-      status: "pending",
-      __t: "SchoolTour",
+      status: { $in: ["pending", "scheduled"] },
+      __t: "SchoolTour"
     }).populate("applicant");
-
+    
     console.log(allEvents.length);
     
     const filteredEvents = allEvents.filter((event) =>
@@ -65,6 +65,8 @@ async function assignEventsToSlots(startOfTheWeek) {
         );
       })
     );
+
+    console.log(filteredEvents.length);
 
     const sortedEvents = await sortEventsByPriority(filteredEvents);
 
@@ -118,16 +120,20 @@ async function placeToAvailableSlot(event, weeklySchedule) {
   for (const reservedDate of event.reserveDates) {
     const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
     const visitTime = reservedDate.visitTime;
+    
+    if (new Date(reservedDate.visitDate) >= new Date(weeklySchedule.weekBeginning) &&
+        new Date(reservedDate.visitDate) <= new Date(weeklySchedule.weekEnding)) {
 
-    const slot = weeklySchedule.slots.find(
-      (slot) => slot.slotDay === visitDay && slot.slotTime === visitTime && slot.isEmpty
-    );
+      const slot = weeklySchedule.slots.find(
+        (slot) => slot.slotDay === visitDay && slot.slotTime === visitTime && slot.isEmpty
+      );
 
-    if (slot) {
-      slot.event = event._id;
-      slot.isEmpty = false;
-      await weeklySchedule.save();
-      return true;
+      if (slot) {
+        slot.event = event._id;
+        slot.isEmpty = false;
+        await weeklySchedule.save();
+        return true;
+      }
     }
   }
 
@@ -181,11 +187,18 @@ async function updateEventStatus(weeklySchedule) {
   }
 }
 
+async function getCurrentMonday() {
+  const now = new Date();
+  const currentMonday = new Date(now);
+  currentMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Adjust to the most recent Monday
+  currentMonday.setHours(0, 0, 0, 0);
+  console.log(currentMonday);
+  return currentMonday;
+}
+
 exports.getWeeklySchedules = async (req, res) => {
   try {
-    const now = new Date();
-    const currentMonday = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-    currentMonday.setUTCHours(0, 0, 0, 0);
+    const currentMonday = await getCurrentMonday();
 
     const weeklyDates = [];
     for (let i = 2; i <= 7; i++) {
@@ -206,7 +219,6 @@ exports.getWeeklySchedules = async (req, res) => {
         },
       }));
     }
-    console.log(schedules);
 
     res.status(200).json(schedules);
   } catch (error) {
@@ -217,9 +229,7 @@ exports.getWeeklySchedules = async (req, res) => {
 
 exports.loadWeeklySchedules = async (req, res) => {
   try {
-    const now = new Date();
-    const currentMonday = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-    currentMonday.setUTCHours(0, 0, 0, 0);
+    const currentMonday = await getCurrentMonday();
 
     const weeklyDates = [];
     for (let i = 2; i <= 7; i++) {
@@ -248,5 +258,160 @@ exports.loadWeeklySchedules = async (req, res) => {
   } catch (error) {
     console.error("Error fetching weekly schedules:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.removeEventFromSchedule = async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    // Find the weekly schedule containing the event
+    const schedule = await WeeklySchedule.findOne({
+      "slots.event": eventId,
+    });
+
+    if (!schedule) {
+      return res.status(404).json({ message: "Schedule containing the event not found." });
+    }
+
+    // Find and update the slot containing the event
+    const slot = schedule.slots.find(
+      (s) => s.event && s.event.toString() === eventId
+    );
+
+    if (slot) {
+      slot.event = null; // Remove event from slot
+      slot.isEmpty = true; // Mark slot as empty
+    }
+
+    await schedule.save();
+
+    // Update the event status to "pending"
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    event.status = "pending";
+    await event.save();
+
+    return res.status(200).json({
+      message: "Event removed from schedule.",
+    });
+  } catch (error) {
+    console.error("Error removing event from schedule:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.getMatchingEventsForSlot = async (req, res) => {
+  try {
+    const { weekBeginning, slotDay, slotTime } = req.body;
+
+    if (!weekBeginning || !slotDay || !slotTime) {
+      return res.status(400).json({ message: "Missing required parameters." });
+    }
+
+    // Convert weekBeginning to a Date object
+    const weekStartDate = new Date(weekBeginning);
+    weekStartDate.setHours(0, 0, 0, 0);
+
+    // Locate the weekly schedule with the given weekBeginning
+    const schedule = await WeeklySchedule.findOne({ weekBeginning: weekStartDate });
+    if (!schedule) {
+      return res.status(404).json({ message: "No matching weekly schedule found." });
+    }
+
+    // Locate the specific slot within the schedule
+    const slot = schedule.slots.find(
+      (s) => s.slotDay === slotDay && s.slotTime === slotTime
+    );
+
+    if (!slot) {
+      return res.status(404).json({ message: "No matching slot found." });
+    }
+
+    // Find all events with status 'pending'
+    const pendingEvents = await Event.find({ status: "pending" });
+
+    const filteredEvents = pendingEvents.filter((event) =>
+      event.reserveDates.some((date) => {
+        const visitDate = new Date(date.visitDate);
+        return (
+          visitDate >= new Date(weeklySchedule.weekBeginning) &&
+          visitDate <= new Date(weeklySchedule.weekEnding)
+        );
+      })
+    );
+
+    // Filter events to match those with a reserveDate matching the slot's date
+    const matchingEvents = pendingEvents.filter((event) =>
+      event.reserveDates.some((date) => {
+        const visitDate = new Date(reserveDate.visitDate);
+        return (
+          visitDate >= new Date(schedule.weekBeginning) &&
+          visitDate <= new Date(schedule.weekEnding) &&
+          reserveDate.slotDay === slotDay && // Match slotDay
+          reserveDate.slotTime === slotTime // Match slotTime
+        );
+      })
+    );
+
+    // Extract the schoolName properties of matching events
+    const schoolNames = matchingEvents.map((event) => event.schoolName || "Unnamed School");
+
+    return res.status(200).json(schoolNames);
+  } catch (error) {
+    console.error("Error in getMatchingEventsForSlot:", error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+exports.assignEventToSlot = async (req, res) => {
+  const { schoolName, weekBeginning, slotDay, slotTime } = req.body;
+
+  try {
+    // Find the event with the matching schoolName
+    const event = await Event.findOne({ schoolName: schoolName });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Find the weekly schedule that matches the provided weekBeginning
+    const weeklySchedule = await WeeklySchedule.findOne({ weekBeginning: new Date(weekBeginning) });
+
+    if (!weeklySchedule) {
+      return res.status(404).json({ message: "Weekly schedule not found" });
+    }
+
+    // Find the slot in the weekly schedule matching slotDay and slotTime
+    const slot = weeklySchedule.slots.find(
+      (s) => s.slotDay === slotDay && s.slotTime === slotTime
+    );
+
+    if (!slot) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+
+    // Check if the slot is already occupied
+    if (!slot.isEmpty) {
+      return res.status(400).json({ message: "Slot is already occupied" });
+    }
+
+    // Assign the event ID to the slot and update the event status
+    slot.event = event._id;
+    slot.isEmpty = false;
+    event.status = "scheduled";
+
+    // Save the updated weekly schedule and event
+    await weeklySchedule.save();
+    await event.save();
+
+    return res.status(200).json({ message: "Event successfully assigned to the slot" });
+  } catch (error) {
+    console.error("Error assigning event to slot:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };

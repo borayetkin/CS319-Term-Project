@@ -27,12 +27,7 @@ const {
   applyToEvent,
   isReviewSubmitted,
 } = require("../controllers/EventController");
-const { getWeeklySchedules, loadWeeklySchedules } = require("../applicationManagement/AppointmentManager");
 const adminAuth = require("../middleware/adminMiddleware");
-
-// Routes for schedule fetching
-router.get("/schedules", loadWeeklySchedules);
-router.get("/schedules/rebuild", getWeeklySchedules);
 
 // Routes for creating events
 router.post("/schooltours", createSchoolTour);
