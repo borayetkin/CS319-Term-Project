@@ -355,7 +355,7 @@ const Applications = () => {
               <thead>
                 <tr>
                   <th>Time</th>
-                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
                     <th key={day}>{day}</th>
                   ))}
                 </tr>
@@ -364,7 +364,7 @@ const Applications = () => {
                 {["09:00", "11:00", "13:30", "16:00"].map((time) => (
                   <tr key={time}>
                     <td>{time}</td>
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => {
+                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => {
                       const slot = weeklySchedules[currentWeekIndex].slots.find(
                         (s) => s.slotDay === day && s.slotTime === time
                       );

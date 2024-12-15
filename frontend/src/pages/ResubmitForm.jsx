@@ -3,26 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import CustomDateTimePicker from "../components/SchoolTourDatePicker";
 import "../styles/ResubmitForm.css";
 
-const generateTimeSlots = () => {
-  const start = new Date();
-  start.setHours(8, 30, 0, 0); // Start time: 8:30 AM
-  const end = new Date();
-  end.setHours(17, 0, 0, 0); // End time: 5:00 PM
-
-  const slots = [];
-  while (start < end) {
-    const hours = start.getHours();
-    const minutes = start.getMinutes();
-    const timeString = `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
-    slots.push(timeString);
-    start.setMinutes(start.getMinutes() + 30); // Increment by 30 minutes
-  }
-
-  return slots;
-};
-
 const ResubmitForm = () => {
   const { eventId } = useParams(); // Extract eventId from URL
   const navigate = useNavigate(); // For navigation
@@ -31,16 +11,14 @@ const ResubmitForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Show submission state
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleReserveDatesChange = ({target}) => {
-   const dates = target.value;
-   const updatedDates = dates.reserveDates;
-   console.log(updatedDates);
+  const handleReserveDatesChange = ({ target }) => {
+    const dates = target.value;
+    const updatedDates = dates.reserveDates;
     // Update reserve dates from the date picker
-    const formattedDates = updatedDates.map(({ visitDate, visitTime }) => ({
-      visitDate,
-      visitTime,
+    const formattedDates = updatedDates.map(({ date, time }) => ({
+      visitDate: date,
+      visitTime: time,
     }));
-
     setReserveDates(formattedDates);
   };
 
@@ -57,7 +35,7 @@ const ResubmitForm = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/events/resubmission/${eventId}`,
+        `http://localhost:3000/api/events/resubmit-form/${eventId}`,
         {
           method: "POST",
           headers: {
@@ -69,7 +47,6 @@ const ResubmitForm = () => {
 
       if (response.ok) {
         setSuccessMessage("Your submission was successful!");
-        setTimeout(() => navigate("/"), 2000); // Redirect after success
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Error resubmitting dates. Please try again.");
@@ -85,6 +62,9 @@ const ResubmitForm = () => {
     return (
       <div className="success-container">
         <h1>{successMessage}</h1>
+        <p className="success-note">
+          Please wait for us to contact you to inform you about the status of your submission.
+        </p>
         <button onClick={() => navigate("/")} className="success-button">
           Return Home
         </button>
@@ -100,11 +80,15 @@ const ResubmitForm = () => {
           <label htmlFor="date-picker">Select Dates:</label>
           <CustomDateTimePicker
             handleChange={handleReserveDatesChange}
-            reserveDatesImp={reserveDates} // Provide current reserveDates as initial data// Pass generated time slots
+            reserveDatesImp={reserveDates} // Provide current reserveDates as initial data
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="submit-button" disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={isSubmitting || reserveDates.length === 0} // Disable if no dates or submission in progress
+        >
           {isSubmitting ? "Submitting..." : "Resubmit"}
         </button>
       </form>

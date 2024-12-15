@@ -1,38 +1,127 @@
+/* Container Styles */
 .resubmit-form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.resubmit-form-container h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 20px;
+}
+
+/* Form Styles */
+.resubmit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4a5568;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Error Message */
+.error-message {
+  font-size: 0.9rem;
+  color: #e53e3e;
+  margin-top: -10px;
+}
+
+/* Submit Button */
+.submit-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+  transform: scale(1.03);
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success Container */
+.success-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #f0fff4;
+  border: 1px solid #c6f6d5;
+  border-radius: 8px;
+  color: #38a169;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.success-container h1 {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.success-note {
+  font-size: 1rem;
+  color: #555555;
+  margin: 10px 20px;
+  text-align: center;
+}
+
+.success-button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #45a049;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.success-button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .resubmit-form-container {
+    width: 90%;
+    padding: 16px;
   }
-  
-  .resubmit-form h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .resubmit-form label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .submit-button {
-    display: block;
+
+  .submit-button,
+  .success-button {
     width: 100%;
-    padding: 10px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
   }
-  
-  .submit-button:hover {
-    background: #0056b3;
-  }
-  
+}

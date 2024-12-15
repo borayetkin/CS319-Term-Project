@@ -13,7 +13,7 @@ const weeklyScheduleSchema = new mongoose.Schema({
     {
       slotDay: {
         type: String,
-        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         required: true,
       },
       slotTime: {

@@ -6,7 +6,7 @@ const { markEventAsCanceled } = require("../controllers/EventController");
 
 // Create a weekly schedule and populate the slots in it
 async function createWeeklySchedule(startOfTheWeek) {
-  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const times = ['09:00', '11:00', '13:30', '16:00'];
 
   const slots = [];
@@ -26,7 +26,7 @@ async function createWeeklySchedule(startOfTheWeek) {
 
   startOfTheWeek.setHours(0, 0, 0, 0);
   const endOfTheWeek = new Date(startOfTheWeek);
-  endOfTheWeek.setDate(endOfTheWeek.getDate() + 4);
+  endOfTheWeek.setDate(endOfTheWeek.getDate() + 6);
   endOfTheWeek.setHours(23, 59, 59, 999);
 
   // Create the weekly schedule object
