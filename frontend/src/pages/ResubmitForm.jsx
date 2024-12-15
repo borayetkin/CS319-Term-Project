@@ -1,64 +1,108 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import CustomDateTimePicker from "../components/SchoolTourDatePicker";
 import "../styles/ResubmitForm.css";
 
+const generateTimeSlots = () => {
+  const start = new Date();
+  start.setHours(8, 30, 0, 0); // Start time: 8:30 AM
+  const end = new Date();
+  end.setHours(17, 0, 0, 0); // End time: 5:00 PM
+
+  const slots = [];
+  while (start < end) {
+    const hours = start.getHours();
+    const minutes = start.getMinutes();
+    const timeString = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+    slots.push(timeString);
+    start.setMinutes(start.getMinutes() + 30); // Increment by 30 minutes
+  }
+
+  return slots;
+};
+
 const ResubmitForm = () => {
-  const [formData, setFormData] = useState({
-    combinedDateTimeUpdate: {
-      visitDate: "",
-      visitTime: "",
-      reserveDates: [],
-    },
-  });
-  const [message, setMessage] = useState(null); // For success message
-  const navigate = useNavigate();
+  const { eventId } = useParams(); // Extract eventId from URL
+  const navigate = useNavigate(); // For navigation
+  const [reserveDates, setReserveDates] = useState([]); // Store reserve dates
+  const [error, setError] = useState(""); // Store error messages
+  const [isSubmitting, setIsSubmitting] = useState(false); // Show submission state
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
+  const handleReserveDatesChange = (updatedDates) => {
+    // Update reserve dates from the date picker
+    const formattedDates = updatedDates.map(({ visitDate, visitTime }) => ({
+      visitDate,
+      visitTime,
     }));
+    setReserveDates(formattedDates);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission
-    setTimeout(() => {
-      setMessage("Tour application submitted successfully!");
-    }, 500);
+
+    if (reserveDates.length === 0) {
+      setError("Please select at least one date and time.");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/events/resubmission/${eventId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reserveDates }),
+        }
+      );
+
+      if (response.ok) {
+        setSuccessMessage("Your submission was successful!");
+        setTimeout(() => navigate("/"), 2000); // Redirect after success
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Error resubmitting dates. Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred while resubmitting dates. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (message === "Tour application submitted successfully!") {
+  if (successMessage) {
     return (
-      <section className="tour-application-section">
-        <div className="tour-application-container">
-          <h1>{message}</h1>
-          <button
-            onClick={() => navigate("/")}
-            className="tour-application-submit"
-          >
-            Return Home
-          </button>
-        </div>
-      </section>
+      <div className="success-container">
+        <h1>{successMessage}</h1>
+        <button onClick={() => navigate("/")} className="success-button">
+          Return Home
+        </button>
+      </div>
     );
   }
 
   return (
     <div className="resubmit-form-container">
-      <h1>Resubmit Form</h1>
+      <h1>Resubmit Dates</h1>
       <form onSubmit={handleSubmit} className="resubmit-form">
-        <label htmlFor="date-picker">
-          Select Dates:
+        <div className="form-group">
+          <label htmlFor="date-picker">Select Dates:</label>
           <CustomDateTimePicker
-            handleChange={handleInputChange}
-            reserveDatesImp={formData.combinedDateTimeUpdate.reserveDates}
+            handleChange={handleReserveDatesChange}
+            reserveDatesImp={reserveDates} // Provide current reserveDates as initial data
+            timeSlots={generateTimeSlots()} // Pass generated time slots
           />
-        </label>
-        <button type="submit" className="submit-button">
-          Resubmit
+        </div>
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit" className="submit-button" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Resubmit"}
         </button>
       </form>
     </div>

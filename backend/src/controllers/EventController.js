@@ -845,3 +845,37 @@ exports.isReviewSubmitted = async (req, res) => {
       .json({ message: "Error checking review status.", error: error.message });
   }
 };
+
+exports.resubmitEventReserveDates = async (req, res) => {
+  const { eventId } = req.params; // Extract eventId from the URL
+  const { reserveDates } = req.body; // Extract reserveDates from the request body
+
+  try {
+    // Validate the reserveDates input
+    if (!Array.isArray(reserveDates) || reserveDates.length === 0) {
+      return res.status(400).json({ message: "Invalid reserveDates array." });
+    }
+
+    // Find the event by eventId
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    // Update the event's reserveDates
+    event.reserveDates = reserveDates;
+
+    // Save the updated event
+    await event.save();
+
+    res.status(200).json({
+      message: "Event reserveDates resubmitted successfully.",
+      event,
+    });
+  } catch (error) {
+    console.error("Error resubmitting event reserveDates:", error);
+    res.status(500).json({ message: "Server error.", error: error.message });
+  }
+};
+

@@ -26,18 +26,23 @@ const {
   confirmEventAction,
   applyToEvent,
   isReviewSubmitted,
+  resubmitEventReserveDates
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
+
+// Route for resubmission of an application
+router.post("/resubmit-form/:eventId", resubmitEventReserveDates);
 
 // Routes for creating events
 router.post("/schooltours", createSchoolTour);
 router.post("/individualtours",  createIndividualTour);
+
 // Routes for fetching events
 router.get("/", advisorAuth, getAllEvents);
 router.get("/accepted", auth, getAcceptedEvents);
 router.get("/user", auth, getAssigneddEventsOfUser);
 router.get("/advisor", auth, getApplicationsOfAdvisor);
-router.get("/completed",auth,getCompletedNonVerifiedEvents);
+router.get("/completed",auth, getCompletedNonVerifiedEvents);
 router.get("/:id", auth, getEvent);
 
 // Add this route to fetch event details by ID

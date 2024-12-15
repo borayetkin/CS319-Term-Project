@@ -7,17 +7,20 @@
 
 .controls-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 16px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  gap: 32px;
+  flex-wrap: wrap;
+  max-width: 100%; /* Prevent container from exceeding page width */
+  overflow: hidden; /* Hide overflowing content */
+  padding: 10px; /* Optional: Add padding for spacing */
+  box-sizing: border-box; /* Include padding and borders in element width/height */
 }
 
 /* Filter and Sort Groups */
 .filter-sort-group {
   display: flex;
-  gap: 16px;
+  gap: 24px;
   align-items: center;
   flex: 1 1 auto;
 }
@@ -27,6 +30,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  max-width: 200px;
 }
 
 .filter-controls label,
@@ -58,7 +62,8 @@
 
 /* Slider Box */
 .slider-box {
-  position: relative;
+  flex: 1 0 auto;
+  margin-right: 24px; /* Add space between slider box and buttons */
   background: linear-gradient(135deg, #a78bfa, #7c3aed);
   border-radius: 12px;
   padding: 20px;
@@ -67,7 +72,6 @@
   transition: background-color 0.3s ease, transform 0.3s ease;
   color: white;
   font-weight: 600;
-  flex: 1 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -128,6 +132,8 @@
 .weekly-schedule-toggle,
 .rebuild-schedules-button {
   padding: 10px 16px;
+  margin: 0 16px;
+  justify-content: flex-end;
   font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
@@ -304,6 +310,8 @@ td {
 .slider-box {
   width: 60%;
   max-width: 500px;
+  margin: 0 auto;
+  flex: 0 1 auto;
 }
 
 .weekly-schedule table {
