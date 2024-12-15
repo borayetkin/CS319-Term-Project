@@ -29,8 +29,10 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   useEffect(() => {
     fetchDateCounts(currentDate);
     setReserveDates(reserveDatesImp);
+  }, []);
+  useEffect(() => {
+    fetchDateCounts(currentDate);
   }, [currentDate]);
-
   const formatLocalDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");

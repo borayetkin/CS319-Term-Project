@@ -31,12 +31,16 @@ const ResubmitForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Show submission state
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleReserveDatesChange = (updatedDates) => {
+  const handleReserveDatesChange = ({target}) => {
+   const dates = target.value;
+   const updatedDates = dates.reserveDates;
+   console.log(updatedDates);
     // Update reserve dates from the date picker
     const formattedDates = updatedDates.map(({ visitDate, visitTime }) => ({
       visitDate,
       visitTime,
     }));
+
     setReserveDates(formattedDates);
   };
 
@@ -96,8 +100,7 @@ const ResubmitForm = () => {
           <label htmlFor="date-picker">Select Dates:</label>
           <CustomDateTimePicker
             handleChange={handleReserveDatesChange}
-            reserveDatesImp={reserveDates} // Provide current reserveDates as initial data
-            timeSlots={generateTimeSlots()} // Pass generated time slots
+            reserveDatesImp={reserveDates} // Provide current reserveDates as initial data// Pass generated time slots
           />
         </div>
         {error && <p className="error-message">{error}</p>}
