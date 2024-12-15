@@ -320,17 +320,24 @@ exports.getMatchingEventsForSlot = async (req, res) => {
     }
 
     // Find all events with status 'pending'
-    const pendingEvents = await Event.find({ status: "pending" });
+    const pendingEvents = await Event.find({
+      status: "pending" ,
+      __t: "SchoolTour"
+    });
 
     // Filter events to match those with a reserveDate matching the slot's date
     const matchingEvents = pendingEvents.filter((event) =>
       event.reserveDates.some((date) => {
         const visitDate = new Date(date.visitDate);
+        const weekStart = new Date(schedule.weekBeginning);
+        const weekEnd = new Date(schedule.weekEnding);
+        const visitDay = date.visitDate.toLocaleDateString("en-US", { weekday: "long" });
+        const visitTime = date.visitTime;
         return (
-          visitDate >= new Date(schedule.weekBeginning) &&
-          visitDate <= new Date(schedule.weekEnding) &&
-          reserveDate.slotDay === slotDay && // Match slotDay
-          reserveDate.slotTime === slotTime // Match slotTime
+          visitDate >= weekStart &&
+          visitDate <= weekEnd &&
+          visitDay === slotDay &&
+          visitTime === slotTime
         );
       })
     );

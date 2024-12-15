@@ -36,6 +36,7 @@ import ViewGuidesPage from "./pages/CoordinatorPages/DashboardPages/ViewGuidesPa
 import ReviewForm from "./pages/ReviewForm";
 import ReviewSubmitted from "./pages/ReviewSubmitted";
 import AdvisorInformation from "./pages/AdvisorInformation";
+import ResubmitForm from "./pages/ResubmitForm";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
         <Route path="/review/:eventId" element={<ReviewForm />} />
         <Route path="/review/submitted" element={<ReviewSubmitted />} />
         <Route path="/advisor-info" element={<AdvisorInformation />} />
+        <Route path="/resubmit-form/:eventId" element={<ResubmitForm />} />
 
         {/* Private Routes */}
         <Route

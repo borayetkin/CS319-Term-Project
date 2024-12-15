@@ -20,6 +20,7 @@ const Applications = () => {
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
   const [showWeeklySchedules, setShowWeeklySchedules] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState({});
+  const [popup, setPopup] = useState({ show: false, slot: null, schoolNames: [], loadingItem: null, });
 
   const navigate = useNavigate();
 
@@ -164,6 +165,7 @@ const Applications = () => {
 
   const handlePopupSelections = async (schoolName, slot) => {
     try {
+      setPopup((prev) => ({ ...prev, loadingItem: schoolName }));
       const token = localStorage.getItem("token");
       setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: true }));
       await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
@@ -180,34 +182,15 @@ const Applications = () => {
         }),
       });
       await fetchWeeklySchedules(token);
-      setMessage(`Event "${schoolName}" successfully added to the slot.`);
     } catch (error) {
       setMessage("Error assigning event: " + error.message);
     } finally {
-      setPopup({ show: false, slot: null, schoolNames: [] });
+      setPopup({ show: false, slot: null, schoolNames: [], loadingItem: null });
       setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: false }));
     }
   };
 
-  const handleAssignEvent = async (schoolName, weekBeginning, slotDay, slotTime) => {
-    try {
-      setLoadingSlots((prev) => ({ ...prev, [slotDay + slotTime]: true }));
-      const token = localStorage.getItem("token");
-      await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ schoolName, weekBeginning, slotDay, slotTime }),
-      });
-      await fetchWeeklySchedules(token);
-    } catch (error) {
-      setMessage("Error assigning event: " + error.message);
-    } finally {
-      setLoadingSlots((prev) => ({ ...prev, [slotDay + slotTime]: false }));
-    }
-  };
+
   const sortApplications = (applications) => {
     const sortedApplications = [...applications];
     if (sortOption === "default") {
@@ -438,7 +421,54 @@ const Applications = () => {
           ) : (
             <p>No schedules available</p>
           )}
+            {popup.show && (
+              <div className="popup-overlay">
+                <div className="popup-content">
+                  <h3>Please select an Event:</h3>
+                  <ul>
+                    {popup.schoolNames.length > 0 ? (
+                      popup.schoolNames.map((schoolName) => (
+                        <li
+                          key={schoolName}
+                          onClick={() => {
+                            if (!popup.loadingItem) {
+                              handlePopupSelections(schoolName, popup.slot);
+                            }
+                          }}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            cursor: popup.loadingItem ? "not-allowed" : "pointer",
+                            opacity: popup.loadingItem && popup.loadingItem !== schoolName ? 0.5 : 1,
+                          }}
+                        >
+                          <span>{schoolName}</span>
+                          {popup.loadingItem === schoolName && (
+                            <span className="popup-loading-spinner"></span>
+                          )}
+                        </li>
+                      ))
+                    ) : (
+                      <p>No matching events available.</p>
+                    )}
+                  </ul>
+
+                  <button
+                    className="popup-close"
+                    onClick={() =>
+                      setPopup({ show: false, slot: null, schoolNames: [], loadingItem: null })
+                    }
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+
         </div>
+
+        
       ) : (
         <GeneralTable
           showFairs={false}

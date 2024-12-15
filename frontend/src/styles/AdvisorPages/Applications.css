@@ -430,12 +430,17 @@ td {
 }
 
 .popup-content li {
-  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 10px 16px;
+  background-color: #e5e7eb;
   border-radius: 8px;
   margin-bottom: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  word-wrap: break-word;
 }
 
 .popup-content li:hover {
@@ -452,8 +457,28 @@ td {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin: 20px 0 0 0;
 }
 
 .popup-close:hover {
   background-color: #b91c1c;
+}
+
+.popup-loading-spinner {
+  flex-shrink: 0;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #373b3d;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
