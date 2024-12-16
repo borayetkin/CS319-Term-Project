@@ -333,7 +333,7 @@ const TourApplication = () => {
         ? "/api/events/schooltours"
         : "/api/events/individualtours";
 
-    const dateTime = new Date(`${formData.visitDate}T${formData.visitTime}`);
+    const dateTime = new Date(`${formData.visitDate}`);
 
     const requestData =
       tourType === "school"
