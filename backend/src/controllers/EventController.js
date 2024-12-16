@@ -131,7 +131,7 @@ exports.createSchoolTour = async (req, res) => {
       phoneNumber,
       reserveDates: reserveDates
         ? reserveDates.map((date) => {
-            return { visitDate: new Date(date.date), visitTime: date.time };
+            return { visitDate: new Date(date.date).setHours(0,0,0,0,), visitTime: date.time };
           })
         : [],
     });
