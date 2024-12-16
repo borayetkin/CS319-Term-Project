@@ -108,7 +108,6 @@ exports.sendConfirmationEmail = async (
 };
 
 exports.sendReviewEmail = async (email, name, reviewLink) => {
-  console.log(`I AM TRIGGERED`);
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -122,7 +121,7 @@ exports.sendReviewEmail = async (email, name, reviewLink) => {
         <p>
           Please click the button below to review the event:
         </p>
-        <p style="text-align: center; margin: 20px 0;">
+        <p style="text-align: left; margin: 20px 0;">
           <a href="${reviewLink}" 
              style="background-color: #0056b3; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">
             Submit Your Review
@@ -160,20 +159,32 @@ exports.sendNewUserEmail = async (user) => {
     subject: `Welcome to ATOM!`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #0056b3;">Hello ${user.name},</h2>
+        <h2 style="color: #0056b3;">Hello ${name},</h2>
         <p>
-          Welcome to ATOM! We are excited to have you on board. You are now part of a community that values your insights and experiences, to help us represent Bilkent better. 
-          You have been assigned as a ${user.role} in our system.
+          We regret to inform you that, due to high demand, we were unable to secure a suitable spot for the dates you selected.
         </p>
         <p>
-          Your account has been successfully created. You can now log in to your account and start exploring the platform with the following credentials:
-        <p>
-          <strong>Email:</strong> ${email}<br />
-          <strong>Password:</strong> ${user.password}<br />
-
-          If you have any questions or need assistance, feel free to reach out to us. We are here to help!
+          To help us better accommodate your request, please resubmit your preferred dates using the link below:
+        </p>
+        <div style="text-align: left; margin: 20px 0;"> <!-- Centering the button -->
+          <a href="${resubmissionLink}" 
+            style="background-color: #0056b3; 
+                    color: white; 
+                    text-decoration: none; 
+                    padding: 10px 20px; 
+                    border-radius: 5px; 
+                    font-weight: bold; 
+                    display: inline-block;">
+            Resubmit Your Dates
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #888;">
+          Please note: This link is unique to you. Do not share it with others.
         </p>
         <p>
+          Thank you for your understanding. We look forward to arranging your visit!
+        </p>
+        <p style="font-weight: bold; margin-top: 20px;">
           Best regards,<br />
           ATOM Team
         </p>
@@ -269,3 +280,60 @@ exports.sendFairAssignmentEmail = async (guide, fair) => {
     );
   }
 };
+
+exports.sendCancelationEmail = async (email, name, resubmissionLink) => {
+  try {
+    const subject = "Reschedule Your Tour";
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; text-align: left;">
+        <h2 style="color: #0056b3;">Hello ${name},</h2>
+        <p>
+          We regret to inform you that, due to high demand, we were unable to secure a suitable spot for the dates you selected.
+        </p>
+        <p>
+          To help us better accommodate your request, please choose less busy times and resubmit your preferred dates:
+        </p>
+        <div style="text-align: left; margin: 20px auto;"> <!-- Added "margin: auto" for centering -->
+          <a href="${resubmissionLink}" 
+            style="background-color: #0056b3; 
+                    color: white; 
+                    text-decoration: none; 
+                    padding: 10px 20px; 
+                    border-radius: 5px; 
+                    font-weight: bold; 
+                    display: inline-block;"> <!-- Ensure the button behaves as inline-block -->
+            Reschedule Your Event
+          </a>
+        </div>
+        <p>
+          Alternatively, you can copy and paste the following link into your browser:
+          <br />
+          <a href="${resubmissionLink}" style="color: #0056b3;">${resubmissionLink}</a>
+        </p>
+        <p style="font-size: 12px; color: #888;">
+          Please note: This link is unique to you. Do not share it with others.
+        </p>
+        <p>
+          Thank you for your understanding. We look forward to your visit!
+        </p>
+        <p style="font-weight: bold; margin-top: 20px;">
+          Best regards,<br />
+          ATOM Team
+        </p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject,
+      html: htmlContent,
+    });
+
+    console.log(`Resubmission request email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send resubmission request email to ${email}:`, error);
+    throw new Error("Failed to send resubmission request email");
+  }
+};
+
