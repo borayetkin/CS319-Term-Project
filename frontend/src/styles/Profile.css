@@ -110,11 +110,11 @@
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .info-card {
-    background: #1f2937;
+    background: #0561e0;
   }
   
-  .card-content h3 {
-    color: #9ca3af;
+  .card-content  {
+    color: #fbfbfc;
   }
   
   .card-content p {
@@ -186,7 +186,7 @@
 @media (prefers-color-scheme: dark) {
   .profile-container {
   .guide-info-section h2 {
-    color: #f3f4f6;
+    color: #1a212f;
   }
 
   .guide-info-section {

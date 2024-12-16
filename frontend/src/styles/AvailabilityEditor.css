@@ -1,0 +1,118 @@
+@keyframes fadeInAndOut {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.availability-form {
+ display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 20px
+}
+/* ...existing code... */
+.availability-editor {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  animation: fadeInAndOut 0.5s ease;
+}
+.availability-edit-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+}
+
+.availability-day {
+  margin-bottom: 1.5rem;
+}
+
+.availability-day h3 {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.time-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.time-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f3f4f6;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.time-slot input {
+  margin-right: 0.5rem;
+}
+
+.time-slot:hover {
+  background: #e5e7eb;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.save-button,
+.cancel-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.save-button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #4338ca;
+}
+
+.cancel-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.cancel-button:hover {
+  background-color: #e5e7eb;
+}
+.available{
+    background: #10b981;
+    color: white;
+}
+.not-available{
+    background: #ef4444;
+    color: white;
+}
+.not-available:hover{
+    background: #dc2626;
+}
+.available:hover{
+    background: #047857;
+}

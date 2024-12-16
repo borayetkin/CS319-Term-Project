@@ -25,7 +25,8 @@ const {
   confirmEventAction,
   applyToEvent,
   isReviewSubmitted,
-  resubmitEventReserveDates
+  resubmitEventReserveDates,
+  updateUserAvailability
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -52,6 +53,7 @@ router.get("/check-review/:eventId", isReviewSubmitted);
 // Routes for updating and deleting events
 router.put("/:eventId", advisorAuth, updateEvent);
 router.put("/edit/:eventId",advisorAuth,updateEventTwo);
+router.put("/user/availability", auth, updateUserAvailability);
 router.delete("/:eventId", advisorAuth, deleteEvent);
 
 //router.post("/:eventId/cancel", auth,  markEventAsCancelled);

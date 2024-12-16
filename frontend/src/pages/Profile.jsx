@@ -13,12 +13,14 @@ import { MdWork, MdSchool, MdLocationOn, MdLanguage } from "react-icons/md";
 import "../styles/Profile.css";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { majors } from "./TourApplication.jsx"; // Adjust the import path as necessary
+import AvailabilityEditor from "../components/AvailabilityEditor";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingAvailability, setIsEditingAvailability] = useState(false);
   const [editForm, setEditForm] = useState({
     email: "",
     phoneNumber: "",
@@ -26,6 +28,7 @@ const Profile = () => {
     password: "",
     assignedDay: "",
   });
+  const [availability, setAvailability] = useState([]);
   const [updateMessage, setUpdateMessage] = useState("");
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,6 +58,7 @@ const Profile = () => {
         assignedDay: data.assignedDay || "",
         password: "",
       });
+      setAvailability(data.availability || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,6 +68,11 @@ const Profile = () => {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    setUpdateMessage("");
+  };
+
+  const handleAvailabilityEditToggle = () => {
+    setIsEditingAvailability(!isEditingAvailability);
     setUpdateMessage("");
   };
 
@@ -77,6 +86,30 @@ const Profile = () => {
       ...editForm,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleAvailabilityChange = (day, timeSlot) => {
+    console.log(day, timeSlot);
+    const updatedAvailability = [...availability];
+    const dayIndex = updatedAvailability.findIndex((d) => d.day === day);
+    console.log(dayIndex);
+    if (dayIndex > -1) {
+      const timeSlotIndex =
+        updatedAvailability[dayIndex].timeSlots.indexOf(timeSlot);
+      if (timeSlotIndex > -1) {
+        updatedAvailability[dayIndex].timeSlots.splice(timeSlotIndex, 1);
+        if (updatedAvailability[dayIndex].timeSlots.length === 0) {
+          updatedAvailability.splice(dayIndex, 1);
+        }
+      } else {
+        updatedAvailability[dayIndex].timeSlots.push(timeSlot);
+      }
+    } else {
+      console.log("here");
+      updatedAvailability.push({ day, timeSlots: [timeSlot] });
+    }
+
+    setAvailability(updatedAvailability);
   };
 
   const handleSubmit = async (e) => {
@@ -112,6 +145,42 @@ const Profile = () => {
       setTimeout(() => setShowSuccessPopup(false), 2000);
       setTimeout(() => setUpdateMessage(""), 2000);
       setIsEditing(false);
+    } catch (err) {
+      setError(err.message);
+      setUpdateMessage("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAvailabilitySubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/events/user/availability",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ availability }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          updatedProfile.message || "Failed to update availability"
+        );
+      }
+
+      setUpdateMessage("Availability updated successfully");
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 2000);
+      setTimeout(() => setUpdateMessage(""), 2000);
+      setIsEditingAvailability(false);
     } catch (err) {
       setError(err.message);
       setUpdateMessage("");
@@ -373,31 +442,53 @@ const Profile = () => {
               >
                 <FaEdit /> Change Password
               </button>
+              {profile.role === "guide" && (
+                <button
+                  onClick={handleAvailabilityEditToggle}
+                  className="edit-button"
+                >
+                  <FaEdit /> Edit Availability
+                </button>
+              )}
             </div>
           </>
         )}
       </div>
 
+      {isEditingAvailability && (
+        <AvailabilityEditor
+          availability={availability}
+          onAvailabilityChange={handleAvailabilityChange}
+          onSubmit={handleAvailabilitySubmit}
+          onCancel={handleAvailabilityEditToggle}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
       <div className="guide-info-section">
         <h2>Guide Information</h2>
         <div className="profile-grid">
           <div className="info-card">
-            <div className="card-icon">
-              <FaCalendarAlt />
-            </div>
             <div className="card-content">
-              <h3>Available Days</h3>
-              <p>{profile.availableDays?.join(", ") || "Not set"}</p>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <div className="card-icon">
-              <FaClock />
-            </div>
-            <div className="card-content">
-              <h3>Preferred Hours</h3>
-              <p>{profile.preferredHours || "Not set"}</p>
+              <div className="card-icon">
+                <h3>Preferred Time and Hours</h3> <FaCalendarAlt /> <FaClock />
+              </div>
+              {profile.availability?.length ? ( // Check if availability is set
+                <ul>
+                  {profile.availability.map((day) => (
+                    <li key={day.day}>
+                      <strong>{day.day}</strong>
+                      <ul>
+                        {day.timeSlots.map((timeSlot) => (
+                          <li key={timeSlot}>{timeSlot}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Not set</p>
+              )}
             </div>
           </div>
 

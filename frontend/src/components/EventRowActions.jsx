@@ -8,12 +8,12 @@ const EventRowActions = ({ event, user, setMessage }) => {
   const eventIsFull =
     event.assignedUsers?.length >= event.requiredNumberOfGuides;
 
-  const applyToEvent = async (eventId) => {
+  const applyToEvent = async (eventId,endpoint) => {
     setActionInProcess(true);
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:3000/api/events/apply`, {
+      const response = await fetch(`http://localhost:3000/api/events/${endpoint}`, {
         method: "POST",
         headers: {
           userrole: user.role,
@@ -65,11 +65,14 @@ const EventRowActions = ({ event, user, setMessage }) => {
     setActionInProcess(false);
   };
   const checkIfUserHasApplied = () => {
-    return event.appliedUsers?.some(
+    return !isEventSchoolTour &&event.appliedUsers?.some(
       (appliedUser) => appliedUser._id === user?._id
+    ) || isEventSchoolTour && event.assignedUsers?.some(
+      (assignedUser) => assignedUser._id === user?._id
     );
   };
-
+  const isEventSchoolTour = event.__t === "SchoolTour";
+  const endpoint = isEventSchoolTour ? "assign-guide" : "apply";
   return (
     <div className="action-buttons">
       <Link to={`/events/${event._id}`} className="action-button view">
@@ -83,15 +86,15 @@ const EventRowActions = ({ event, user, setMessage }) => {
       !eventIsFull ? (
         <button
           className="action-button apply"
-          onClick={() => applyToEvent(event._id)}
+          onClick={() => applyToEvent(event._id,endpoint)}
           disabled={actionInProcess}
           style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
         >
           <i className="fas fa-hand-point-up"></i>
-          Apply
+          {isEventSchoolTour ? "Assign" : "Apply"}
         </button>
       ) : (
-        user &&
+        user && !isEventSchoolTour &&
         rolesThatApply.includes(user.role) &&
         checkIfUserHasApplied() &&
         !eventIsFull && (

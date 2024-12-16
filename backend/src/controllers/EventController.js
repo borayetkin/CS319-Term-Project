@@ -14,7 +14,10 @@ const { removeEventFromSchedule } = require("../applicationManagement/Appointmen
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
   try {
-    const acceptedEvents = await Event.find({ status: "accepted" })
+    // return all accepted events until next two weeks
+    const today = new Date();
+    const twoWeeksLater = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const acceptedEvents = await Event.find({ status: "accepted" , visitDate: { $gte: today, $lte: twoWeeksLater }})
       .populate("assignedAdvisor")
       .populate("assignedUsers")
       .populate("applicant")
@@ -888,6 +891,26 @@ exports.resubmitEventReserveDates = async (req, res) => {
   } catch (error) {
     console.error("Error resubmitting event reserveDates:", error);
     res.status(500).json({ message: "Server error.", error: error.message });
+  }
+};
+
+exports.updateUserAvailability = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { availability } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await user.setAvailability(availability);
+ 
+
+    res.status(200).json({ message: "Availability updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+const availabilitySchema = new mongoose.Schema({
+  day: {
+    type: String,
+    enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    required: true,
+  },
+  timeSlots: [
+    {
+      type: String,
+      enum: ["09:00-11:00", "11:00-12:30", "13:30-15:00", "16:00-17:30"],
+      required: true,
+    },
+  ],
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -62,7 +77,8 @@ const userSchema = new mongoose.Schema({
   averageRating: {
     type: Number,
     default: 0
-  }
+  },
+  availability: [availabilitySchema],
 });
 userSchema.methods.updateAssignedDay = function updateAssignedDay(day) {
   this.assignedDay = day;
@@ -151,6 +167,10 @@ userSchema.methods.updateContactInfo = function(email, phone) {
   return this.save();
 };
 
+userSchema.methods.setAvailability = function (availability) {
+  this.availability = availability;
+  return this.save();
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
