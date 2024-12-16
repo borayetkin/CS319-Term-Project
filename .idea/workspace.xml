@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1eabcc27-6488-4035-81d6-e70601e96baa" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/EditDetails.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/controllers/EventController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/controllers/EventController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/models/Event.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/models/Event.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/routes/eventRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/eventRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdvisorPages/ManageGuides.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdvisorPages/ManageGuides.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Event.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Event.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/EditDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/EditDetails.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/styles/AdvisorPages/ManageGuides.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles/AdvisorPages/ManageGuides.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

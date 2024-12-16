@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../styles/Event.css";
 import "../styles/TourApplication.css";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Event = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
-  const [additionalNotes, setAdditionalNotes] = useState("");
-  const [advisorNotes, setAdvisorNotes] = useState("");
-  const [studentCount, setStudentCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,9 +29,6 @@ const Event = () => {
         const eventData = await response.json();
         setEvent(eventData);
         setEditedEvent(eventData);
-        setStudentCount(eventData.studentCount || 0);
-        setAdditionalNotes(eventData.additionalNotes || "");
-        setAdvisorNotes(eventData.advisorNotes || "");
         setIsLoading(false);
       } catch (error) {
         setError(error.message);
@@ -46,61 +41,37 @@ const Event = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // Prevent changes to the date field
+    if (name === "visitDate") return;
     setEditedEvent({ ...editedEvent, [name]: value });
   };
 
   const handleSaveChanges = async () => {
     try {
       const token = localStorage.getItem("token");
+      // Only send updated fields, excluding the date
+      const updatedFields = {};
+      for (let key in editedEvent) {
+        if (key !== "visitDate" && editedEvent[key] !== event[key]) {
+          updatedFields[key] = editedEvent[key];
+        }
+      }
+
       const response = await fetch(`http://localhost:3000/api/events/edit/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editedEvent),
+        body: JSON.stringify(updatedFields),
       });
       if (!response.ok) {
         throw new Error("Failed to save changes");
       }
+
       const updatedEvent = await response.json();
       setEvent(updatedEvent);
       setIsEditing(false);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const handleStudentCountChange = (e) => {
-    setStudentCount(e.target.value)
-  };
-
-  const handleNoteChange = (e) => {
-    setAdditionalNotes(e.target.value);
-  };
-
-  const handleAdvisorNoteChange = (e) => {
-    setAdvisorNotes(e.target.value);
-  };
-
-  const handleAddNotes = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/events/edit/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ additionalNotes, advisorNotes }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to save notes");
-      }
-      const updatedEvent = await response.json();
-      setEvent(updatedEvent);
-      setAdditionalNotes("");
-      setAdvisorNotes("");
     } catch (error) {
       setError(error.message);
     }
@@ -115,39 +86,76 @@ const Event = () => {
           <div className="event-info">
             {isEditing ? (
               <>
+                {event.__t === "SchoolTour" && (
+                  <>
+                  <label htmlFor="student count" style={{ marginRight: "8px", fontWeight: "bold" }}>Student Number:</label>
+                  <input
+                    type="number"
+                    name="studentCount"
+                    value={editedEvent.studentCount || ""}
+                    onChange={handleInputChange}
+                    placeholder="enter the student number"
+                  />
+                  </>
+                )}
+                <>
+                <label htmlFor="guide number" style={{ marginRight: "8px", fontWeight: "bold" }}>Guide Number:</label>
                 <input
-                  type="Number"
-                  name="studentCount"
-                  value={editedEvent.studentCount}
+                  name="requiredNumberOfGuides"
+                  type="number"
+                  value={editedEvent.requiredNumberOfGuides || ""}
                   onChange={handleInputChange}
-                />
-                <textarea
-                  name="additionalNotes"
-                  value={editedEvent.additionalNotes || ""}
-                  onChange={handleInputChange}
-                ></textarea>
+                  placeholder="enter the required guide number"
+                ></input>
+                <label htmlFor="advisor notes" style={{ marginRight: "8px", fontWeight: "bold" }}>Advisor Notes:</label>
+                <div
+                  contentEditable
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    minHeight: "50px",
+                    borderRadius: "5px",
+                    marginBottom: "10px",
+                    textAlign: "Left",
+                    direction: "rtl",
+                  }}
+                  onInput={(e) =>
+                    handleInputChange({
+                      target: { name: "advisorNotes", value: e.currentTarget.textContent },
+                    })
+                  }
+                >
+                  {editedEvent.advisorNotes }
+                </div>
                 <button onClick={handleSaveChanges}>Save Changes</button>
+                </>
               </>
             ) : (
               <>
-                <h1>{event.schoolName}</h1>
-                <p>Date: {new Date(event.visitDate).toLocaleDateString()}</p>
-                <p>studentNumber: {event.studentCount || "N/A"}</p>
-                <p>Additional Notes: {event.additionalNotes || "N/A"}</p>
-                <p>Advisor Notes: {event.advisorNotes || "N/A"}</p>
-                <button onClick={() => setIsEditing(true)}>Edit</button>
+                  {event.__t === "IndividualTours" && (
+                    <>
+                      <h1>{event.studentHighSchool}</h1>
+                      <p>Date: {new Date(event.visitDate).toLocaleDateString()}</p>
+                      <p>Student name: {event.studentName || "N/A"}</p>
+                    </>
+                  )}
+                  {event.__t === "SchoolTour" && (
+                    <>
+                      <h1>{event.schoolName}</h1>
+                      <p>Date: {new Date(event.visitDate).toLocaleDateString()}</p>
+                      <p>Student Number: {event.studentCount || "N/A"}</p>
+                    </>
+                  )}
+                  <p>Number of Guides: {event.requiredNumberOfGuides || "N/A"}</p>
+                  <p>Additional Notes: {event.additionalNotes || "N/A"}</p>
+                  <p>Advisor Notes: {event.advisorNotes || "N/A"}</p>
+                  <button onClick={() => setIsEditing(true)}>Edit</button>
               </>
             )}
           </div>
-          <div className="additional-notes">
-            <h3>Leave Notes</h3>
-            <textarea
-              value={advisorNotes}
-              onChange={handleAdvisorNoteChange}
-              placeholder="Write advisor notes here..."
-            ></textarea>
-            <button onClick={handleAddNotes}>Save Notes</button>
-          </div>
+          <button className="return-button" onClick={() => navigate("/manage-guides")}>
+            Return to Manage Guides
+          </button>
         </div>
       )}
     </>

@@ -46,7 +46,7 @@ router.get("/completed",auth, getCompletedNonVerifiedEvents);
 router.get("/:id", auth, getEvent);
 
 // Add this route to fetch event details by ID
-router.get("/details/:id", auth, getEvent); // Assuming `getEvent` handles fetching by ID
+router.get("/details/:id", auth, getEvent);
 router.get("/:id/assignees", auth, getEventAssignees);
 router.get("/check-review/:eventId", isReviewSubmitted);
 
