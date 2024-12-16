@@ -9,6 +9,7 @@ const {
   sendReviewEmail,
   sendGuideAssignmentEmail,
 } = require("../config/EmailService");
+const { removeEventFromSchedule } = require("../applicationManagement/AppointmentManager");
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -413,6 +414,9 @@ exports.updateEvent = async (req, res) => {
       if (status === "accepted") {
         return await acceptTourApplication(req, res);
       }
+      else {
+        await removeEventFromSchedule(eventId);
+      }
     }
 
     res.status(200).json({
@@ -619,6 +623,8 @@ exports.getSchoolTourCountsByMonth = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+/* NOT NEEDED
 exports.markEventAsCancelled = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -635,7 +641,7 @@ exports.markEventAsCancelled = async (req, res) => {
 
     event.cancellationTimes++;
 
-    /*
+    
     const reviewLink = `http://localhost:5173/review/${eventId}`;
 
     // Populate the applicant data from the event
@@ -648,7 +654,7 @@ exports.markEventAsCancelled = async (req, res) => {
 
     // Send the review email
     await sendReviewEmail(applicant.email, applicant.name, reviewLink);
-    */
+    
 
     await Event.findByIdAndUpdate(eventId, {
       status: "canceled-resubmission-requested",
@@ -660,6 +666,9 @@ exports.markEventAsCancelled = async (req, res) => {
       .json({ message: "Failed to cancel event", error: error.message });
   }
 };
+
+*/
+
 exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -865,6 +874,9 @@ exports.resubmitEventReserveDates = async (req, res) => {
 
     // Update the event's reserveDates
     event.reserveDates = reserveDates;
+
+    //Update event status
+    event.status = 'pending';
 
     // Save the updated event
     await event.save();

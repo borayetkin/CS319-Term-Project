@@ -5,23 +5,23 @@ const advisorAuth = require("../middleware/advisorMiddleware");
 const adminAuth = require("../middleware/adminMiddleware");
 const { getWeeklySchedules, 
         loadWeeklySchedules,
-        removeEventFromSchedule, 
+        removeEvent, 
         getMatchingEventsForSlot, 
         assignEventToSlot
       } = require("../applicationManagement/AppointmentManager");
 
 // Routes for schedule fetching
-router.get("/load", adminAuth, loadWeeklySchedules);
-router.get("/rebuild", adminAuth, getWeeklySchedules);
+router.get("/load", advisorAuth, loadWeeklySchedules);
+router.get("/rebuild", advisorAuth, getWeeklySchedules);
 
 // Routes for schedule editing
 // Remove Event from Schedule
-router.post("/remove-from-schedule", adminAuth, removeEventFromSchedule);
+router.post("/remove-from-schedule", advisorAuth, removeEvent);
 
 // Find Events Matching Slot
-router.put("/matching-slot", adminAuth, getMatchingEventsForSlot);
+router.put("/matching-slot", advisorAuth, getMatchingEventsForSlot);
 
 // Assign Event to Slot
-router.post("/assign-to-slot", adminAuth, assignEventToSlot);
+router.post("/assign-to-slot", advisorAuth, assignEventToSlot);
 
 module.exports = router;

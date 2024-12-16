@@ -20,7 +20,6 @@ const {
   getApplicationsOfAdvisor,
   removeAssignedGuideFromEvent,
   getSchoolTourCountsByMonth,
-  markEventAsCancelled,
   markEventAsCompleted,
   takeBackEventAction,
   confirmEventAction,
@@ -55,7 +54,7 @@ router.put("/:eventId", advisorAuth, updateEvent);
 router.put("/edit/:eventId",advisorAuth,updateEventTwo);
 router.delete("/:eventId", advisorAuth, deleteEvent);
 
-router.post("/:eventId/cancel", auth,  markEventAsCancelled);
+//router.post("/:eventId/cancel", auth,  markEventAsCancelled);
 router.post("/:eventId/complete", auth, markEventAsCompleted);
 router.post("/:eventId/take-back", auth, takeBackEventAction);
 router.post("/confirm-action/:eventId", advisorAuth, confirmEventAction);
