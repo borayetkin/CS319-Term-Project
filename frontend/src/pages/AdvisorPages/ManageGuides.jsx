@@ -46,6 +46,9 @@ const ManageGuides = () => {
     }
   };
 
+  const handleEditClick = (event) => {
+    navigate(`/edit/${event._id}`);
+  };
  
   const clearChoices = () => {
     setUpdatedAssignments({});
@@ -148,7 +151,7 @@ const ManageGuides = () => {
               <td>{event.city}</td>
               <td>{new Date(event.visitDate).toLocaleDateString()}</td>
               <td>{event.visitTime}</td>
-              <th>{event.studentCount}</th>
+              <th>{event.studentCount ||"N/A"}</th>
               <td>
                 {event.assignedUsers.map((guide) => (
                   <div key={guide._id} style={{display : "flex", alignItems : "center",gap : "5px"}}>
@@ -206,11 +209,12 @@ const ManageGuides = () => {
                 </select>
               </td>
               <td>
-                <Link to={`/edit/${event._id}`} className="action-button view">
-                        <i className="fas fa-eye"></i>
-                        edit details
-                </Link>
-                <button onClick={() => saveChanges(event._id)}>Save Changes</button>
+                 <button onClick={() => handleEditClick(event)} className="edit-details-button">
+                     Edit Details
+                 </button>
+                <button onClick={() => saveChanges(event._id)} className="save-changes-button">
+                    Save Changes
+                </button>
               </td>
             </tr>
           ))):( isLoading ? (

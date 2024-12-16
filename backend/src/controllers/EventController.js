@@ -367,6 +367,8 @@ exports.updateEventTwo = async (req, res) => {
   const { eventId } = req.params;
   const updateData = req.body;
 
+  console.log("Update Data Received:", updateData); // Debug log
+
   try {
     // Find the event by ID
     const event = await Event.findById(eventId);
@@ -375,13 +377,19 @@ exports.updateEventTwo = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
+    console.log("Event Before Update:", event);
+
     // Update the event's properties with the provided data
     Object.keys(updateData).forEach((key) => {
       event[key] = updateData[key];
     });
 
+    console.log("Event After Update (Before Save):", event);
+
     // Save the updated event
     const updatedEvent = await event.save();
+
+    console.log("Event After Save:", updatedEvent);
 
     res.status(200).json(updatedEvent);
   } catch (error) {
