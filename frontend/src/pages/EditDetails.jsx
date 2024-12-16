@@ -108,25 +108,30 @@ const Event = () => {
                   placeholder="enter the required guide number"
                 ></input>
                 <label htmlFor="advisor notes" style={{ marginRight: "8px", fontWeight: "bold" }}>Advisor Notes:</label>
-                <div
-                  contentEditable
+                <textarea
+                  name="advisorNotes"
+                  value={editedEvent.advisorNotes || ""}
+                  onChange={(e) =>
+                    handleInputChange({
+                      target: { name: "advisorNotes", value: e.target.value },
+                    })
+                  }
+                  placeholder="Write your advisor notes here..."
                   style={{
                     border: "1px solid #ccc",
                     padding: "10px",
                     minHeight: "50px",
                     borderRadius: "5px",
                     marginBottom: "10px",
-                    textAlign: "Left",
-                    direction: "rtl",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    resize: "none", // Prevent resizing if you want a fixed height
+                    fontFamily: "inherit", // Matches the parent font
+                    fontSize: "inherit",
+                    textAlign: "left",
+                    direction: "ltr", // Ensures left-to-right text
                   }}
-                  onInput={(e) =>
-                    handleInputChange({
-                      target: { name: "advisorNotes", value: e.currentTarget.textContent },
-                    })
-                  }
-                >
-                  {editedEvent.advisorNotes }
-                </div>
+                />
                 <button onClick={handleSaveChanges}>Save Changes</button>
                 </>
               </>
