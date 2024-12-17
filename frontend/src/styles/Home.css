@@ -224,7 +224,6 @@
 }
 
 .featured-card:hover {
-  transform: translateY(-1px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -232,12 +231,14 @@
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: #1e293b;
+  text-align: left;
 }
 
 .featured-card p {
   color: #64748b;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .featured-link {
@@ -511,6 +512,7 @@
   color: #1e293b;
   margin-bottom: 1rem;
   font-weight: 700;
+  text-align: left;
 }
 
 .action-card p {
@@ -518,6 +520,7 @@
   line-height: 1.6;
   margin-bottom: 1.5rem;
   flex-grow: 1;
+  text-align: left;
 }
 
 .action-buttons {
