@@ -13,7 +13,6 @@ const Applications = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [user, setUser] = useState(null);
   const [tourType, setTourType] = useState("SchoolTour");
-  const [slideIndex, setSlideIndex] = useState(0);
   const [sortOption, setSortOption] = useState("default");
   const [isLoading, setIsLoading] = useState(true);
   const [weeklySchedules, setWeeklySchedules] = useState([]);
@@ -308,20 +307,6 @@ const Applications = () => {
     setShowWeeklySchedules((prev) => !prev);
   };
 
-  const sliderContent = [
-    `Pending Applications: ${applications.filter((app) => app.status === "pending").length}`,
-    `Pending School Tours: ${applications.filter(
-      (app) => app.status === "pending" && app.__t === "SchoolTour"
-    ).length}`,
-    `Pending Individual Tours: ${applications.filter(
-      (app) => app.status === "pending" && app.__t === "IndividualTour"
-    ).length}`,
-  ];
-
-  const handleSlide = () => {
-    setSlideIndex((prevIndex) => (prevIndex + 1) % sliderContent.length);
-  };
-
   const tourFilteredApplications = sortApplications(
     applications.filter((app) => app.__t === tourType)
   );
@@ -376,32 +361,15 @@ const Applications = () => {
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
       <div className="controls-container">
-        <div className="button-group">
+        <div className="controls-left">
           <TypeSelectionTrio
             setShowType={setTourType}
             showType={tourType}
             haveFairButton={false}
             upperCase={false}
           />
-          <button
-            className={`weekly-schedule-toggle ${showWeeklySchedules ? "soft-red" : "green"}`}
-            onClick={() => setShowWeeklySchedules(!showWeeklySchedules)}
-          >
-            {showWeeklySchedules ? "Hide Schedule" : "Show Schedule"}
-          </button>
-          <button
-            className="rebuild-schedules-button"
-            onClick={handleRebuildSchedules}
-          >
-            Rebuild Schedules
-          </button>
-        </div>
-        {message && <p>{message}</p>}
-
-        <div className="controls-container">
-        { !showWeeklySchedules  &&( 
+          
           <div className="filter-sort-group">
-           <>
             <div className="filter-controls">
               <label htmlFor="filter">Filter by Status:</label>
               <select
@@ -431,23 +399,24 @@ const Applications = () => {
                 <option value="status">Status</option>
                 {tourType === "SchoolTour" && <option value="priority">Priority</option>}
               </select>
-            </div> </>
-
-          <div className="slider-box">
-            <div className="slider-content">{sliderContent[slideIndex]}</div>
-            <div className="slider-arrows">
-              <span className="slider-arrow slider-left" onClick={() => handleSlide(-1)}>
-                ◀
-              </span>
-              <span className="slider-arrow slider-right" onClick={() => handleSlide(1)}>
-                ▶
-              </span>
             </div>
           </div>
         </div>
-        )
-      }
-      </div>
+
+        <div className="controls-right">
+          <button
+            className={`weekly-schedule-toggle ${showWeeklySchedules ? "soft-red" : "green"}`}
+            onClick={() => setShowWeeklySchedules(!showWeeklySchedules)}
+          >
+            {showWeeklySchedules ? "Hide Schedule" : "Show Schedule"}
+          </button>
+          <button
+            className="rebuild-schedules-button"
+            onClick={handleRebuildSchedules}
+          >
+            Rebuild Schedules
+          </button>
+        </div>
       </div>
 
       { showWeeklySchedules ? !isLoadingWeeklySchedules &&( 

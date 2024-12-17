@@ -3,31 +3,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 .typeSelectionTrio {
   display: inline-flex;
-  gap: 2px;
-  background-color: #f1f5f9;
-  padding: 2px;
-  border-radius: 8px;
-  margin-right: 16px;
+  gap: 8px;
+  background: transparent;
+  padding: 4px;
 }
 
 .button {
-  font-size: 0.8rem;
-  padding: 6px 12px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
   border: none;
-  background: transparent;
+  background: #f8fafc;
   color: #64748b;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 12px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
 
 .button:hover {
   color: #334155;
+  background: #f1f5f9;
+  transform: translateY(-1px);
 }
 
 .active {
-  background-color: #ffffff;
-  color: #334155;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #2563eb;
+  color: white;
+  border: 1px solid #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.active:hover {
+  background: #1d4ed8;
+  color: white;
+}
+
+.button:active {
+  transform: translateY(1px);
 }

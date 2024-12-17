@@ -7,50 +7,54 @@
 
 .controls-container {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-end;
   gap: 16px;
-  flex-wrap: wrap;
   padding: 10px;
+  margin-bottom:0px;
   box-sizing: border-box;
 }
 
-.button-group {
+.controls-left {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
+  gap: 24px;
 }
 
-.weekly-schedule-toggle,
-.rebuild-schedules-button {
-  font-size: 0.8rem;
-  padding: 6px 12px;
+.typeSelectionTrio {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 36px;
+}
+
+.typeSelectionTrio .button {
+  font-size: 0.9rem;
+  padding: 8px 16px;
   border-radius: 8px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f3f4f6;
+  color: #334155;
+  height: 36px;
+  display: flex;
+  align-items: center;
 }
 
-/* Filter and Sort Groups */
 .filter-sort-group {
   display: flex;
   gap: 24px;
-  align-items: center;
-  flex: 1 1 auto;
+  align-items: flex-end;
 }
 
 .filter-controls,
 .sort-controls {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  max-width: 200px;
-}
-
-.filter-controls label,
-.sort-controls label {
-  font-size: 0.9rem;
-  font-weight: bold;
-  margin-bottom: 4px;
+  gap: 4px;
+  min-width: 200px;
 }
 
 .filter-controls select,
@@ -61,65 +65,30 @@
   border-radius: 6px;
   background-color: #ffffff;
   color: #2d3748;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.filter-controls select:hover,
-.sort-controls select:hover,
-.filter-controls select:focus,
-.sort-controls select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 4px rgba(59, 130, 246, 0.4);
-  outline: none;
-}
-
-/* Slider Box */
-.slider-box {
-  flex: 1 0 auto;
-  margin-right: 24px; /* Add space between slider box and buttons */
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  color: white;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.slider-box:hover {
-  background-color: #6d28d9;
-  transform: scale(1.03);
-}
-
-.slider-arrows {
-  position: absolute;
+  height: 36px;
   width: 100%;
-  top: 50%;
-  transform: translateY(-50%);
+}
+
+.controls-right {
   display: flex;
-  justify-content: space-between;
-  pointer-events: none;
+  align-items: center;
+  gap: 8px;
+  height: auto;
 }
 
-.slider-arrow {
-  pointer-events: all;
-  font-size: 1.2rem;
+
+
+
+
+.typeSelectionTrio .active {
+  background-color: #2563eb;
   color: white;
-  cursor: pointer;
-  user-select: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
-.slider-left {
-  left: 10px;
-}
 
-.slider-right {
-  right: 10px;
-}
+
+
 
 /* Weekly Controls and Date Range */
 .weekly-controls {
@@ -141,50 +110,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Buttons */
-.weekly-schedule-toggle,
-.rebuild-schedules-button {
-  padding: 10px 16px;
-  margin: 0 16px;
-  justify-content: flex-end;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
 
-.weekly-schedule-toggle.green {
-  background-color: #10b981;
-  color: #ffffff;
-}
 
-.weekly-schedule-toggle.green:hover {
-  background-color: #059669;
-  transform: scale(1.03);
-}
 
-.weekly-schedule-toggle.soft-red {
-  background-color: #f87171;
-  color: #ffffff;
-}
-
-.weekly-schedule-toggle.soft-red:hover {
-  background-color: #f87171;
-  transform: scale(1.03);
-}
-
-.rebuild-schedules-button {
-  background-color: #3b82f6;
-  color: #ffffff;
-}
-
-.rebuild-schedules-button:hover {
-  background-color: #2563eb;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
-}
 
 /* Weekly Schedule */
 .weekly-schedule {
@@ -273,8 +201,7 @@ td {
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
+  gap: 4px;
 }
 
 .button-container button {
@@ -555,4 +482,88 @@ td {
   border-radius: 4px;
   font-size: 0.875rem;
   color: #4b5563;
+}
+
+/* Modern button styles for schedule controls */
+.weekly-schedule-toggle,
+.rebuild-schedules-button {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 
+              0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Show Schedule button */
+.weekly-schedule-toggle {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.weekly-schedule-toggle.soft-red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+/* Rebuild Schedule button */
+.rebuild-schedules-button {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+/* Hover effects */
+.weekly-schedule-toggle:hover,
+.rebuild-schedules-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active/pressed state */
+.weekly-schedule-toggle:active,
+.rebuild-schedules-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Status badges */
+.applications-page-container .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+/* Add specific status colors */
+.applications-page-container .status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.applications-page-container .status-badge.scheduled {
+  background-color: #e0f2fe;
+  color: #075985;
+}
+
+.applications-page-container .status-badge.accepted {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.applications-page-container .status-badge.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
 }

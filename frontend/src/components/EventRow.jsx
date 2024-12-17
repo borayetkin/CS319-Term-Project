@@ -55,30 +55,34 @@ const EventRow = ({
         emoji = "🔵";
         text = "General";
       }
-      return <td>{`${text} ${emoji}`}</td>;
+      return <td>{text}</td>;
     } else if (property === "applicationDate") {
       return <td>{formatLocalDate(event.applicationDate) || "N/A"}</td>;
     } else if (property === "assignedAdvisor") {
       return (
         <td>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              justifyItems: "center",
-              height: "100%",
-            }}
-          >
-            <img
-              src={personIconUrl}
-              alt={event.assignedAdvisor.name}
-              title={event.assignedAdvisor.name}
-              style={{ width: "20px", cursor: "pointer" }}
-              onClick={() => {window.location.href = `/advisor-info?id=${event.assignedAdvisor._id}`}}
-            />
-            {event.assignedAdvisor.name}
-          </div>
+          {event.assignedAdvisor ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                justifyItems: "center",
+                height: "100%",
+              }}
+            >
+              <img
+                src={personIconUrl}
+                alt={event.assignedAdvisor.name}
+                title={event.assignedAdvisor.name}
+                style={{ width: "20px", cursor: "pointer" }}
+                onClick={() => {window.location.href = `/advisor-info?id=${event.assignedAdvisor._id}`}}
+              />
+              {event.assignedAdvisor.name}
+            </div>
+          ) : (
+            "N/A"
+          )}
         </td>
       );
     } else {
