@@ -151,27 +151,6 @@
   transform: translateY(-1px);
 }
 
-/* Modern hover effect for CTA */
-.hero-cta::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.7s ease;
-}
-
-.hero-cta:hover::before {
-  left: 100%;
-}
-
 /* Stats Section */
 .stats-section {
   margin-top: 2rem;
@@ -245,7 +224,6 @@
 }
 
 .featured-card:hover {
-  transform: translateY(-1px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -253,12 +231,14 @@
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: #1e293b;
+  text-align: left;
 }
 
 .featured-card p {
   color: #64748b;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .featured-link {
@@ -532,6 +512,7 @@
   color: #1e293b;
   margin-bottom: 1rem;
   font-weight: 700;
+  text-align: center;
 }
 
 .action-card p {
@@ -539,6 +520,7 @@
   line-height: 1.6;
   margin-bottom: 1.5rem;
   flex-grow: 1;
+  text-align: left;
 }
 
 .action-buttons {
@@ -1033,4 +1015,3 @@ button {
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
-
