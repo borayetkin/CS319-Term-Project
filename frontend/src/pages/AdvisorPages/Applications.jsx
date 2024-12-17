@@ -588,6 +588,7 @@ const Applications = () => {
         
       ) : (
         <GeneralTable
+          key={tourType}
           showFairs={false}
           showTours={true}
           showExtraProperties={{
