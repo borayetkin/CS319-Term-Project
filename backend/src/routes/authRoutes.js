@@ -36,6 +36,6 @@ router.get("/guides", auth, getAllGuides);
 
 router.get("/user-search",auth,searchUsers)
 router.get("/advisor-info", auth, getAdvisorInfo);
-module.exports = router;
 
 router.put('/update-contact', auth, userController.updateUserFromProfile);
+module.exports = router;

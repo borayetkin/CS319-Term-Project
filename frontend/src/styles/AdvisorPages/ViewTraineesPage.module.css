@@ -1,0 +1,124 @@
+.viewTraineesPageContainer {
+  padding: 20px;
+}
+
+.controlsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.searchIcon {
+  margin-right: 5px;
+}
+
+.searchBar input {
+  border: none;
+  outline: none;
+}
+
+.viewToggle button {
+  margin-right: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.viewToggle .active {
+  background-color: #007bff;
+  color: white;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.actionButton {
+  background: none;
+  color: #007bff;
+  border: none;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  background-color: #debdbd;
+}
+
+.noResults {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modalActions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modalActions button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.modalActions button:last-child {
+  background-color: #ccc;
+}

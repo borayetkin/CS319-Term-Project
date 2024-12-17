@@ -126,6 +126,9 @@ const ManageGuides = () => {
         <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" , width :"auto" }}>
           View Completed Tours
         </button>
+        <button onClick={() => navigate("/trainees")} style={{ padding: "10px 20px" , width :"auto" }}>
+          View Trainees
+        </button>
       </div>
       {message && <p>{message}</p>}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>

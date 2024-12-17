@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 const DatePicker2 = ({ onDateChange, onMonthChange, size = 'large' }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const today = new Date();
   const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
 
   const isDisabled = (date) => {
-    if (date <= twoWeeksFromNow) {
+    if (date <= today) {
       return true;
     }
     return false;

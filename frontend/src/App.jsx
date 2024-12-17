@@ -37,6 +37,8 @@ import ReviewForm from "./pages/ReviewForm";
 import ReviewSubmitted from "./pages/ReviewSubmitted";
 import AdvisorInformation from "./pages/AdvisorInformation";
 import ResubmitForm from "./pages/ResubmitForm";
+import TraineeshipApplication from "./pages/TraineeshipApplication";
+import ViewTraineesPage from "./pages/AdvisorPages/ViewTraineesPage";
 
 function App() {
   return (
@@ -54,6 +56,7 @@ function App() {
         <Route path="/review/submitted" element={<ReviewSubmitted />} />
         <Route path="/advisor-info" element={<AdvisorInformation />} />
         <Route path="/resubmit-form/:eventId" element={<ResubmitForm />} />
+        <Route path="/traineeship-application" element={<TraineeshipApplication />} />
 
         {/* Private Routes */}
         <Route
@@ -148,7 +151,14 @@ function App() {
             </PrivateRoute>
           }
         />
-       
+        <Route
+          path="/trainees"
+          element={
+            <PrivateRoute allowedRoles={["advisor"]}>
+              <ViewTraineesPage />
+            </PrivateRoute>
+          }
+        />
         <Route path="/events/:id" element={<Event />} />
         <Route path="/edit/:id" element={< EditDetails />} />
         <Route path="/fairs/:id" element={<Fair />} />

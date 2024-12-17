@@ -998,3 +998,39 @@ button {
     filter: blur(0);
   }
 }
+
+/* Work With Us Section */
+.work-with-us-section {
+  padding: 6rem 2rem;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.work-with-us-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.work-with-us-container:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.work-with-us-container h2 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.work-with-us-container p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+

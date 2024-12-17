@@ -252,6 +252,20 @@ const Home = () => {
               </Link>
             </div>
           </section>
+
+          <section className="work-with-us-section">
+            <div className="work-with-us-container">
+              <h2>Want to work with us?</h2>
+              <p>Join our team and contribute to our mission of excellence in education and research.</p>
+              <button 
+                className="action-button primary"
+                onClick={(e) => handleNavigation('/traineeship-application', e)}
+              >
+                <span className="button-text">Apply Now</span>
+                <span className="button-icon">→</span>
+              </button>
+            </div>
+          </section>
         </>
       }
     </motion.div>
