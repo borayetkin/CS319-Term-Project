@@ -151,27 +151,6 @@
   transform: translateY(-1px);
 }
 
-/* Modern hover effect for CTA */
-.hero-cta::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.7s ease;
-}
-
-.hero-cta:hover::before {
-  left: 100%;
-}
-
 /* Stats Section */
 .stats-section {
   margin-top: 2rem;
@@ -1033,4 +1012,3 @@ button {
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
-
