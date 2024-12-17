@@ -16,11 +16,25 @@
     background-color: white;
   }
   .time-slot.selected {
-    background-color: #2563eb;
-    color: white;
+    background-color: #e5e7eb;
+    color: rgb(102, 87, 87);
     border-color: #2563eb;
+    cursor: not-allowed;
+
   }
-  
+  .down-arrow {
+    margin-left: 8px;
+    height: 20px;
+    width : 20px;
+    padding: 0px;
+    border-radius: 0px;
+    background-color: #9ab4da;
+    align-self: center;
+    justify-self: center;
+  }
+  .down-arrow:hover {
+    background-color: #7b9fd6;
+  }
   .time-slot.yellow {
     background-color: #fef9c3;
     color: #854d0e;
@@ -60,7 +74,7 @@
   }
 
   .current-month.day:not(.red):not(.yellow):not(.disabled) {
-    background: #2cd250;
+    background: #86e49a;
   }
   /* Custom Date Picker Container */
 .custom-date-picker {

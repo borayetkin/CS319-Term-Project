@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../styles/CustomDatePicker.css";
 import "../styles/TourApplication.css";
-import { FaTimes, FaRedo } from "react-icons/fa"; // Import FaRedo icon
+import {
+  FaTimes,
+  FaRedo,
+  FaArrowDown,
+  FaCartArrowDown,
+  FaAngleDown,
+  FaAngleUp,
+} from "react-icons/fa"; // Import FaRedo icon
 
 const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -10,6 +17,7 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   const [isTimeSelectionOpen, setIsTimeSelectionOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [reserveDates, setReserveDates] = useState([]);
+  const [showReserveDates, setShowReserveDates] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
 
   const fetchDateCounts = async (date) => {
@@ -51,17 +59,26 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
     if (count >= 3) return "disabled";
     return count === 0 ? "white" : count === 1 ? "yellow" : "red";
   };
-
+  const isTimeSlotSelected = (time, date) => {
+    if (
+      reserveDates.some(
+        (reserve) =>
+          reserve.date === formatLocalDate(date) && reserve.time === time
+      )
+    )
+      return "selected";
+  };
   const renderTimeSlots = (date) => {
     const times = ["09:00", "11:00", "13:30", "16:00"];
     return times.map((time) => {
       const availability = getAvailability(time, date);
+      const isSelected = isTimeSlotSelected(time, date);
       return (
         <button
           type="button"
           key={time}
-          className={`time-slot ${availability}`}
-          disabled={availability === "disabled"}
+          className={`time-slot  ${isSelected ? "selected" : availability} `}
+          disabled={availability === "disabled" || isSelected}
           onClick={() => handleCompleteSelection(date, time)}
         >
           {time}
@@ -74,7 +91,7 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
       ...reserveDates,
       { date: formatLocalDate(date), time },
     ];
-    if (newReserveDates.length > 4) {
+    if (newReserveDates.length > 10) {
       newReserveDates.shift();
     }
     handleOnChange(newReserveDates[0], newReserveDates);
@@ -156,7 +173,6 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   const reservedStyle = {
     backgroundColor: "lightyellow",
     color: "black",
-    pointerEvents: "none",
   };
   const isDisabled = (date) => {
     if (date <= twoWeeksFromNow) {
@@ -271,7 +287,6 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
   return (
     <>
       <div className={`custom-date-picker large`}>
-
         {isOpen && (
           <div className="calendar">
             <div className="calendar-header">
@@ -319,7 +334,7 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
             </div>
           </div>
         )}
-                <div>
+        <div>
           <div
             style={{
               display: "flex",
@@ -327,7 +342,17 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
               alignContent: "center",
             }}
           >
-            <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
+            <div style={{ display: "flex", gap: "10px" }}>
+              <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
+              <button
+                className="down-arrow"
+                type="button"
+                onClick={() => setShowReserveDates(() => !showReserveDates) }
+              >
+   
+                {!showReserveDates ? <FaAngleDown /> : <FaAngleUp />}
+              </button>
+            </div>
             <button
               type="button"
               onClick={resetSelections}
@@ -336,7 +361,9 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
               <FaRedo style={resetIconStyles} /> Reset
             </button>
           </div>
+
           {reserveDates.length > 0 ? (
+            showReserveDates &&
             reserveDates.map((reserve, index) => (
               <div key={index} style={reservedDateStyles}>
                 {reserve.date} - {reserve.time}
