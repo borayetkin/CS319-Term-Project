@@ -26,7 +26,8 @@ const {
   applyToEvent,
   isReviewSubmitted,
   resubmitEventReserveDates,
-  updateUserAvailability
+  updateUserAvailability,
+  checkSchoolApplicationExists,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -68,6 +69,8 @@ router.post("/remove-guide", auth, removeAssignedGuideFromEvent);
 
 // Route for fetching application counts on the date&time
 router.get("/shcooltours/dates",getSchoolTourCountsByMonth);
+
+router.get("/check-school/:schoolID", checkSchoolApplicationExists);
 
 
 module.exports = router;

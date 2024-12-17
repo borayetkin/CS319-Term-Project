@@ -276,6 +276,7 @@ const TourApplication = () => {
     );
     return school;
   };
+  
   const handleSchoolSelection = (e) => {
     const schoolName = e.target.value;
     const school = findSchool(schoolName, formData.city, formData.district);
@@ -288,6 +289,24 @@ const TourApplication = () => {
       schoolProirity: proirity,
     });
   };
+
+  const schoolApplicationExists = async (schoolID) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/events/check-school/${schoolID}`
+      );
+      const data = await response.json();
+  
+      if (response.ok && data.exists) {
+        return true; // Application already exists
+      }
+      return false; // No application exists
+    } catch (error) {
+      console.error("Error checking for existing school application:", error);
+      throw new Error("Error checking for existing school application.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const submitButton = document.getElementById("submitButton");
@@ -327,6 +346,20 @@ const TourApplication = () => {
       submitButton.disabled = false;
       return;
     }
+
+    if (formData.tourType === "school") {
+      console.log(formData.schoolID);
+      const applicationExists = await schoolApplicationExists(formData.schoolID);
+      console.log(applicationExists);
+      if (applicationExists) {
+        setMessage(
+          "An application for this school already exists. You can update the details from the email sent to the applicant's email address."
+        );
+        submitButton.disabled = false;
+        return; // Stop further submission
+      }
+    }  
+
     const { tourType, ...tourData } = formData;
     const endpoint =
       tourType === "school"
@@ -435,7 +468,7 @@ const TourApplication = () => {
       <div className="tour-application-container">
         <h1>Submit a Tour Application</h1>
         {message && (
-          <p className="tour-application-message" id="message" tabIndex="0">
+          <p className="warning-box" id="message" tabIndex="0">
             {message}
           </p>
         )}
@@ -654,6 +687,7 @@ const TourApplication = () => {
                     </option>
                   ))}
                 </select>
+
                 {formData.tourType === "school" && (
                   <>
                     <label htmlFor="studentCount">Number of Students:</label>

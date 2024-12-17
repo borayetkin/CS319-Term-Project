@@ -4,6 +4,8 @@ const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
+const fs = require("fs");
+const path = require("path");
 const {
   sendConfirmationEmail,
   sendReviewEmail,
@@ -921,4 +923,50 @@ exports.updateUserAvailability = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.checkSchoolApplicationExists = async (req, res) => {
+  const {schoolID} = req.params;
+
+  const highSchoolsList = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "../data/high_schools_list.json"), "utf-8")
+  );
+  
+  try {
+    // Convert schoolID to a number
+    const schoolIdNumber = parseInt(schoolID, 10);
+
+    if (isNaN(schoolIdNumber)) {
+      return res.status(400).json({ message: "Invalid school ID." });
+    }
+
+    // Find the SchoolName corresponding to the schoolID
+    const school = highSchoolsList.find((s) => s.id === schoolIdNumber);
+
+    if (!school) {
+      return res.status(404).json({ message: "School not found in the list." });
+    }
+
+    const schoolName = school.SchoolName;
+    const schoolCity = school.City;
+
+    // Search for an event in the database using the SchoolName
+    const existingEvent = await SchoolTour.findOne({
+      schoolName: schoolName,
+      city: schoolCity,
+      status: { $in: ["pending", "scheduled", "accepted", "canceled-resubmission-requested"] },
+    });
+    
+    if (existingEvent) {
+      return res.status(200).json({
+        exists: true,
+        message: `An application already exists for ${schoolName}.`,
+      });
+    } else {
+      return res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    console.error("Error checking for existing school application:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 
