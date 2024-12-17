@@ -24,6 +24,7 @@ const Applications = () => {
   const [slotInformation, setSlotInformation] = useState([]);
   const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
   const navigate = useNavigate();
+  const [expandedRows, setExpandedRows] = useState(new Set());
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -228,14 +229,37 @@ const Applications = () => {
     const sortedApplications = [...applications];
     if (sortOption === "default") {
       return applications.sort((a, b) => {
-        if (a.status === "pending" && b.status !== "pending") return -1;
-        if (b.status === "pending" && a.status !== "pending") return 1;
-        if (a.status === "pending" && b.status === "pending") {
+        // Define status priority order
+        const statusOrder = {
+          pending: 1,
+          scheduled: 2,
+          accepted: 3,
+          // All other statuses will have higher numbers
+          "canceled-resubmission-requested": 4,
+          rejected: 5
+        };
+
+        // Get status priorities (default to highest number if status not found)
+        const statusA = statusOrder[a.status] || 999;
+        const statusB = statusOrder[b.status] || 999;
+
+        // If status is different, sort by status priority
+        if (statusA !== statusB) {
+          return statusA - statusB;
+        }
+
+        // For pending and scheduled status, sort by priority if it's a SchoolTour
+        if ((a.status === 'pending' || a.status === 'scheduled') && 
+            a.__t === 'SchoolTour' && b.__t === 'SchoolTour') {
           return getPriorityScore(b) - getPriorityScore(a);
         }
+
+        // For same status and not pending/scheduled SchoolTours, sort by date
         return new Date(b.visitDate) - new Date(a.visitDate);
       });
     }
+    
+    // Rest of the sorting options remain the same
     return sortedApplications.sort((a, b) => {
       switch (sortOption) {
         case "date":
@@ -302,83 +326,128 @@ const Applications = () => {
     applications.filter((app) => app.__t === tourType)
   );
 
+  const toggleRowExpansion = (applicationId) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(applicationId)) {
+        newSet.delete(applicationId);
+      } else {
+        newSet.add(applicationId);
+      }
+      return newSet;
+    });
+  };
+
+  const renderReserveDatesButton = (application) => {
+    if (!application.reserveDates || application.reserveDates.length <= 1) return null;
+    
+    return (
+      <button 
+        className="expand-dates-button"
+        onClick={() => toggleRowExpansion(application._id)}
+      >
+        {expandedRows.has(application._id) ? 'Hide Dates' : 'Show All Dates'}
+      </button>
+    );
+  };
+
+  const renderExpandedDates = (application) => {
+    if (!expandedRows.has(application._id)) return null;
+
+    return (
+      <tr className="expanded-dates-row">
+        <td colSpan="100%">
+          <div className="reserved-dates-container">
+            <h4>Reserved Dates:</h4>
+            <ul>
+              {application.reserveDates.map((date, index) => (
+                <li key={index}>
+                  {new Date(date.visitDate).toLocaleDateString()} at {date.visitTime}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
-      <TypeSelectionTrio
-        setShowType={setTourType}
-        haveFairButton={false}
-        haveSchoolTourButton={true}
-        haveIndividualTourButton={true}
-        showType={tourType}
-      />
-
-      {message && <p>{message}</p>}
-
       <div className="controls-container">
-      { !showWeeklySchedules  &&( 
-        <div className="filter-sort-group">
-         <>
-          <div className="filter-controls">
-            <label htmlFor="filter">Filter by Status:</label>
-            <select
-              id="filter"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All</option>
-              <option value="pending">Pending</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="canceled-resubmission-requested">Canceled</option>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-          <div className="sort-controls">
-            <label htmlFor="sort">Sort by:</label>
-            <select
-              id="sort"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-            >
-              <option value="default">Default</option>
-              <option value="date">Date (Latest)</option>
-              <option value="appliedDate">Applied Date</option>
-              <option value="schoolName">School Name</option>
-              <option value="status">Status</option>
-              {tourType === "SchoolTour" && <option value="priority">Priority</option>}
-            </select>
-          </div> </>
+        <div className="button-group">
+          <TypeSelectionTrio
+            setShowType={setTourType}
+            showType={tourType}
+            haveFairButton={false}
+            upperCase={false}
+          />
+          <button
+            className={`weekly-schedule-toggle ${showWeeklySchedules ? "soft-red" : "green"}`}
+            onClick={() => setShowWeeklySchedules(!showWeeklySchedules)}
+          >
+            {showWeeklySchedules ? "Hide Schedule" : "Show Schedule"}
+          </button>
+          <button
+            className="rebuild-schedules-button"
+            onClick={handleRebuildSchedules}
+          >
+            Rebuild Schedules
+          </button>
+        </div>
+        {message && <p>{message}</p>}
 
-        <div className="slider-box">
-          <div className="slider-content">{sliderContent[slideIndex]}</div>
-          <div className="slider-arrows">
-            <span className="slider-arrow slider-left" onClick={() => handleSlide(-1)}>
-              ◀
-            </span>
-            <span className="slider-arrow slider-right" onClick={() => handleSlide(1)}>
-              ▶
-            </span>
+        <div className="controls-container">
+        { !showWeeklySchedules  &&( 
+          <div className="filter-sort-group">
+           <>
+            <div className="filter-controls">
+              <label htmlFor="filter">Filter by Status:</label>
+              <select
+                id="filter"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="canceled-resubmission-requested">Canceled</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div className="sort-controls">
+              <label htmlFor="sort">Sort by:</label>
+              <select
+                id="sort"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+              >
+                <option value="default">Default</option>
+                <option value="date">Date (Latest)</option>
+                <option value="appliedDate">Applied Date</option>
+                <option value="schoolName">School Name</option>
+                <option value="status">Status</option>
+                {tourType === "SchoolTour" && <option value="priority">Priority</option>}
+              </select>
+            </div> </>
+
+          <div className="slider-box">
+            <div className="slider-content">{sliderContent[slideIndex]}</div>
+            <div className="slider-arrows">
+              <span className="slider-arrow slider-left" onClick={() => handleSlide(-1)}>
+                ◀
+              </span>
+              <span className="slider-arrow slider-right" onClick={() => handleSlide(1)}>
+                ▶
+              </span>
+            </div>
           </div>
         </div>
+        )
+      }
       </div>
-      )
-    }
-        {tourType === "SchoolTour" && 
-        <div className="button-group">
-          <button
-            onClick={toggleWeeklySchedules}
-            className={`weekly-schedule-toggle ${
-              showWeeklySchedules ? "soft-red" : "green"
-            }`}
-          >
-            {showWeeklySchedules ? "Show Applications" : "Show Weekly Schedules"}
-          </button>
-          { showWeeklySchedules&&
-          <button onClick={handleRebuildSchedules} className="rebuild-schedules-button">
-            Auto Reschedule
-          </button>}
-        </div> }
       </div>
 
       { showWeeklySchedules ? !isLoadingWeeklySchedules &&( 
@@ -533,6 +602,12 @@ const Applications = () => {
           showType={tourType}
           setIsLoading={setIsLoading}
           EventRowActions={ApplicationsRowActions}
+          extraRowContent={(application) => (
+            <>
+              {renderReserveDatesButton(application)}
+              {renderExpandedDates(application)}
+            </>
+          )}
         />
       )}
       {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}

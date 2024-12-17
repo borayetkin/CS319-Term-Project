@@ -2,41 +2,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 .typeSelectionTrio {
-  display: flex;
-    justify-content: center;
-  gap: 2rem;
-  background-color: inherit;
-
+  display: inline-flex;
+  gap: 2px;
+  background-color: #f1f5f9;
+  padding: 2px;
+  border-radius: 8px;
+  margin-right: 16px;
 }
 
 .button {
-font-family:  'Monsterrat', sans-serif;
-  font-weight: 300;
-  padding: 5px 30px;
-  width: auto;
-  background-color:  inherit;
-  color: #1c3633;
+  font-size: 0.8rem;
+  padding: 6px 12px;
   border: none;
-  border-radius: 8px;
-  transition: all 0.3s ease-in-out;
-  background-size: 200% 200%;
-  position: relative;
-  font-size: 1.5rem;
-  overflow: hidden;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.button:not(.active):hover {
-    color: #fefafa;
-  background-image:  linear-gradient(145deg, #6e8f9e, #123a50, #48023a);
-  animation: background-image 1.2s ease ;
-
+.button:hover {
+  color: #334155;
 }
+
 .active {
-    color: #fefafa;
-  background-image: linear-gradient(145deg, #6e8f9e, #123a50, #bfd0d5);
-  scale: 1.2;
-
-}
-.active:hover {
-    background-image:  linear-gradient(145deg, #6e8f9e, #123a50, #bfd0d5);
+  background-color: #ffffff;
+  color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

@@ -19,6 +19,7 @@ const GeneralTable = ({
   setIsLoading = () => {},
   EventRowActions = () => {},
   FairRowActions = () => {},
+  extraRowContent = () => null,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -42,40 +43,49 @@ const GeneralTable = ({
 
   const renderSchoolTours = (events) => {
     return paginate(events.filter((event) => event.__t === "SchoolTour")).map((event) => (
-      <EventRow
-        key={event._id}
-        event={event}
-        user={user}
-        setMessage={setMessage}
-        showExtraProperties={showExtraProperties.SchoolTour}
-        EventRowActions={EventRowActions}
-      />
+      <>
+        <EventRow
+          key={event._id}
+          event={event}
+          user={user}
+          setMessage={setMessage}
+          showExtraProperties={showExtraProperties.SchoolTour}
+          EventRowActions={EventRowActions}
+        />
+        {extraRowContent(event)}
+      </>
     ));
   };
 
   const renderIndividualTours = (events) => {
     return paginate(events.filter((event) => event.__t === "IndividualTour")).map((event) => (
-      <EventRow
-        key={event._id}
-        event={event}
-        user={user}
-        setMessage={setMessage}
-        showExtraProperties={showExtraProperties.IndividualTour}
-        EventRowActions={EventRowActions}
-      />
+      <>
+        <EventRow
+          key={event._id}
+          event={event}
+          user={user}
+          setMessage={setMessage}
+          showExtraProperties={showExtraProperties.IndividualTour}
+          EventRowActions={EventRowActions}
+        />
+        {extraRowContent(event)}
+      </>
     ));
   };
 
   const renderFairs = (fairs) => {
     return paginate(fairs).map((fair) => (
-      <FairRow
-        key={fair._id}
-        fair={fair}
-        user={user}
-        setMessage={setMessage}
-        showExtraProperties={showExtraProperties.Fair}
-        FairRowActions={FairRowActions}
-      />
+      <>
+        <FairRow
+          key={fair._id}
+          fair={fair}
+          user={user}
+          setMessage={setMessage}
+          showExtraProperties={showExtraProperties.Fair}
+          FairRowActions={FairRowActions}
+        />
+        {extraRowContent(fair)}
+      </>
     ));
   };
 
