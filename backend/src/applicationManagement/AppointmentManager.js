@@ -95,11 +95,19 @@ async function sortEventsByPriority(events) {
     High: 3,
     Medium: 2,
     General: 1,
+    ANKARA: 0.5,
   };
 
   return events.sort((a, b) => {
     const priorityA = priorityMap[a.applicant.priority] + a.cancellationTimes / 2;
     const priorityB = priorityMap[b.applicant.priority] + b.cancellationTimes / 2;
+
+    if (a.city !== "ANKARA") {
+      priorityA += 0.5;
+    }
+    if (b.city !== "ANKARA") {
+      priorityB += 0.5;
+    }
 
     const priorityDiff = priorityB - priorityA;
     if (priorityDiff !== 0) {
@@ -138,6 +146,53 @@ async function hasFutureReserveDate(event, weeklySchedule) {
   );
 }
 
+/**
+ * Recursively finds an empty slot for an event and places it there,
+ * shifting other events if necessary.
+ * @param {Object} event - The event to be placed.
+ * @param {Object} weeklySchedule - The weekly schedule containing slots.
+ * @param {Function} populateEvent - A function to populate the slot's event.
+ * @param {Set} visitedSlots - Tracks slots already visited to prevent revisits.
+ * @returns {Boolean} - Returns true if the event was successfully placed.
+ */
+async function replaceEventsRecursively(event, weeklySchedule, visitedSlots = new Set()) {
+  for (const reservedDate of event.reserveDates) {
+    const visitDay = new Date(reservedDate.visitDate).toLocaleDateString("en-US", { weekday: "long" });
+    const visitTime = reservedDate.visitTime;
+
+    // Find the corresponding slot
+    const slot = weeklySchedule.slots.find(
+      (s) => s.slotDay === visitDay && s.slotTime === visitTime
+    );
+
+    if (!slot || visitedSlots.has(slot)) continue; // Skip if slot does not exist or is already visited
+
+    visitedSlots.add(slot); // Mark this slot as visited
+
+    if (slot.isEmpty) {
+      // If slot is empty, place the event and return success
+      await assignEventToSlot(event, slot, weeklySchedule);
+      return true;
+    } else {
+      // If slot is not empty, attempt to recursively place the current event
+      const currentEvent = slot.event;
+
+      // Recursively attempt to place the current event elsewhere
+      const success = await replaceEventsRecursively(currentEvent, weeklySchedule, visitedSlots);
+
+      if (success) {
+        // If successfully placed, now assign the new event to the current slot
+        await assignEventToSlot(event, slot, weeklySchedule);
+        return true;
+      }
+    }
+  }
+
+  // If no suitable slot was found, return false
+  return false;
+}
+
+
 async function checkLastChances(remainingEvents, weeklySchedule) {
   const eventsToCancel = [];
   await weeklySchedule.populate({
@@ -153,23 +208,30 @@ async function checkLastChances(remainingEvents, weeklySchedule) {
       const visitTime = reservedDate.visitTime;
 
       const slot = weeklySchedule.slots.find((slot) => slot.slotDay === visitDay && slot.slotTime === visitTime);
-      const slotHasFutureDates = await hasFutureReserveDate(slot.event, weeklySchedule);
 
-      if (slotHasFutureDates) {
-        slot.event.status = "pending";
-        await slot.event.save();
+      isScheduled = await replaceEventsRecursively(event, weeklySchedule);
 
-        await assignEventToSlot(event, slot, weeklySchedule);
-        isScheduled = true;
+      // If event still not could not find a place, try to postpone some events
+      if (!isScheduled) {
+        const slotEventHasFutureDates = await hasFutureReserveDate(slot.event, weeklySchedule);
+        if (slotEventHasFutureDates) {
+          slot.event.status = "pending";
+          await slot.event.save();
 
+          await assignEventToSlot(event, slot, weeklySchedule);
+
+          isScheduled = true;
+        }
+      }
+
+      if (isScheduled) {
         await weeklySchedule.populate({
-          path: `slots.${weeklySchedule.slots.indexOf(slot)}.event`,
+          path: "slots.event",
           model: "Event",
         });
         
         break;
       }
-      
     }
 
     if (!isScheduled) {
