@@ -21,7 +21,8 @@ const Applications = () => {
   const [showWeeklySchedules, setShowWeeklySchedules] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState({});
   const [popup, setPopup] = useState({ show: false, slot: null, schoolNames: [], loadingItem: null, });
-
+  const [slotInformation, setSlotInformation] = useState([]);
+  const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,9 +30,15 @@ const Applications = () => {
     if (token) {
       fetchUserProfile(token);
       fetchWeeklySchedules(token);
+      
     }
   }, []);
-
+  useEffect ( () => {
+    if (weeklySchedules && weeklySchedules.length > 0) {
+      fetchAllPossibleSlots(weeklySchedules[currentWeekIndex]?.weekBeginning);
+      
+    }
+  }, [weeklySchedules, currentWeekIndex]);
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
@@ -73,6 +80,7 @@ const Applications = () => {
   };
 
   const fetchWeeklySchedules = async (token) => {
+    setIsLoadingWeeklySchedules(true);
     try {
       const response = await fetch("http://localhost:3000/api/schedules/load", {
         headers: { Authorization: `Bearer ${token}` },
@@ -80,14 +88,37 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setWeeklySchedules(data);
+
       } else {
         setMessage("Failed to fetch weekly schedules");
       }
     } catch (error) {
       setMessage("Error fetching weekly schedules: " + error.message);
     }
+    setIsLoadingWeeklySchedules(false);
   };
+  const fetchAllPossibleSlots = async (weekBeginning) => {
+    try {
 
+      const response = await fetch(
+        `http://localhost:3000/api/schedules/week-all?weekBeginning=${weekBeginning}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSlotInformation(data);
+      } else {
+        setMessage("Failed to fetch all possible slots");
+      }
+    } catch (error) {
+      setMessage("Error fetching all possible slots: " + error.message);
+    }
+  }
   const handleRebuildSchedules = async () => {
     try {
       const response = await fetch(
@@ -155,8 +186,10 @@ const Applications = () => {
           body: JSON.stringify({ weekBeginning, slotDay, slotTime }),
         }
       );
+    
       const schoolNames = await response.json();
       return schoolNames;
+      
     } catch (error) {
       setMessage("Error fetching matching events: " + error.message);
       return [];
@@ -233,6 +266,12 @@ const Applications = () => {
         return 0;
     }
   };
+  const checkIfSlotIsAvailable = (slot) => {
+
+    return slotInformation.some((s) => s.slot.slotDay === slot.slotDay && s.slot.slotTime === slot.slotTime);
+
+  };
+
 
   const handleWeekChange = (direction) => {
     setCurrentWeekIndex((prevIndex) => {
@@ -277,7 +316,9 @@ const Applications = () => {
       {message && <p>{message}</p>}
 
       <div className="controls-container">
+      { !showWeeklySchedules  &&( 
         <div className="filter-sort-group">
+         <>
           <div className="filter-controls">
             <label htmlFor="filter">Filter by Status:</label>
             <select
@@ -307,8 +348,7 @@ const Applications = () => {
               <option value="status">Status</option>
               {tourType === "SchoolTour" && <option value="priority">Priority</option>}
             </select>
-          </div>
-        </div>
+          </div> </>
 
         <div className="slider-box">
           <div className="slider-content">{sliderContent[slideIndex]}</div>
@@ -321,7 +361,10 @@ const Applications = () => {
             </span>
           </div>
         </div>
-
+      </div>
+      )
+    }
+        {tourType === "SchoolTour" && 
         <div className="button-group">
           <button
             onClick={toggleWeeklySchedules}
@@ -331,13 +374,14 @@ const Applications = () => {
           >
             {showWeeklySchedules ? "Show Applications" : "Show Weekly Schedules"}
           </button>
+          { showWeeklySchedules&&
           <button onClick={handleRebuildSchedules} className="rebuild-schedules-button">
             Auto Reschedule
-          </button>
-        </div>
+          </button>}
+        </div> }
       </div>
 
-      {showWeeklySchedules ? (
+      { showWeeklySchedules ? !isLoadingWeeklySchedules &&( 
         <div className="weekly-schedule">
           <div className="weekly-controls">
             <button onClick={() => handleWeekChange(-1)}>← Previous</button>
@@ -393,7 +437,7 @@ const Applications = () => {
                                   ✖
                                 </span>
                               </div>
-                            ) : (
+                            ) : ( checkIfSlotIsAvailable(slot) ? (
                               <button
                                 className="add-event-button"
                                 onClick={async () => {
@@ -406,7 +450,11 @@ const Applications = () => {
                                 }}
                               >
                                 +Add Event
-                              </button>
+                              </button>) : (
+                                <div className="event" style={{ backgroundColor: "#f9f9f9" }}>
+                                  No event Possible
+                                </div>
+                              )
                             )
                           ) : (
                             <p>No event</p>
@@ -421,7 +469,7 @@ const Applications = () => {
           ) : (
             <p>No schedules available</p>
           )}
-            {popup.show && (
+            { popup.show && (
               <div className="popup-overlay">
                 <div className="popup-content">
                   <h3>Please select an Event:</h3>
@@ -487,9 +535,10 @@ const Applications = () => {
           EventRowActions={ApplicationsRowActions}
         />
       )}
-      {isLoading && <LoadingSpinner />}
+      {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}
     </div>
   );
-};
+}
+;
 
 export default Applications;
