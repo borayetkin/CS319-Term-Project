@@ -21,17 +21,25 @@ const Applications = () => {
   const [showWeeklySchedules, setShowWeeklySchedules] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState({});
   const [popup, setPopup] = useState({ show: false, slot: null, schoolNames: [], loadingItem: null, });
-
+  const [slotInformation, setSlotInformation] = useState([]);
+  const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
   const navigate = useNavigate();
+  const [expandedRows, setExpandedRows] = useState(new Set());
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserProfile(token);
       fetchWeeklySchedules(token);
+      
     }
   }, []);
-
+  useEffect ( () => {
+    if (weeklySchedules && weeklySchedules.length > 0) {
+      fetchAllPossibleSlots(weeklySchedules[currentWeekIndex]?.weekBeginning);
+      
+    }
+  }, [weeklySchedules, currentWeekIndex]);
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
@@ -73,6 +81,7 @@ const Applications = () => {
   };
 
   const fetchWeeklySchedules = async (token) => {
+    setIsLoadingWeeklySchedules(true);
     try {
       const response = await fetch("http://localhost:3000/api/schedules/load", {
         headers: { Authorization: `Bearer ${token}` },
@@ -80,14 +89,37 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setWeeklySchedules(data);
+
       } else {
         setMessage("Failed to fetch weekly schedules");
       }
     } catch (error) {
       setMessage("Error fetching weekly schedules: " + error.message);
     }
+    setIsLoadingWeeklySchedules(false);
   };
+  const fetchAllPossibleSlots = async (weekBeginning) => {
+    try {
 
+      const response = await fetch(
+        `http://localhost:3000/api/schedules/week-all?weekBeginning=${weekBeginning}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSlotInformation(data);
+      } else {
+        setMessage("Failed to fetch all possible slots");
+      }
+    } catch (error) {
+      setMessage("Error fetching all possible slots: " + error.message);
+    }
+  }
   const handleRebuildSchedules = async () => {
     try {
       const response = await fetch(
@@ -155,8 +187,10 @@ const Applications = () => {
           body: JSON.stringify({ weekBeginning, slotDay, slotTime }),
         }
       );
+    
       const schoolNames = await response.json();
       return schoolNames;
+      
     } catch (error) {
       setMessage("Error fetching matching events: " + error.message);
       return [];
@@ -195,14 +229,37 @@ const Applications = () => {
     const sortedApplications = [...applications];
     if (sortOption === "default") {
       return applications.sort((a, b) => {
-        if (a.status === "pending" && b.status !== "pending") return -1;
-        if (b.status === "pending" && a.status !== "pending") return 1;
-        if (a.status === "pending" && b.status === "pending") {
+        // Define status priority order
+        const statusOrder = {
+          pending: 1,
+          scheduled: 2,
+          accepted: 3,
+          // All other statuses will have higher numbers
+          "canceled-resubmission-requested": 4,
+          rejected: 5
+        };
+
+        // Get status priorities (default to highest number if status not found)
+        const statusA = statusOrder[a.status] || 999;
+        const statusB = statusOrder[b.status] || 999;
+
+        // If status is different, sort by status priority
+        if (statusA !== statusB) {
+          return statusA - statusB;
+        }
+
+        // For pending and scheduled status, sort by priority if it's a SchoolTour
+        if ((a.status === 'pending' || a.status === 'scheduled') && 
+            a.__t === 'SchoolTour' && b.__t === 'SchoolTour') {
           return getPriorityScore(b) - getPriorityScore(a);
         }
+
+        // For same status and not pending/scheduled SchoolTours, sort by date
         return new Date(b.visitDate) - new Date(a.visitDate);
       });
     }
+    
+    // Rest of the sorting options remain the same
     return sortedApplications.sort((a, b) => {
       switch (sortOption) {
         case "date":
@@ -233,6 +290,12 @@ const Applications = () => {
         return 0;
     }
   };
+  const checkIfSlotIsAvailable = (slot) => {
+
+    return slotInformation.some((s) => s.slot.slotDay === slot.slotDay && s.slot.slotTime === slot.slotTime);
+
+  };
+
 
   const handleWeekChange = (direction) => {
     setCurrentWeekIndex((prevIndex) => {
@@ -263,81 +326,131 @@ const Applications = () => {
     applications.filter((app) => app.__t === tourType)
   );
 
+  const toggleRowExpansion = (applicationId) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(applicationId)) {
+        newSet.delete(applicationId);
+      } else {
+        newSet.add(applicationId);
+      }
+      return newSet;
+    });
+  };
+
+  const renderReserveDatesButton = (application) => {
+    if (!application.reserveDates || application.reserveDates.length <= 1) return null;
+    
+    return (
+      <button 
+        className="expand-dates-button"
+        onClick={() => toggleRowExpansion(application._id)}
+      >
+        {expandedRows.has(application._id) ? 'Hide Dates' : 'Show All Dates'}
+      </button>
+    );
+  };
+
+  const renderExpandedDates = (application) => {
+    if (!expandedRows.has(application._id)) return null;
+
+    return (
+      <tr className="expanded-dates-row">
+        <td colSpan="100%">
+          <div className="reserved-dates-container">
+            <h4>Reserved Dates:</h4>
+            <ul>
+              {application.reserveDates.map((date, index) => (
+                <li key={index}>
+                  {new Date(date.visitDate).toLocaleDateString()} at {date.visitTime}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
-      <TypeSelectionTrio
-        setShowType={setTourType}
-        haveFairButton={false}
-        haveSchoolTourButton={true}
-        haveIndividualTourButton={true}
-        showType={tourType}
-      />
-
-      {message && <p>{message}</p>}
-
       <div className="controls-container">
-        <div className="filter-sort-group">
-          <div className="filter-controls">
-            <label htmlFor="filter">Filter by Status:</label>
-            <select
-              id="filter"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All</option>
-              <option value="pending">Pending</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="canceled-resubmission-requested">Canceled</option>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-          <div className="sort-controls">
-            <label htmlFor="sort">Sort by:</label>
-            <select
-              id="sort"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-            >
-              <option value="default">Default</option>
-              <option value="date">Date (Latest)</option>
-              <option value="appliedDate">Applied Date</option>
-              <option value="schoolName">School Name</option>
-              <option value="status">Status</option>
-              {tourType === "SchoolTour" && <option value="priority">Priority</option>}
-            </select>
-          </div>
-        </div>
-
-        <div className="slider-box">
-          <div className="slider-content">{sliderContent[slideIndex]}</div>
-          <div className="slider-arrows">
-            <span className="slider-arrow slider-left" onClick={() => handleSlide(-1)}>
-              ◀
-            </span>
-            <span className="slider-arrow slider-right" onClick={() => handleSlide(1)}>
-              ▶
-            </span>
-          </div>
-        </div>
-
         <div className="button-group">
+          <TypeSelectionTrio
+            setShowType={setTourType}
+            showType={tourType}
+            haveFairButton={false}
+            upperCase={false}
+          />
           <button
-            onClick={toggleWeeklySchedules}
-            className={`weekly-schedule-toggle ${
-              showWeeklySchedules ? "soft-red" : "green"
-            }`}
+            className={`weekly-schedule-toggle ${showWeeklySchedules ? "soft-red" : "green"}`}
+            onClick={() => setShowWeeklySchedules(!showWeeklySchedules)}
           >
-            {showWeeklySchedules ? "Show Applications" : "Show Weekly Schedules"}
+            {showWeeklySchedules ? "Hide Schedule" : "Show Schedule"}
           </button>
-          <button onClick={handleRebuildSchedules} className="rebuild-schedules-button">
-            Auto Reschedule
+          <button
+            className="rebuild-schedules-button"
+            onClick={handleRebuildSchedules}
+          >
+            Rebuild Schedules
           </button>
         </div>
+        {message && <p>{message}</p>}
+
+        <div className="controls-container">
+        { !showWeeklySchedules  &&( 
+          <div className="filter-sort-group">
+           <>
+            <div className="filter-controls">
+              <label htmlFor="filter">Filter by Status:</label>
+              <select
+                id="filter"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="canceled-resubmission-requested">Canceled</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div className="sort-controls">
+              <label htmlFor="sort">Sort by:</label>
+              <select
+                id="sort"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+              >
+                <option value="default">Default</option>
+                <option value="date">Date (Latest)</option>
+                <option value="appliedDate">Applied Date</option>
+                <option value="schoolName">School Name</option>
+                <option value="status">Status</option>
+                {tourType === "SchoolTour" && <option value="priority">Priority</option>}
+              </select>
+            </div> </>
+
+          <div className="slider-box">
+            <div className="slider-content">{sliderContent[slideIndex]}</div>
+            <div className="slider-arrows">
+              <span className="slider-arrow slider-left" onClick={() => handleSlide(-1)}>
+                ◀
+              </span>
+              <span className="slider-arrow slider-right" onClick={() => handleSlide(1)}>
+                ▶
+              </span>
+            </div>
+          </div>
+        </div>
+        )
+      }
+      </div>
       </div>
 
-      {showWeeklySchedules ? (
+      { showWeeklySchedules ? !isLoadingWeeklySchedules &&( 
         <div className="weekly-schedule">
           <div className="weekly-controls">
             <button onClick={() => handleWeekChange(-1)}>← Previous</button>
@@ -393,7 +506,7 @@ const Applications = () => {
                                   ✖
                                 </span>
                               </div>
-                            ) : (
+                            ) : ( checkIfSlotIsAvailable(slot) ? (
                               <button
                                 className="add-event-button"
                                 onClick={async () => {
@@ -406,7 +519,11 @@ const Applications = () => {
                                 }}
                               >
                                 +Add Event
-                              </button>
+                              </button>) : (
+                                <div className="event" style={{ backgroundColor: "#f9f9f9" }}>
+                                  No event Possible
+                                </div>
+                              )
                             )
                           ) : (
                             <p>No event</p>
@@ -421,7 +538,7 @@ const Applications = () => {
           ) : (
             <p>No schedules available</p>
           )}
-            {popup.show && (
+            { popup.show && (
               <div className="popup-overlay">
                 <div className="popup-content">
                   <h3>Please select an Event:</h3>
@@ -471,6 +588,7 @@ const Applications = () => {
         
       ) : (
         <GeneralTable
+          key={tourType}
           showFairs={false}
           showTours={true}
           showExtraProperties={{
@@ -485,11 +603,18 @@ const Applications = () => {
           showType={tourType}
           setIsLoading={setIsLoading}
           EventRowActions={ApplicationsRowActions}
+          extraRowContent={(application) => (
+            <>
+              {renderReserveDatesButton(application)}
+              {renderExpandedDates(application)}
+            </>
+          )}
         />
       )}
-      {isLoading && <LoadingSpinner />}
+      {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}
     </div>
   );
-};
+}
+;
 
 export default Applications;

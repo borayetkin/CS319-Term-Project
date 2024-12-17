@@ -390,7 +390,46 @@ exports.removeEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+exports. getAllEventsAndMatchingSlots = async (req, res) => {
+  try {
+    const { weekBeginning } = req.query;
 
+    if (!weekBeginning) {
+      return res.status(400).json({ message: "Missing required parameters." });
+    }
+    const weekStartDate = new Date(weekBeginning);
+    const weekEndDate = new Date(weekStartDate.getTime() + 7 * 24 * 60 * 60 * 1000 - 1);
+
+    const allEvents = await Event.find({
+      status: "pending" ,
+      __t: "SchoolTour", reserveDates: { $elemMatch: { visitDate: { $gte: weekStartDate, $lte: weekEndDate } } }
+    });
+
+    const schedule   = await WeeklySchedule.findOne({ weekBeginning: weekStartDate });
+    const slots = schedule.slots;
+
+    const matchingSlots = [];
+    for (const event of allEvents) {
+      for (const slot of slots) {
+        if (slot.isEmpty) {
+          const visitDay = event.visitDate.toLocaleDateString("en-US", { weekday: "long" });
+          if (slot.slotDay === visitDay && slot.slotTime === event.visitTime) {
+            matchingSlots.push({
+              event: event,
+              slot: slot,
+            });
+          }
+        }
+      }
+    }
+    
+    return res.status(200).json(matchingSlots);
+  } catch (error) {
+    console.error("Error in getAllEventsAndMatchingSlots:", error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+     
+}
 exports.getMatchingEventsForSlot = async (req, res) => {
   try {
     const { weekBeginning, slotDay, slotTime } = req.body;
