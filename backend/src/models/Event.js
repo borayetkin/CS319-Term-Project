@@ -79,6 +79,11 @@ const eventSchema = new mongoose.Schema({
     default: 0
   },
 
+  rejectionReason: {
+    type: String,
+    required: false
+  }
+
 });
 
 eventSchema.methods.changeDate =  function (date ){

@@ -144,7 +144,7 @@ exports.createSchoolTour = async (req, res) => {
 
     const savedTour = await schoolTour.save();
     await savedTour.populate("applicant");
-    await sendConfirmationEmail(email, contactPerson, "", savedTour);
+    await sendConfirmationEmail(email, contactPerson, "processing", savedTour);
     res.status(201).json({
       message: "School tour created successfully",
       schoolTour,
@@ -199,7 +199,7 @@ exports.createIndividualTour = async (req, res) => {
     await sendConfirmationEmail(
       savedTour.applicant.email,
       savedTour.applicant.name,
-      "",
+      "processing",
       savedTour
     );
     res.status(201).json({

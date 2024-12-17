@@ -54,10 +54,6 @@ async function assignEventsToSlots(startOfTheWeek) {
       status: "pending" ,
       __t: "SchoolTour"
     }).populate("applicant");
-
-    for (const anEvent of allEvents) {
-      console.log("ALLEVENTS ELEMENT STATUS:  " + anEvent.status);
-    }
     
     const filteredEvents = allEvents.filter((event) =>
       event.reserveDates.some((date) => {
@@ -70,8 +66,6 @@ async function assignEventsToSlots(startOfTheWeek) {
     );
 
     const sortedEvents = await sortEventsByPriority(filteredEvents);
-
-    console.log("000000000000000000000000000000000000000000000000000000000000000000000000000\nSORTED EVENTS:: " + sortedEvents);
 
     let notPlacedEvents = [];
     for (const event of sortedEvents) {
@@ -150,11 +144,8 @@ async function checkLastChances(remainingEvents, weeklySchedule) {
     path: "slots.event",
     model: "Event",
   });
-
-  console.log("--------------------------------------------------------------------\nI AM CURRENT WEEK TO BE INVESTIGATED: " + weeklySchedule.weekBeginning);
   
   for (const event of remainingEvents) {
-    console.log("I AM REMAINING EVENT: " + event);
     
     let isScheduled = false;
     for (const reservedDate of event.reserveDates) {
@@ -162,19 +153,11 @@ async function checkLastChances(remainingEvents, weeklySchedule) {
       const visitTime = reservedDate.visitTime;
 
       const slot = weeklySchedule.slots.find((slot) => slot.slotDay === visitDay && slot.slotTime === visitTime);
-      
-      console.log("IAM SLOT:  " + slot);
-      console.log("IAM RESERVEDDATE:  " + reservedDate);
-      console.log("IAM EVENT:  " + slot.event);
-
       const slotHasFutureDates = await hasFutureReserveDate(slot.event, weeklySchedule);
-
 
       if (slotHasFutureDates) {
         slot.event.status = "pending";
         await slot.event.save();
-
-        console.log(slot.event + " IS BEING SWITCHED WITH " + event);
 
         await assignEventToSlot(event, slot, weeklySchedule);
         isScheduled = true;
@@ -192,8 +175,6 @@ async function checkLastChances(remainingEvents, weeklySchedule) {
     if (!isScheduled) {
       eventsToCancel.push(event);
     }
-
-    console.log("THIS EVENT IS DONE\n***************************");
   }
 
   return eventsToCancel;
@@ -202,7 +183,6 @@ async function checkLastChances(remainingEvents, weeklySchedule) {
 async function cancelEvents(events) {
   for (const event of events) {
     event.status = "canceled-resubmission-requested";
-    console.log(event.status);
     event.cancellationTimes++;
     await event.save()
 

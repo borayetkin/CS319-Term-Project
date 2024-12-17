@@ -73,7 +73,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       >
         <FaEye />
       </button>
-      {(event.status === "pending" || event.status === "scheduled") && (
+      {(event.status === "scheduled") && (
         <>
           <button
             className="accept"
@@ -84,6 +84,12 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
           >
             <FaCheck />
           </button>
+          
+        </>
+        )}
+          
+      {(event.status === "pending" || event.status === "scheduled") && (
+        <>
           <button
             className="decline"
             onClick={() => handleAction(event._id, event, "rejected")}

@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const AppointmentManager = require("../applicationManagement/AppointmentManager");
 const advisorAuth = require("../middleware/advisorMiddleware");
 const adminAuth = require("../middleware/adminMiddleware");
 const { getWeeklySchedules, 
