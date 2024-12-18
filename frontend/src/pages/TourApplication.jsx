@@ -68,6 +68,8 @@ const TourApplication = () => {
   const [isTypingPhone, setIsTypingPhone] = useState(false);
   const phoneTimeoutRef = useRef(null);
   const dateTimeTimeoutRef = useRef(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setShowToastMessage] = useState('');
   // Fetch schools from backend on component mount
   useEffect(() => {
     const fetchSchools = async () => {
@@ -290,10 +292,10 @@ const TourApplication = () => {
     });
   };
 
-  const schoolApplicationExists = async (schoolID) => {
+  const schoolApplicationExists = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/events/check-school/${schoolID}`
+        `http://localhost:3000/api/events/check-school/${formData.schoolID}`
       );
       const data = await response.json();
   
@@ -304,6 +306,32 @@ const TourApplication = () => {
     } catch (error) {
       console.error("Error checking for existing school application:", error);
       throw new Error("Error checking for existing school application.");
+    }
+  };
+
+  const handleResendApplicationEmail = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/events/resend-application-email/${formData.schoolID}`,
+        { method: "POST" }
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setShowToastMessage(data.message || 'Email has been resent successfully!');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      } else {
+        console.error("Failed to resend email");
+        setShowToastMessage(data.message || 'Failed to resend email. Please try again.');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      }
+    } catch (error) {
+      console.error("Error resending email:", error);
+      setShowToastMessage('An unexpected error occurred. Please try again later.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
   };
 
@@ -349,12 +377,18 @@ const TourApplication = () => {
 
     if (formData.tourType === "school") {
       console.log(formData.schoolID);
-      const applicationExists = await schoolApplicationExists(formData.schoolID);
+      const applicationExists = await schoolApplicationExists();
       console.log(applicationExists);
       if (applicationExists) {
-        setMessage(
-          "An application for this school already exists. You can update the details from the email sent to the applicant's email address."
-        );
+        const warningMessage = `
+        An application for this school already exists. You can update the details from the email sent to the applicant's email address.<br />
+        <br> If you think there is a mistake or further assistance, contact us at:
+        <a href="mailto:atomanager.notifications@gmail.com" style="color: #0056b3; text-decoration: none;">
+          atomanager.notifications@gmail.com
+        </a> <br/>
+        <br> If you cannot find your application email, click the button below to resend it to your email: <br/>
+      `;
+        setMessage(warningMessage);
         submitButton.disabled = false;
         return; // Stop further submission
       }
@@ -468,10 +502,22 @@ const TourApplication = () => {
       <div className="tour-application-container">
         <h1>Submit a Tour Application</h1>
         {message && (
-          <p className="warning-box" id="message" tabIndex="0">
-            {message}
-          </p>
-        )}
+          <div className="styled-warning-container">
+            <div className="styled-warning">
+              <div dangerouslySetInnerHTML={{ __html: message }} />
+                {message.includes("resend") && (
+                  <button className="resend-button" onClick={handleResendApplicationEmail}>
+                    Resend Application Email
+                  </button>
+                )}
+              </div>
+              {showToast && (
+                <div className="toast-notification">
+                  {toastMessage} {/* Display dynamic toast message */}
+                </div>
+              )}
+              </div>
+            )}
 
         {step === 0 && (
           <p className="tour-application-description">

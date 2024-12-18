@@ -377,13 +377,28 @@ exports.sendGuideAssignmentEmail = async (guide, event) => {
   try {
     const subject = "You have been assigned to a new event";
 
+    const {
+      __t,
+      visitDate,
+      visitTime,
+      additionalNotes,
+      city,
+      district,
+      contactPerson,
+      schoolName,
+      studentCount,
+      phoneNumber,
+      studentName,
+      studentHighSchool,
+      majorOfInterest,
+    } = event;
+
     const tourDetails =
       __t === "SchoolTour"
         ? `
           <div style="margin: 20px 0; padding: 15px; background-color: #e7f3ff; border-left: 4px solid #0056b3; border-radius: 5px;">
             <h3 style="color: #0056b3; font-size: 18px; margin-bottom: 10px;">Tour Details</h3>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Tour Type:</strong> School Tour</p>
-            <p style="font-size: 14px; margin: 5px 0;"><strong>Email:</strong> ${email}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Contact Person:</strong> ${contactPerson}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>School Name:</strong> ${city}, ${schoolName}, ${district}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Number of Students:</strong> ${studentCount}</p>
@@ -395,7 +410,6 @@ exports.sendGuideAssignmentEmail = async (guide, event) => {
           <div style="margin: 20px 0; padding: 15px; background-color: #e7f3ff; border-left: 4px solid #0056b3; border-radius: 5px;">
             <h3 style="color: #0056b3; font-size: 18px; margin-bottom: 10px;">Tour Details</h3>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Tour Type:</strong> Individual Tour</p>
-            <p style="font-size: 14px; margin: 5px 0;"><strong>Email:</strong> ${email}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Contact Person:</strong> ${studentName}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Visit Date:</strong> ${new Date(visitDate).toLocaleDateString("en-US")}</p>
             <p style="font-size: 14px; margin: 5px 0;"><strong>Visit Time:</strong> ${visitTime}</p>
@@ -577,7 +591,6 @@ const generateTourDetails = (tourData, email) => {
     return `
       <p><strong>Tour Type:</strong> School Tour</p>
       <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Contact Person:</strong> ${tourData.contactPerson}</p>
       <p><strong>School Name:</strong> ${city}, ${tourData.schoolName}, ${district}</p>
       <p><strong>Number of Students:</strong> ${tourData.studentCount}</p>
       ${tourData.reserveDates
@@ -586,7 +599,7 @@ const generateTourDetails = (tourData, email) => {
             `<p style="color: gray;">Reserve Visit Date ${index + 1}: ${new Date(date.visitDate).toLocaleDateString()} at ${date.visitTime}</p>`
         )
         .join("")}
-      <p><strong>Phone Number:</strong> ${tourData.phoneNumber}</p>
+      <p><strong>Phone Number:</strong> ${tourData.applicant.phoneNumber}</p>
       <p><strong>Additional Notes:</strong> ${additionalNotes || "N/A"}</p>
     `;
   } else if (__t === "IndividualTour") {

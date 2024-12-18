@@ -28,11 +28,13 @@ const {
   resubmitEventReserveDates,
   updateUserAvailability,
   checkSchoolApplicationExists,
+  resendApplicationEmail
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
 // Route for resubmission of an application
 router.post("/resubmit-form/:eventId", resubmitEventReserveDates);
+router.post("/resend-application-email/:schoolID", resendApplicationEmail);
 
 // Routes for creating events
 router.post("/schooltours", createSchoolTour);

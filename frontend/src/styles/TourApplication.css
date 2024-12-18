@@ -316,11 +316,83 @@ input[type="tel"]::placeholder {
   margin-top: 20px;
 }
 
-.warning-box {
-  background-color: #f8d7da; /* Light red background */
-  color: #721c24; /* Dark red text */
-  border: 1px solid #f5c6cb; /* Light red border */
+.styled-warning-container {
   padding: 10px;
-  margin: 10px 0 20px 0;
-  border-radius: 10px; /* Rounded corners */
+  border-radius: 8px;
+  color: #f10000;
+  border: 1px solid #ffeeba; 
+  margin: 20px 0;
+  animation: fade-in 0.3s ease-in-out;
 }
+
+.styled-warning {
+  background-color: #ffe5e5;
+  color: #d90606;
+  padding: 16px;
+  border: 1px solid #f50b0b;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.styled-warning .resend-button {
+  display: block; 
+  margin: 20px auto 10px auto;
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.styled-warning .resend-button:hover {
+  background-color: #1e40af; /* Darker blue */
+}
+
+.resend-button:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+}
+
+.toast-notification {
+  position: fixed;
+  top: 80px; /* Ensure visibility below the navbar */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center adjustment */
+  background-color: #4caf50; /* Green background */
+  color: white;
+  padding: 20px 30px; /* Larger padding for better visibility */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 3D shadow effect */
+  font-size: 18px; /* Larger font size for readability */
+  z-index: 1000; /* Ensure it appears above other elements */
+  animation: slide-down-fade-out 3s ease-in-out; /* Updated animation */
+}
+
+/* Animation for sliding down and fading out */
+@keyframes slide-down-fade-out {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50px); /* Start above the view */
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0); /* Slide into position */
+  }
+  90% {
+    opacity: 1;
+    transform: translate(-50%, 0); /* Stay in position */
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px); /* Slide slightly up and fade out */
+  }
+}
+
+
+
