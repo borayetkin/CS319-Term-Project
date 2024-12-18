@@ -604,3 +604,35 @@ const generateTourDetails = (tourData, email) => {
     return `<p><strong>Unknown Tour Type:</strong> Details are unavailable.</p>`;
   }
 };
+
+exports.sendNotificationEmail = async (email, name, changedFields) => {
+  const subject = "Update on Your Scheduled Tour";
+
+    // Dynamically generate email content for changed fields
+    const changesList = Object.entries(changedFields)
+      .map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`)
+      .join("");
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0056b3;">Hello ${name},</h2>
+        <p>We wanted to let you know about the following updates to your scheduled tour:</p>
+        <ul>${changesList}</ul>
+        <p>If you have any questions, feel free to reach out to us.</p>
+        <p>Thank you for your understanding!</p>
+        <p><strong>ATOM Team</strong></p>
+      </div>
+    `;
+
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject,
+        html: htmlContent,
+      });
+      console.log(`Notification email sent to ${email}`);
+    } catch (error) {
+      console.error(`Failed to send email to ${email}:`, error);
+    }
+};

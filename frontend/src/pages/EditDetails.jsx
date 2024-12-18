@@ -39,11 +39,19 @@ const Event = () => {
     fetchEvent();
   }, [id]);
 
+  const formatDateForInput = (isoString) => {
+    const date = new Date(isoString);
+    return date.toISOString().split("T")[0];
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     // Prevent changes to the date field
-    if (name === "visitDate") return;
-    setEditedEvent({ ...editedEvent, [name]: value });
+      if (name === "visitDate") {
+        setEditedEvent({ ...editedEvent, [name]: new Date(value).toISOString() });
+        return;
+      }
+      setEditedEvent({ ...editedEvent, [name]: value });
   };
 
   const handleSaveChanges = async () => {
@@ -52,7 +60,7 @@ const Event = () => {
       // Only send updated fields, excluding the date
       const updatedFields = {};
       for (let key in editedEvent) {
-        if (key !== "visitDate" && editedEvent[key] !== event[key]) {
+        if (editedEvent[key] !== event[key]) {
           updatedFields[key] = editedEvent[key];
         }
       }
@@ -86,6 +94,14 @@ const Event = () => {
           <div className="event-info">
             {isEditing ? (
               <>
+                <label htmlFor="visitDate:" style={{ marginRight: "8px", fontWeight: "bold" }}>Visit date:</label>
+                <input
+                  type="date"
+                  name="visitDate"
+                  value={formatDateForInput(editedEvent.visitDate || "")}
+                  onChange={handleInputChange}
+                  placeholder="enter the new date"
+                />
                 {event.__t === "SchoolTour" && (
                   <>
                   <label htmlFor="student count" style={{ marginRight: "8px", fontWeight: "bold" }}>Student Number:</label>
