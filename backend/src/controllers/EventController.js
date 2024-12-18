@@ -882,8 +882,6 @@ exports.resubmitEventReserveDates = async (req, res) => {
 
     // Save the updated event
     await event.save();
-    const user = await User.findById(req.user.id);
-    createLog(req.user.id, req.user.role, 'resubmitEventReserveDates', eventId, 'success', 'Event reserveDates resubmitted successfully');
     res.status(200).json({
       message: "Event reserveDates resubmitted successfully.",
       event,
