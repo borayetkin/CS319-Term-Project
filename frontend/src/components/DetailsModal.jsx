@@ -1,10 +1,79 @@
 import "../styles/components/DetailsModal.css";
+import { useState } from 'react';
 
-const DetailsModal = ({ application, onClose, context = "applications" }) => {
-  if (!application) return null;
-
+const DetailsModal = ({ application, onClose, context }) => {
+  const [updatedAssignments, setUpdatedAssignments] = useState({});
+  const [updatedRemovals, setUpdatedRemovals] = useState({});
+  const [message, setMessage] = useState("");
+  const token = localStorage.getItem("token");
+  
   const isFair = application.hasOwnProperty('fairDate');
   const isApplicationContext = context === "applications";
+
+  const checkIfGuideHasBeenAssigned = (guide) => {
+    return application.assignedUsers?.some((assignedGuide) => assignedGuide._id === guide._id);
+  };
+
+  const saveChanges = async () => {
+    const guideToAssign = updatedAssignments[application._id];
+    const guideToRemove = updatedRemovals[application._id];
+
+    try {
+      // Assign new guide
+      if (guideToAssign) {
+        const assignResponse = await fetch(
+          "http://localhost:3000/api/events/assign-guide",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userID: guideToAssign,
+              eventID: application._id,
+            }),
+          }
+        );
+
+        if (!assignResponse.ok) {
+          const errorData = await assignResponse.json();
+          throw new Error(errorData.message || "Failed to assign guide");
+        }
+      }
+
+      // Remove selected guide
+      if (guideToRemove) {
+        const removeResponse = await fetch(
+          "http://localhost:3000/api/events/remove-guide",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              userID: guideToRemove,
+              eventID: application._id,
+            }),
+          }
+        );
+
+        if (!removeResponse.ok) {
+          const errorData = await removeResponse.json();
+          throw new Error(errorData.message || "Failed to remove guide");
+        }
+      }
+
+      setMessage("Changes saved successfully!");
+      // Clear selections
+      setUpdatedAssignments({});
+      setUpdatedRemovals({});
+      
+    } catch (error) {
+      setMessage("Error saving changes: " + error.message);
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -129,6 +198,67 @@ const DetailsModal = ({ application, onClose, context = "applications" }) => {
                   </div>
                 )}
               </div>
+
+              {/* Add guide management section for advisors */}
+              {user?.role === 'advisor' && (
+                <div className="detail-group">
+                  <div className="detail-item">
+                    <label>Guide Management</label>
+                    <div className="guide-management">
+                      <div className="assign-guide">
+                        <select
+                          onChange={(e) =>
+                            setUpdatedAssignments((prev) => ({
+                              ...prev,
+                              [application._id]: e.target.value,
+                            }))
+                          }
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Assign New Guide</option>
+                          {application.appliedUsers?.map((guide) => (
+                            !checkIfGuideHasBeenAssigned(guide) &&
+                            <option key={guide._id} value={guide._id}>
+                              {guide.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="remove-guide">
+                        <select
+                          onChange={(e) =>
+                            setUpdatedRemovals((prev) => ({
+                              ...prev,
+                              [application._id]: e.target.value,
+                            }))
+                          }
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Remove Guide</option>
+                          {application.assignedUsers?.map((guide) => (
+                            <option key={guide._id} value={guide._id}>
+                              {guide.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <button 
+                        className="save-changes-button"
+                        onClick={saveChanges}
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                    {message && (
+                      <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
+                        {message}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             // Events context - show event details with assigned guides
