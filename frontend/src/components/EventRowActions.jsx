@@ -23,15 +23,17 @@ const EventRowActions = ({ event, user, setMessage, events, setEvents, onActionC
     
     const updatedEvents = events.map(evt => 
       evt._id === eventId 
-        ? { ...evt, ...updatedFields }
+        ? ({ ...evt, ...updatedFields })
         : evt
     );
+    
+    
     setEvents(updatedEvents);
   };
 
   const applyToEvent = async (eventId, endpoint) => {
-    setActionInProcess(true);
     try {
+      setActionInProcess(true);
       const response = await fetch(`http://localhost:3000/api/events/${endpoint}`, {
         method: "POST",
         headers: {
@@ -49,17 +51,39 @@ const EventRowActions = ({ event, user, setMessage, events, setEvents, onActionC
 
       if (response.ok) {
         setMessage(`✅ Successfully ${isEventSchoolTour ? 'assigned to' : 'applied to'} event`);
+     
         
         if (isEventSchoolTour) {
           setIsAssigned(true);
-          setHasApplied(true);
         } else {
           setHasApplied(true);
         }
 
-        if (onActionComplete) {
-          await onActionComplete();
+        if (setEvents) {
+          if (isEventSchoolTour) {
+            setEvents(prevEvents => prevEvents.map(e =>
+              e._id === eventId
+                ? {
+                    ...e,
+                    assignedUsers: [...e.assignedUsers, user]
+                  }
+                : e
+            ));
+          
+          }
+          else {
+            setEvents(prevEvents => prevEvents.map(e =>
+              e._id === eventId
+                ? {
+                    ...e,
+                    appliedUsers: [...e.appliedUsers, user]
+                  }
+                : e
+            ));
+          }
         }
+        console.log("wtf")
+        setActionInProcess(false);
       } else {
         const error = await response.json();
         setMessage(`⚠️ Failed to ${isEventSchoolTour ? 'assign' : 'apply'}: ${error.message}`);
@@ -172,7 +196,9 @@ const EventRowActions = ({ event, user, setMessage, events, setEvents, onActionC
 
   const checkIfUserIsAssigned = () => {
     if (!user || !event) return false;
-    return user.assignedEvents?.includes(event._id);
+    return event.assignedUsers?. some(
+      (assignedUser) => assignedUser._id === user._id
+    );
   };
 
   return (

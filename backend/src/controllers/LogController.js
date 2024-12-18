@@ -27,9 +27,15 @@ exports.createLog = async (userId, role, action, targetId, status, comment) => {
 
 exports.getLogs = async (req, res) => {
     try {
-        const { action } = req.query;
-        const filter = action ? { action } : {};
-        const logs = await Log.find(filter).populate("userId").populate("targetId").sort({ timestamp: -1 });
+      // set maximum to 5000
+        const { action, limit } = req.query;
+        let filter = action ? { action } : {};
+        let logs;
+        if( limit && limit === 'true'){ 
+        logs = await Log.find(filter).limit(50000).populate("userId").sort({ timestamp: -1 });}
+        else{
+        logs = await Log.find(filter).populate("userId").sort({ timestamp: -1 });
+        }
         console.log(logs);
         res.status(200).send(logs);
     } catch (error) {
@@ -38,3 +44,15 @@ exports.getLogs = async (req, res) => {
     }
 };
 
+exports.getLog = async (req, res) => {
+    try {
+        const log = await Log.findById(req.params.id).populate("userId").populate("targetId");
+        if (!log) {
+            return res.status(404).send("Log not found");
+        }
+        res.status(200).send(log);
+    } catch (error) {
+        console.error("Error fetching log:", error.message);
+        res.status(500).send("Server error");
+    }
+}

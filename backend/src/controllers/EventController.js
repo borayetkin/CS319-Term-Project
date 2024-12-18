@@ -578,6 +578,7 @@ exports.assignGuideToEvent = async (req, res) => {
       // Send guide assignment email
       await sendGuideAssignmentEmail(guide, event);
     } catch (error) {
+      console.error(error);
       createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'error', error.message);
       return res
         .status(400)
@@ -590,8 +591,9 @@ exports.assignGuideToEvent = async (req, res) => {
       createLog(req.user.id, req.user.role, 'assignGuideToEventByOther', eventID, 'success', `Guide ${guide.name} assigned successfully to event`);
     }
     createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'success', 'Guide assigned successfully');
-
+    return res.status(200).json({ message: "Guide assigned successfully" });
   } catch (error) {
+    console.error(error);
     createLog(req.user.id, req.user.role, 'assignGuideToEvent', req.body.eventID, 'error', error.message);
     res
       .status(500)
