@@ -378,7 +378,7 @@ exports.sendGuideAssignmentEmail = async (guide, event) => {
     const subject = "You have been assigned to a new event";
 
     const tourDetails =
-      __t === "SchoolTour"
+      event.__t === "SchoolTour"
         ? `
           <div style="margin: 20px 0; padding: 15px; background-color: #e7f3ff; border-left: 4px solid #0056b3; border-radius: 5px;">
             <h3 style="color: #0056b3; font-size: 18px; margin-bottom: 10px;">Tour Details</h3>
