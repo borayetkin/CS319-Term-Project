@@ -383,7 +383,7 @@ exports.updateEventTwo = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Identify changed fields and update the event object
+    // Identify changed fields
     const changedFields = {};
     for (let key in updateData) {
       if (updateData[key] !== event[key]) {
@@ -405,7 +405,7 @@ exports.updateEventTwo = async (req, res) => {
     const applicant = updatedEvent.applicant;
 
     if (applicant) {
-      await sendNotificationEmail(applicant.email, applicant.name, changedFields);
+      await sendNotificationEmail(applicant.email, applicant.name, changedFields, updatedEvent);
     }
 
     res.status(200).json(updatedEvent);
