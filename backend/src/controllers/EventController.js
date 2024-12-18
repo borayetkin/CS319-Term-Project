@@ -10,8 +10,10 @@ const {
   sendConfirmationEmail,
   sendReviewEmail,
   sendGuideAssignmentEmail,
+  sendNotificationEmail,
 } = require("../config/EmailService");
 const { removeEventFromSchedule } = require("../applicationManagement/AppointmentManager");
+const { createLog } = require("./LogController");
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -334,6 +336,7 @@ const acceptTourApplicationByCoordinator = async (req, res) => {
 
     await randomAdvisor.acceptTourApplication(eventId);
     await randomAdvisor.save();
+    createLog(userid, userrole, 'acceptTourApplication', eventId, 'success', `Tour application accepted and assigned to advisor ${randomAdvisor.name} with mail ${randomAdvisor.email}`);
     return res.status(200).json({
       message:
         "Tour application accepted and a random advisor has been assigned!",
@@ -359,7 +362,7 @@ const acceptTourApplication = async (req, res) => {
     const advisor = await Advisor.findById(userid);
     await advisor.acceptTourApplication(eventId);
     await advisor.save();
-
+    createLog(userid, userrole, 'acceptTourApplication', eventId, 'success', `Tour application accepted`);
     return res.status(200).json({ message: "Tour application accepted" });
   } catch (error) {
     return res
@@ -372,8 +375,6 @@ exports.updateEventTwo = async (req, res) => {
   const { eventId } = req.params;
   const updateData = req.body;
 
-  console.log("Update Data Received:", updateData); // Debug log
-
   try {
     // Find the event by ID
     const event = await Event.findById(eventId);
@@ -382,19 +383,30 @@ exports.updateEventTwo = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    console.log("Event Before Update:", event);
+    // Identify changed fields
+    const changedFields = {};
+    for (let key in updateData) {
+      if (updateData[key] !== event[key]) {
+        changedFields[key] = updateData[key];
+        event[key] = updateData[key]; // Update the event object
+      }
+    }
 
-    // Update the event's properties with the provided data
-    Object.keys(updateData).forEach((key) => {
-      event[key] = updateData[key];
-    });
-
-    console.log("Event After Update (Before Save):", event);
+    // If no changes, return
+    if (Object.keys(changedFields).length === 0) {
+      return res.status(400).json({ message: "No changes detected" });
+    }
 
     // Save the updated event
     const updatedEvent = await event.save();
 
-    console.log("Event After Save:", updatedEvent);
+    // Populate applicant and send email
+    await updatedEvent.populate("applicant");
+    const applicant = updatedEvent.applicant;
+
+    if (applicant) {
+      await sendNotificationEmail(applicant.email, applicant.name, changedFields, updatedEvent);
+    }
 
     res.status(200).json(updatedEvent);
   } catch (error) {
@@ -415,7 +427,7 @@ exports.updateEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
     if (status === "accepted" || status === "rejected") {
-      const applicant = await Applicant.findById(event.applicant);
+      const applicant = updatedEvent.applicant;
       if (applicant) {
         await sendConfirmationEmail(
           applicant.email,
@@ -425,19 +437,25 @@ exports.updateEvent = async (req, res) => {
         );
       }
       if (status === "accepted") {
+
         return await acceptTourApplication(req, res);
-      }
-      else {
+      } else {
         await removeEventFromSchedule(eventId);
+        if (updatedEvent.applicant.priority  === "high") {
+          createLog(req.user.id, req.user.role, 'updateEvent', eventId, 'success', 'Event rejected and removed from schedule of high priority applicant ' + updatedEvent.applicant.name); 
+          return res.status(200).json({ message: "Event rejected and removed from schedule" , event: updatedEvent});
+        }
       }
     }
 
+    createLog(req.user.id, req.user.role, 'updateEvent', eventId, 'success', 'Event updated successfully');
     res.status(200).json({
       message: "Event updated successfully",
       event: updatedEvent,
     });
   } catch (error) {
     console.error(error);
+    createLog(req.user.id, req.user.role, 'updateEvent', req.params.eventId, 'error', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -458,6 +476,8 @@ const deleteEventFromUsers = async (eventId) => {
 exports.deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
+    const user = await User.findById(req.user.id);
+
     const event = await Event.findByIdAndDelete(eventId);
     try {
       const applicant = await Applicant.findById(
@@ -472,11 +492,14 @@ exports.deleteEvent = async (req, res) => {
       console.error(error);
     }
     if (!event) {
+      createLog(req.user.id, req.user.role, 'deleteEvent', eventId, 'error', 'Event not found');
       return res.status(404).json({ message: "Event not found" });
     }
     await event.removeFromAssigneesEvents();
+    user && createLog(req.user.id, req.user.role, 'deleteEvent', eventId, 'success', 'Event deleted successfully');
     res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {
+    createLog(req.user.id, req.user.role, 'deleteEvent', req.params.eventId, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to delete event", error: error.message });
@@ -517,23 +540,27 @@ exports.assignGuideToEvent = async (req, res) => {
     // Find the event
     const event = await Event.findById(eventID);
     if (!event) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'error', 'Event not found');
       return res.status(404).json({ message: "Event not found" });
     }
 
     // Check if the guide ID is valid
     const guide = await User.findById(userID);
     if (!guide) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', userID, 'error', 'Invalid guide ID');
       return res.status(400).json({ message: "Invalid guide ID" });
     }
 
     // Check if the number of assigned guides exceeds the limit
     if (event.assignedUsers.length >= event.requiredNumberOfGuides) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'error', 'Guide limit exceeded');
       return res.status(400).json({
         message: `Cannot assign more than ${event.requiredNumberOfGuides} guide(s) to this event.`,
       });
     }
     // Check if the guide is already assigned
     if (event.assignedUsers.includes(userID)) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'error', 'Guide already assigned');
       return res
         .status(400)
         .json({ message: "Guide is already assigned to this event." });
@@ -551,13 +578,21 @@ exports.assignGuideToEvent = async (req, res) => {
       // Send guide assignment email
       await sendGuideAssignmentEmail(guide, event);
     } catch (error) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'error', error.message);
       return res
         .status(400)
         .json({ message: "Failed to assign guide", error: error.message });
     }
+    if (req.user.id === userID) {
+      createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'success', `Guide ${guide.name} assigned successfully to event `);}
+    else {
+      const user = await User.findById(req.user.id);
+      createLog(req.user.id, req.user.role, 'assignGuideToEventByOther', eventID, 'success', `Guide ${guide.name} assigned successfully to event`);
+    }
+    createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'success', 'Guide assigned successfully');
 
-    res.status(200).json({ message: "Guide assigned successfully" });
   } catch (error) {
+    createLog(req.user.id, req.user.role, 'assignGuideToEvent', req.body.eventID, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to assign guide", error: error.message });
@@ -585,6 +620,7 @@ exports.removeAssignedGuideFromEvent = async (req, res) => {
       console.error(error);
       return res.status(404).json({ message: error.message });
     }
+    createLog(req.user.id, req.user.role, 'removeAssignedGuideFromEvent', eventID, 'success', 'Guide removed successfully from event');
     res.status(200).json({ message: "Guide removed successfully" });
   } catch (error) {
     console.error(error);
@@ -691,14 +727,17 @@ exports.markEventAsCompleted = async (req, res) => {
     // Fetch event by ID
     let event = await Event.findById(eventId).populate("assignedUsers");
     if (!event) {
+      createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'error', 'Event not found');
       return res.status(404).json({ message: "Event not found" });
     }
     let user = await User.findById(userId);
     if (!user) {
+      createLog(req.user.id, req.user.role, 'markEventAsCompleted', userId, 'error', 'User not found');
       return res.status(404).json({ message: "User not found" });
     }
     // Check if the user is assigned to the event
     if (!event.appliedUsers.some((user) => user._id == userId)) {
+      createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'error', 'User not assigned to event');
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
@@ -713,6 +752,7 @@ exports.markEventAsCompleted = async (req, res) => {
 
     } catch (error) {
       console.error(error);
+      createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'error', error.message);
       return res.status(400).json({ message: error.message });
     }
 
@@ -729,6 +769,7 @@ exports.markEventAsCompleted = async (req, res) => {
     const applicant = event.applicant;
 
     if (!applicant) {
+      createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'error', 'Applicant not found');
       return res.status(404).json({ message: "Applicant not found" });
     }
 
@@ -736,12 +777,14 @@ exports.markEventAsCompleted = async (req, res) => {
     await sendReviewEmail(applicant.email, applicant.name, reviewLink);
 
     // Respond with success
+    createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'success', 'Event marked as completed');
     res.status(200).json({
       message: "Event marked as completed successfully, review email sent.",
     });
   } catch (error) {
     // Handle errors
     console.error(error);
+    createLog(req.user.id, req.user.role, 'markEventAsCompleted', req.params.eventId, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to complete event", error: error.message });
@@ -755,16 +798,19 @@ exports.takeBackEventAction = async (req, res) => {
     const userId = req.user.id;
     const event = await Event.findById(eventId).populate("assignedUsers");
     if (!event.assignedUsers.some((user) => user._id == userId)) {
+      createLog(req.user.id, req.user.role, 'takeBackEventAction', eventId, 'error', 'User not assigned to event');
       return res
         .status(403)
         .json({ message: "User not assigned to this event" });
     }
     if (!event) {
+      createLog(req.user.id, req.user.role, 'takeBackEventAction', eventId, 'error', 'Event not found');
       return res.status(404).json({ message: "Event not found" });
     }
     try {
       await event.takeBackAction();
     } catch (error) {
+      createLog(req.user.id, req.user.role, 'takeBackEventAction', eventId, 'error', 'Event status not eligible for action');
       return res.status(400).json({ message: "Event status not eligible for action" });
     }
 
@@ -775,77 +821,20 @@ exports.takeBackEventAction = async (req, res) => {
       await user.save();
     }
    
+    createLog(req.user.id, req.user.role, 'takeBackEventAction', eventId, 'success', 'Event status set back to accepted');
     res.status(200).json({ message: "Event status set back to accepted" });
   } catch (error) {
     console.error(error);
+    createLog(req.user.id, req.user.role, 'takeBackEventAction', req.params.eventId, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to take back event", error: error.message });
   }
 };
 
-exports.confirmEventAction = async (req, res) => {
-  try {
-    const { eventId } = req.params;
-    const userId = req.user.id;
 
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    if (!event.assignedAdvisor === userId) {
-      return res
-        .status(403)
-        .json({ message: "Advisor not assigned to this event" });
-    }
-    try {
-      await event.markVerified();
-      res
-        .status(200)
-        .json({ message: "Event completion/cancellation confirmed" });
-    } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Event status not eligible for confirmation" });
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to confirm event completion",
-      error: error.message,
-    });
-  }
-};
-exports.applyToEvent = async (req, res) => {
-  try {
-    const { eventID } = req.body;
-    const { userrole, userid } = req.headers;
-    const user = await User.findById(userid || req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
 
-    const event = await Event.findById(eventID);
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    if (event.appliedUsers.includes(userid)) {
-      return res
-        .status(400)
-        .json({ message: "Guide is already assigned to this event." });
-    }
 
-    // Assign the guide to the event
-    event.appliedUsers.push(userid);
-
-    await event.save();
-
-    // Add the event to the guide's list of assigned events
-    res.status(200).json({ message: "Applied to event successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
 
 exports.isReviewSubmitted = async (req, res) => {
   const { eventId } = req.params; // Get eventId from the request parameters
@@ -893,7 +882,6 @@ exports.resubmitEventReserveDates = async (req, res) => {
 
     // Save the updated event
     await event.save();
-
     res.status(200).json({
       message: "Event reserveDates resubmitted successfully.",
       event,

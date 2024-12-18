@@ -75,7 +75,7 @@ const FairRowActions = ({ fair, user, setMessage }) => {
   };
 
   const checkIfUserHasApplied = () => {
-    return fair.appliedUsers?.some((appliedUser) => appliedUser === user?._id);
+    return fair.appliedUsers?.some((appliedUser) => appliedUser._id === user?._id);
   };
 
   return (
@@ -84,20 +84,7 @@ const FairRowActions = ({ fair, user, setMessage }) => {
         <i className="fas fa-eye"></i>
         View Details
       </Link>
-      {user &&
-        user.role === "advisor" &&
-        !fairIsFull &&
-        fair.assignedAdvisor === user._id && (
-          <button
-            className="action-button assign"
-            onClick={() => assignGuide(fair._id)}
-            disabled={actionInProcess}
-            style= {{cursor : actionInProcess ?  "not-allowed" : ""}}
-          >
-            <i className="fas fa-user-plus"></i>
-            Assign Guide
-          </button>
-        )}
+      
       {user &&
       rolesThatApply.includes(user.role) &&
       !checkIfUserHasApplied() &&

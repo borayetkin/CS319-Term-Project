@@ -6,6 +6,8 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
+import { FaSearch } from 'react-icons/fa';
+import DetailsModal from "../../components/DetailsModal";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -24,6 +26,10 @@ const Applications = () => {
   const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
   const navigate = useNavigate();
   const [expandedRows, setExpandedRows] = useState(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [messageTimeout, setMessageTimeout] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,6 +45,22 @@ const Applications = () => {
       
     }
   }, [weeklySchedules, currentWeekIndex]);
+  useEffect(() => {
+    if (message) {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+      const timeout = setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      setMessageTimeout(timeout);
+    }
+    return () => {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+    };
+  }, [message]);
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
@@ -77,6 +99,11 @@ const Applications = () => {
     } catch (error) {
       setMessage("Error fetching applications: " + error.message);
     }
+  };
+
+  const handleActionComplete = async () => {
+    const token = localStorage.getItem("token");
+    await fetchApplications(token, user);
   };
 
   const fetchWeeklySchedules = async (token) => {
@@ -357,9 +384,19 @@ const Applications = () => {
     );
   };
 
+  const handleShowDetails = (application) => {
+    setSelectedApplication(application);
+    setShowDetailsModal(true);
+  };
+
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
+      {message && (
+        <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          {message}
+        </div>
+      )}
       <div className="controls-container">
         <div className="controls-left">
           <TypeSelectionTrio
@@ -399,6 +436,16 @@ const Applications = () => {
                 <option value="status">Status</option>
                 {tourType === "SchoolTour" && <option value="priority">Priority</option>}
               </select>
+            </div>
+            
+            <div className="search-bar">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search applications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -561,26 +608,38 @@ const Applications = () => {
           showFairs={false}
           showTours={true}
           showExtraProperties={{
-            SchoolTour: [ "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber", "applicationDate"],
+            SchoolTour: [ "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber"],
             IndividualTour: ["studentName", "studentHighSchool", "majorOfInterest", "email", "phoneNumber", "applicationDate"],
           }}
           setMessage={setMessage}
           user={user}
           events={tourFilteredApplications}
           statusFilter={filterStatus}
-          searchTerm=""
+          searchTerm={searchTerm}
           showType={tourType}
           setIsLoading={setIsLoading}
-          EventRowActions={ApplicationsRowActions}
+          EventRowActions={(props) => (
+            <ApplicationsRowActions
+              {...props}
+              onActionComplete={handleActionComplete}
+            />
+          )}
           extraRowContent={(application) => (
             <>
               {renderReserveDatesButton(application)}
               {renderExpandedDates(application)}
             </>
           )}
+          onShowDetails={handleShowDetails}
         />
       )}
       {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}
+      {showDetailsModal && (
+        <DetailsModal
+          application={selectedApplication}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
     </div>
   );
 }

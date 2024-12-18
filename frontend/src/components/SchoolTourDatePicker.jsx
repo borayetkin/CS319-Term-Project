@@ -91,13 +91,16 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
     });
   };
   const handleCompleteSelection = (date, time) => {
+    if (reserveDates.length >= 3) {
+      alert("En fazla 3 tarih seçebilirsiniz.");
+      return;
+    }
+
     const newReserveDates = [
       ...reserveDates,
       { date: formatLocalDate(date), time },
     ];
-    if (newReserveDates.length > 10) {
-      newReserveDates.shift();
-    }
+    
     handleOnChange(newReserveDates[0], newReserveDates);
     setReserveDates(newReserveDates);
     setIsTimeSelectionOpen(false);
@@ -173,13 +176,12 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
   };
 
   const today = new Date();
-  const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
   const reservedStyle = {
     backgroundColor: "lightyellow",
     color: "black",
   };
   const isDisabled = (date) => {
-    if (date <= twoWeeksFromNow) {
+    if (date < today) {
       return true;
     }
     return false;
@@ -349,7 +351,7 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
             }}
           >
             <div style={{ display: "flex", gap: "10px" }}>
-              <h3 style={{ alignSelf: "center" }}>Reserved Dates:</h3>{" "}
+              <h3 style={{ alignSelf: "center" }}>Reserved Dates: ({reserveDates.length}/3)</h3>
               <button
                 className="down-arrow"
                 type="button"
@@ -381,7 +383,10 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
         </div>
       </div>
       <p className="restriction-message">
-        *Sadece bugünden iki hafta sonraki tarihler seçilebilir.
+        *Sadece bugünden sonraki tarihler seçilebilir.
+      </p>
+      <p className="restriction-message">
+        *En fazla 3 tarih seçebilirsiniz.
       </p>
       <p className="restriction-message">
         *Seçtiğiniz tarih ve saate göre Üniversitemizde yoğunluk seviyesi

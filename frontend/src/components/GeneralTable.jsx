@@ -14,85 +14,196 @@ const GeneralTable = ({
   showType = "SchoolTour",
   EventRowActions,
   FairRowActions,
+  viewType = "tours",
+  onShowDetails,
 }) => {
   
   const columnWidths = {
-    name: 200,
+    name: 25230,
     date: 100,
     time: 80,
-    status: 100,
+    status: 120,
     assignedUsers: 120,
     requiredNumberOfGuides: 120,
     contactPerson: 120,
-    email: 180,
-    phoneNumber: 120,
-    studentCount: 100,
-    city: 100,
-    applicationDate: 100,
+    email: 150,
+    phoneNumber: 20,
+    studentCount: 20,
+    city: 20,
+    applicationDate: 110,
     priority: 100,
-    studentHighSchool: 150,
-    majorOfInterest: 150,
+    studentHighSchool: 180,
+    majorOfInterest: 180,
     studentName: 150,
-    actions: 200
+    actions: 20,
+    details: 80
   };
 
   const getColumns = () => {
+    // First declare extraColumns
+    const extraColumns = [];
+    
     const baseColumns = [
       { 
-        field: 'applicantName', 
-        headerName: 'Name', 
+        field: 'name', 
+        headerName: showType === "Fair" ? 'School Name' : 'Name', 
         width: columnWidths.name,
-        flex: 0,
+        headerAlign: 'center',
+        align: 'center',
+        flex: 1,
+        minWidth: 150,
         renderCell: (params) => {
-          if (showType === "SchoolTour") {
-            return (
-              <div style={{ 
-                whiteSpace: 'normal',
-                lineHeight: '1.2',
-                padding: '8px 0',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-                {params.row?.applicant?.name || "N/A"}
-              </div>
-            );
+          if (showType === "Fair") {
+            return params.row?.schoolName || "N/A";
           }
           return params.row?.applicant?.name || "N/A";
         }
       },
       { 
-        field: 'visitDate', 
+        field: 'date', 
         headerName: 'Date', 
         width: columnWidths.date,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
         renderCell: (params) => {
-          return params.row?.visitDate 
-            ? new Date(params.row.visitDate).toLocaleDateString() 
-            : "N/A";
+          const date = showType === "Fair" ? params.row?.fairDate : params.row?.visitDate;
+          return date ? new Date(date).toLocaleDateString() : "N/A";
         }
       },
       { 
-        field: 'visitTime', 
+        field: 'time', 
         headerName: 'Time', 
         width: columnWidths.time,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
-        renderCell: (params) => params.row?.visitTime || "N/A"
+        renderCell: (params) => {
+          return showType === "Fair" ? params.row?.fairTime : params.row?.visitTime || "N/A";
+        }
       },
       { 
         field: 'status', 
         headerName: 'Status', 
         width: columnWidths.status,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
-        renderCell: (params) => params.row?.status || "N/A"
+        renderCell: (params) => {
+          const status = params.row?.status || "N/A";
+          const getStatusColor = (status) => {
+            switch(status.toLowerCase()) {
+              case 'pending':
+                return { bg: '#FEF3C7', text: '#92400E' }; // Warm yellow
+              case 'confirmed':
+                return { bg: '#DCFCE7', text: '#166534' }; // Green
+              case 'scheduled':
+                return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
+              case 'completed':
+                return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
+              case 'cancelled':
+                return { bg: '#FEE2E2', text: '#991B1B' }; // Red
+              case 'accepted':
+                return { bg: '#DCFCE7', text: '#166534' }; // Green
+              default:
+                return { bg: '#F3F4F6', text: '#4B5563' }; // Gray
+            }
+          };
+
+          const colors = getStatusColor(status);
+          const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+          
+          return (
+            <div style={{
+              backgroundColor: colors.bg,
+              color: colors.text,
+              padding: '4px 12px',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              textTransform: 'capitalize',
+              width: '90%',
+              textAlign: 'center'
+            }}>
+              {formattedStatus}
+            </div>
+          );
+        }
+      },
+      {
+        field: 'details',
+        headerName: '',
+        width: columnWidths.details,
+        headerAlign: 'center',
+        align: 'center',
+        sortable: false,
+        renderCell: (params) => (
+          <button
+            onClick={() => onShowDetails(params.row)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#3b82f6',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#f1f5f9';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            Details
+          </button>
+        )
       }
     ];
 
-    // Add extra properties based on showExtraProperties
-    const extraColumns = [];
-    
+    // Add Fair properties handling
+    if (showType === "Fair" && showExtraProperties.Fair) {
+      showExtraProperties.Fair.forEach(prop => {
+        switch(prop) {
+          case "assignedUsers":
+            extraColumns.push({
+              field: 'assignedUsers',
+              headerName: 'Assigned Guides',
+              width: columnWidths.assignedUsers,
+              renderCell: (params) => params.row?.assignedUsers?.length || "0"
+            });
+            break;
+          case "requiredNumberOfGuides":
+            extraColumns.push({
+              field: 'requiredNumberOfGuides',
+              headerName: 'Required Guides',
+              width: columnWidths.requiredNumberOfGuides,
+              renderCell: (params) => params.row?.requiredNumberOfGuides || "N/A"
+            });
+            break;
+          case "organiserName":
+            extraColumns.push({
+              field: 'organiserName',
+              headerName: 'Organiser',
+              width: columnWidths.contactPerson,
+              renderCell: (params) => params.row?.organiserName || "N/A"
+            });
+            break;
+          case "email":
+            extraColumns.push({
+              field: 'email',
+              headerName: 'Email',
+              width: columnWidths.email,
+              renderCell: (params) => params.row?.email || "N/A"
+            });
+            break;
+        }
+      });
+    }
+
+    // Add SchoolTour properties
     if (showType === "SchoolTour" && showExtraProperties.SchoolTour) {
       showExtraProperties.SchoolTour.forEach(prop => {
         switch(prop) {
@@ -169,6 +280,20 @@ const GeneralTable = ({
               width: columnWidths.priority,
               renderCell: (params) => {
                 const priority = params.row?.applicant?.priority || "N/A";
+                
+                const getPriorityColor = (priority) => {
+                  switch(priority) {
+                    case "High":
+                      return { bg: '#FEE2E2', text: '#991B1B' }; // Red for Focus
+                    case "Medium":
+                      return { bg: '#FEF3C7', text: '#92400E' }; // Yellow for Preferred
+                    case "General":
+                      return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue for General
+                    default:
+                      return { bg: '#F3F4F6', text: '#4B5563' }; // Gray for N/A
+                  }
+                };
+
                 let text = "";
                 switch(priority) {
                   case "High":
@@ -183,7 +308,21 @@ const GeneralTable = ({
                   default:
                     text = "N/A";
                 }
-                return text;
+
+                const colors = getPriorityColor(priority);
+
+                return (
+                  <div style={{
+                    backgroundColor: colors.bg,
+                    color: colors.text,
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                  }}>
+                    {text}
+                  </div>
+                );
               }
             });
             break;
@@ -191,6 +330,7 @@ const GeneralTable = ({
       });
     }
 
+    // Add IndividualTour properties
     if (showType === "IndividualTour" && showExtraProperties.IndividualTour) {
       showExtraProperties.IndividualTour.forEach(prop => {
         switch(prop) {
@@ -239,7 +379,11 @@ const GeneralTable = ({
         width: columnWidths.actions,
         renderCell: (params) => {
           if (showType === "Fair" && FairRowActions) {
-            return <FairRowActions fair={params.row} />;
+            return <FairRowActions 
+              fair={params.row} 
+              user={user}
+              setMessage={setMessage}
+            />;
           }
           if (EventRowActions) {
             return <EventRowActions 
@@ -253,7 +397,17 @@ const GeneralTable = ({
       });
     }
 
-    return [...baseColumns, ...extraColumns];
+    // Modify all extra columns to be centered
+    const modifyExtraColumn = (column) => ({
+      ...column,
+      headerAlign: 'center',
+      align: 'center',
+      flex: 1,
+      minWidth: column.width
+    });
+
+    // Apply the modification to all extra columns
+    return [...baseColumns, ...extraColumns.map(modifyExtraColumn)];
   };
 
   const filteredEvents = events.filter((event) => {
@@ -270,12 +424,12 @@ const GeneralTable = ({
     <div style={{ 
       width: '100%', 
       height: '100%', 
-      overflow: 'hidden',
+      overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
     }}>
       <DataGrid
-        rows={filteredEvents}
+        rows={viewType === "fairs" ? fairs : filteredEvents}
         columns={getColumns()}
         getRowId={(row) => row._id}
         pageSize={10}
@@ -284,38 +438,86 @@ const GeneralTable = ({
         disableSelectionOnClick
         disableColumnMenu
         disableColumnSelector
+        rowHeight={70}
+        components={{
+          NoRowsOverlay: () => (
+            <div style={{ padding: '1rem', textAlign: 'center' }}>
+              {viewType === "fairs" ? "No fairs available" : "No events available"}
+            </div>
+          ),
+        }}
         sx={{
           border: 'none',
+          '& .MuiDataGrid-root': {
+            width: '100%',
+          },
           '& .MuiDataGrid-main': {
-            width: '100% !important',
+            width: '100%',
+            overflow: 'hidden',
           },
           '& .MuiDataGrid-virtualScroller': {
-            width: '100% !important',
-            overflow: 'hidden auto',
+            width: '100%',
+            overflow: 'hidden',
           },
           '& .MuiDataGrid-virtualScrollerContent': {
-            width: '100% !important',
+            width: '100%',
           },
           '& .MuiDataGrid-virtualScrollerRenderZone': {
-            width: '100% !important',
+            width: '100%',
           },
           '& .MuiDataGrid-cell': {
             borderColor: '#e5e7eb',
             whiteSpace: 'normal',
             padding: '8px',
+            lineHeight: '1.5',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           },
           '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f8fafc',
             color: '#475569',
             fontWeight: 600,
+            '& .MuiDataGrid-columnHeader': {
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '& .MuiDataGrid-columnHeaderTitle': {
+                width: '100%',
+                textAlign: 'center',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }
+            }
+          },
+          '& .MuiDataGrid-row': {
+            width: '100% !important',
+            minWidth: 'fit-content',
           },
           '& .MuiDataGrid-row:hover': {
             backgroundColor: '#f8fafc',
           },
-          width: '100%',
           '& .MuiDataGrid-footerContainer': {
             borderTop: '1px solid #e5e7eb',
-          }
+            width: '100%',
+          },
+          '& .MuiDataGrid-columnHeader': {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+          },
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          margin: 0,
+          padding: 0,
+          flexGrow: 1,
+          flexShrink: 1,
+          minWidth: '100%',
         }}
       />
     </div>

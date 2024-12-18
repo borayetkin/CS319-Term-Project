@@ -5,6 +5,8 @@ const Advisor = require("../models/Advisor");
 const Event = require("../models/Event");
 const Coordinator = require("../models/Coordinator");
 const {sendNewUserEmail} = require("../config/EmailService");
+const { createLog } = require("./LogController");
+
 const saveUser = async ({ name, email, password, role }) =>{
     // Create new user with conditional role
     const user = new User({ name, email, password, role });
@@ -43,6 +45,7 @@ const changeUserToAdvisor = async (user,assignedDay) => {
   const advisor = new Advisor({...userJson,_id: user._id ,assignedDay, __t : "Advisor"});
   return advisor;
 }
+
 exports.updateUser = async (req, res) => {
   try {
     let user = await User.findById(req.user.id);
@@ -55,9 +58,13 @@ exports.updateUser = async (req, res) => {
       user[key] = req.body[key] || user[key];
     });
     await user.save();
+    
+    await createLog(req.user.id, req.user.role, 'updateUser', user._id, 'success', 'User profile updated');
+    
     res.status(200).json({ message: "Profile updated successfully", user });
   } catch (err) {
     console.error(err);
+    await createLog(req.user.id, req.user.role, 'updateUser', req.user.id, 'error', err.message);
     res.status(500).json({ message: "Server error" });
   }
 }
@@ -79,12 +86,15 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByIdAndDelete(userId);
     deleteUserFromEvents(userId);
     if (!user) {
+      await createLog(req.user.id, req.user.role, 'deleteUser', userId, 'error', 'User not found');
       return res.status(404).json({ message: "User not found" });
     }
 
+    await createLog(req.user.id, req.user.role, 'deleteUser', userId, 'success', 'User deleted successfully');
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error(error);
+    await createLog(req.user.id, req.user.role, 'deleteUser', req.params.id, 'error', error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -161,6 +171,7 @@ exports.signupUser = async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      await createLog(null, role, 'signupUser', null, 'error', 'User already exists');
       return res.status(400).json({ message: "User already exists." });
     }
     
@@ -199,9 +210,11 @@ exports.signupUser = async (req, res) => {
     if (sendEmailBool) {
       await sendNewUserEmail(userToSendEmail);
     }
+    await createLog(newUser._id, newUser.role, 'signupUser', newUser._id, 'success', 'User registered successfully');
     res.status(201).json({ token, message: "User registered successfully." });
   } catch (err) {
     console.error(err);
+    await createLog(null, role, 'signupUser', null, 'error', err.message);
     res.status(500).json({ message: "Server error during registration." });
   }
 };

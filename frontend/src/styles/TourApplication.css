@@ -1,7 +1,9 @@
 .tour-application-section {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 54.5px); /* Set min-height to ensure initial full viewport coverage */
+  min-height: calc(
+    100vh - 54.5px
+  ); /* Set min-height to ensure initial full viewport coverage */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,7 +46,7 @@
 }
 
 .tour-application-message {
-  text-align: center;
+  text-align: left;
   color: #5a67b3;
   margin-bottom: 15px;
   font-size: 1.2rem;
@@ -255,11 +257,11 @@ input[type="tel"]::placeholder {
 .navigation-button {
   background-color: #21253d;
   color: white;
-  padding: .75rem ;
+  padding: 0.75rem;
   font-size: 1.2rem;
   font-weight: bold;
   border: none;
-  
+
   border-radius: 8px;
   cursor: pointer;
   margin-top: 15px;
@@ -310,7 +312,6 @@ input[type="tel"]::placeholder {
   }
 }
 .form-navigation {
-  
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
@@ -396,3 +397,29 @@ input[type="tel"]::placeholder {
 
 
 
+
+
+.confirmation-step {
+  text-align: left; /* Align text to the left */
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #2b3349; /* Ensure consistent text color */
+}
+
+.confirmation-step h2 {
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.confirmation-step p {
+  text-align: left;
+}
+
+.confirmation-step p strong {
+  font-weight: bold; /* Highlight the labels */
+}
+
+.confirmation-step p.gray-text {
+  color: gray; /* Style for optional gray text like reserve visit details */
+}
