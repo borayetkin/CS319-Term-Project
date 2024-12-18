@@ -15,7 +15,7 @@ exports.createLog = async (userId, role, action, targetId, status, comment) => {
       role,
       action,
       targetId,
-      details: { status, newComment },
+      details: { status, comment :newComment },
       timestamp: new Date()
     });
     await log.save();
