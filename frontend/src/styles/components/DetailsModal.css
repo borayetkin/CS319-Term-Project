@@ -246,3 +246,42 @@
   font-weight: 500;
   min-width: 50px;
 }
+
+.reserved-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.reserved-date-item {
+  background: rgba(243, 244, 246, 0.5);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.reserved-date-item:hover {
+  background: rgba(243, 244, 246, 0.8);
+  transform: translateX(2px);
+}
+
+.reserved-date-item .datetime {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4b5563;
+  font-size: 0.925rem;
+}
+
+.reserved-date-item .icon {
+  color: #6b7280;
+}
+
+.reserved-date-item .time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #6b7280;
+}

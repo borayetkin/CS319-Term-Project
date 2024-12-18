@@ -1,7 +1,9 @@
 import "../styles/components/DetailsModal.css";
 import { useState } from 'react';
 
-const DetailsModal = ({ application, onClose, context }) => {
+const DetailsModal = ({ application, onClose, context, user }) => {
+  console.log("DetailsModal props:", { application, context, user });
+
   const [updatedAssignments, setUpdatedAssignments] = useState({});
   const [updatedRemovals, setUpdatedRemovals] = useState({});
   const [message, setMessage] = useState("");
@@ -162,18 +164,33 @@ const DetailsModal = ({ application, onClose, context }) => {
                 </div>
               )}
 
-              {!isFair && isApplicationContext && application.reserveDates && application.reserveDates.length > 0 && (
+              {isApplicationContext && application.reserveDates && application.reserveDates.length > 0 && (
                 <div className="detail-group">
                   <div className="detail-item">
                     <label>Reserved Dates</label>
-                    <div className="alternative-dates">
+                    <div className="reserved-dates">
                       {application.reserveDates.map((dateObj, index) => (
-                        <p key={index} className="datetime">
-                          <svg className="icon" viewBox="0 0 24 24" width="14" height="14">
-                            <path fill="currentColor" d="M9,10H7V12H9V10M13,10H11V12H13V10M17,10H15V12H17V10M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V8H19V19Z"/>
-                          </svg>
-                          {new Date(dateObj.visitDate).toLocaleDateString()} at {dateObj.visitTime}
-                        </p>
+                        <div key={index} className="reserved-date-item">
+                          <p className="datetime">
+                            <svg className="icon" viewBox="0 0 24 24" width="14" height="14">
+                              <path fill="currentColor" d="M9,10H7V12H9V10M13,10H11V12H13V10M17,10H15V12H17V10M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V8H19V19Z"/>
+                            </svg>
+                            <span>
+                              {new Date(dateObj.visitDate).toLocaleDateString('en-US', { 
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                            <span className="time">
+                              <svg className="icon" viewBox="0 0 24 24" width="14" height="14">
+                                <path fill="currentColor" d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/>
+                              </svg>
+                              {dateObj.visitTime}
+                            </span>
+                          </p>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -199,66 +216,7 @@ const DetailsModal = ({ application, onClose, context }) => {
                 )}
               </div>
 
-              {/* Add guide management section for advisors */}
-              {user?.role === 'advisor' && (
-                <div className="detail-group">
-                  <div className="detail-item">
-                    <label>Guide Management</label>
-                    <div className="guide-management">
-                      <div className="assign-guide">
-                        <select
-                          onChange={(e) =>
-                            setUpdatedAssignments((prev) => ({
-                              ...prev,
-                              [application._id]: e.target.value,
-                            }))
-                          }
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Assign New Guide</option>
-                          {application.appliedUsers?.map((guide) => (
-                            !checkIfGuideHasBeenAssigned(guide) &&
-                            <option key={guide._id} value={guide._id}>
-                              {guide.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="remove-guide">
-                        <select
-                          onChange={(e) =>
-                            setUpdatedRemovals((prev) => ({
-                              ...prev,
-                              [application._id]: e.target.value,
-                            }))
-                          }
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Remove Guide</option>
-                          {application.assignedUsers?.map((guide) => (
-                            <option key={guide._id} value={guide._id}>
-                              {guide.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <button 
-                        className="save-changes-button"
-                        onClick={saveChanges}
-                      >
-                        Save Changes
-                      </button>
-                    </div>
-                    {message && (
-                      <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
-                        {message}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              
             </>
           ) : (
             // Events context - show event details with assigned guides

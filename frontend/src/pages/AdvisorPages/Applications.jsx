@@ -638,6 +638,8 @@ const Applications = () => {
         <DetailsModal
           application={selectedApplication}
           onClose={() => setShowDetailsModal(false)}
+          context="applications"
+          user={user}
         />
       )}
     </div>
