@@ -10,6 +10,7 @@ const {
   sendConfirmationEmail,
   sendReviewEmail,
   sendGuideAssignmentEmail,
+  sendNotificationEmail,
 } = require("../config/EmailService");
 const { removeEventFromSchedule } = require("../applicationManagement/AppointmentManager");
 const { createLog } = require("./LogController");
@@ -374,8 +375,6 @@ exports.updateEventTwo = async (req, res) => {
   const { eventId } = req.params;
   const updateData = req.body;
 
-  console.log("Update Data Received:", updateData); // Debug log
-
   try {
     // Find the event by ID
     const event = await Event.findById(eventId);
@@ -384,19 +383,30 @@ exports.updateEventTwo = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    console.log("Event Before Update:", event);
+    // Identify changed fields and update the event object
+    const changedFields = {};
+    for (let key in updateData) {
+      if (updateData[key] !== event[key]) {
+        changedFields[key] = updateData[key];
+        event[key] = updateData[key]; // Update the event object
+      }
+    }
 
-    // Update the event's properties with the provided data
-    Object.keys(updateData).forEach((key) => {
-      event[key] = updateData[key];
-    });
-
-    console.log("Event After Update (Before Save):", event);
+    // If no changes, return
+    if (Object.keys(changedFields).length === 0) {
+      return res.status(400).json({ message: "No changes detected" });
+    }
 
     // Save the updated event
     const updatedEvent = await event.save();
 
-    console.log("Event After Save:", updatedEvent);
+    // Populate applicant and send email
+    await updatedEvent.populate("applicant");
+    const applicant = updatedEvent.applicant;
+
+    if (applicant) {
+      await sendNotificationEmail(applicant.email, applicant.name, changedFields);
+    }
 
     res.status(200).json(updatedEvent);
   } catch (error) {
