@@ -84,6 +84,7 @@ const Event = () => {
       setError(error.message);
     }
   };
+  const roomOptions = ["B205", "FFB-22", "FFB-05", "FFB-06", "EE-01", "MitatCoruh"];
 
   return (
     <>
@@ -112,6 +113,24 @@ const Event = () => {
                     onChange={handleInputChange}
                     placeholder="enter the student number"
                   />
+                   <label htmlFor="reservedRoom" style={{ marginRight: "8px", fontWeight: "bold" }}>Reserved Room:</label>
+                   <select
+                     name="reservedRoom"
+                     value={editedEvent.reservedRoom || ""}
+                     onChange={handleInputChange}
+                     style={{
+                         padding: "8px",
+                         borderRadius: "4px",
+                         border: "1px solid #ccc",
+                         boxSizing: "border-box",
+                         fontSize: "inherit",
+                       }}
+                   >
+                     <option value="" disabled>Select a room</option>
+                       {roomOptions.map((room) => (
+                         <option key={room} value={room}>{room}</option>
+                       ))}
+                     </select>
                   </>
                 )}
                 <>
@@ -165,6 +184,7 @@ const Event = () => {
                       <h1>{event.schoolName}</h1>
                       <p>Date: {new Date(event.visitDate).toLocaleDateString()}</p>
                       <p>Student Number: {event.studentCount || "N/A"}</p>
+                      <p>Reserved Room: {event.reservedRooms || "N/A"}</p>
                     </>
                   )}
                   <p>Number of Guides: {event.requiredNumberOfGuides || "N/A"}</p>
