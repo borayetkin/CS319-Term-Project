@@ -63,6 +63,7 @@ exports.getFairs = async (req, res) => {
   try {
     const fairs = await Fair.find()
       .populate("assignedUsers", "name") // Populate the guide's name
+      .populate("appliedUsers", "name") // Populate the guide's name
       .exec();
     res.status(200).json(fairs);
   } catch (error) {
@@ -77,6 +78,7 @@ exports.getAcceptedFairs = async (req, res) => {
   try {
     const acceptedFairs = await Fair.find({ status: "accepted" })
       .populate("assignedUsers", "name") // Populate the guide's name
+      .populate("appliedUsers", "name") // Populate the guide's name
       .exec();
 
     if (acceptedFairs.length === 0) {
@@ -99,6 +101,7 @@ exports.getFair = async (req, res) => {
     const { id } = req.params;
     const fair = await Fair.findById(id)
       .populate("assignedUsers", "name") // Populate the guide's name
+      .populate("appliedUsers", "name") // Populate the guide's name
       .exec();
     if (!fair) {
       return res.status(404).json({ message: "Fair not found" });
