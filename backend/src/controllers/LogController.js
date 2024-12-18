@@ -36,7 +36,7 @@ exports.getLogs = async (req, res) => {
         else{
         logs = await Log.find(filter).populate("userId").sort({ timestamp: -1 });
         }
-        console.log(logs);
+  
         res.status(200).send(logs);
     } catch (error) {
         console.error("Error fetching logs:", error.message);
