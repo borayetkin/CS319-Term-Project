@@ -204,3 +204,50 @@
     grid-template-columns: 1fr;
   }
 }
+
+.assigned-guides {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guide-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.guide-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 22px;
+  font-size: 0.875rem;
+}
+
+.guide-details p {
+  display: flex;
+  gap: 8px;
+  color: #475569;
+}
+
+.guide-details span {
+  color: #64748b;
+  font-weight: 500;
+  min-width: 50px;
+}

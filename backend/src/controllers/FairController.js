@@ -77,8 +77,8 @@ exports.getFairs = async (req, res) => {
 exports.getAcceptedFairs = async (req, res) => {
   try {
     const acceptedFairs = await Fair.find({ status: "accepted" })
-      .populate("assignedUsers", "name") // Populate the guide's name
-      .populate("appliedUsers", "name") // Populate the guide's name
+      .populate('assignedUsers', 'name email phoneNumber major')
+      .populate('appliedUsers', 'name email phoneNumber major')
       .exec();
 
     if (acceptedFairs.length === 0) {
