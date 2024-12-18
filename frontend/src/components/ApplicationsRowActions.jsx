@@ -73,7 +73,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       >
         <FaEye />
       </button>
-      {(event.status === "scheduled") && (
+      {(event.status === "scheduled" || (event.__t === "IndividualTour" && event.status === "pending")) && (
         <>
           <button
             className="accept"
