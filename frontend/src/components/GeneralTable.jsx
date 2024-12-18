@@ -16,7 +16,6 @@ const GeneralTable = ({
   FairRowActions,
 }) => {
   
-  // At the start of the component, define default column widths
   const columnWidths = {
     name: 200,
     date: 100,
@@ -126,7 +125,7 @@ const GeneralTable = ({
               field: 'email',
               headerName: 'Email',
               width: columnWidths.email,
-              renderCell: (params) => params.row?.email || "N/A"
+              renderCell: (params) => params.row?.applicant?.email || "N/A"
             });
             break;
           case "phoneNumber":
@@ -134,7 +133,7 @@ const GeneralTable = ({
               field: 'phoneNumber',
               headerName: 'Phone',
               width: columnWidths.phoneNumber,
-              renderCell: (params) => params.row?.phoneNumber || "N/A"
+              renderCell: (params) => params.row?.applicant?.phoneNumber || "N/A"
             });
             break;
           case "studentCount":
@@ -208,7 +207,7 @@ const GeneralTable = ({
               field: 'email',
               headerName: 'Email',
               width: columnWidths.email,
-              renderCell: (params) => params.row?.email || "N/A"
+              renderCell: (params) => params.row?.applicant?.email || "N/A"
             });
             break;
           case "phoneNumber":
@@ -216,7 +215,7 @@ const GeneralTable = ({
               field: 'phoneNumber',
               headerName: 'Phone',
               width: columnWidths.phoneNumber,
-              renderCell: (params) => params.row?.phoneNumber || "N/A"
+              renderCell: (params) => params.row?.applicant?.phoneNumber || "N/A"
             });
             break;
           case "majorOfInterest":
@@ -227,14 +226,7 @@ const GeneralTable = ({
               renderCell: (params) => params.row?.majorOfInterest || "N/A"
             });
             break;
-          case "studentName":
-            extraColumns.push({
-              field: 'studentName',
-              headerName: 'Student Name',
-              width: columnWidths.studentName,
-              renderCell: (params) => params.row?.studentName || "N/A"
-            });
-            break;
+          
         }
       });
     }
@@ -264,7 +256,6 @@ const GeneralTable = ({
     return [...baseColumns, ...extraColumns];
   };
 
-  // Filter events based on status and search term
   const filteredEvents = events.filter((event) => {
     const matchesStatus = statusFilter === "all" || event.status === statusFilter;
     const matchesSearch = !searchTerm || 
@@ -279,10 +270,9 @@ const GeneralTable = ({
     <div style={{ 
       width: '100%', 
       height: '100%', 
-      overflow: 'auto', 
-      maxWidth: '100vw',
-      display: 'flex',  // Added
-      flexDirection: 'column'  // Added
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <DataGrid
         rows={filteredEvents}
@@ -292,40 +282,40 @@ const GeneralTable = ({
         rowsPerPageOptions={[5, 10, 20]}
         autoHeight
         disableSelectionOnClick
+        disableColumnMenu
+        disableColumnSelector
         sx={{
-          '.MuiDataGrid-root': {
-            width: 'auto !important',
-            maxWidth: '100%',
+          border: 'none',
+          '& .MuiDataGrid-main': {
+            width: '100% !important',
           },
-          '.MuiDataGrid-virtualScroller': {
-            maxWidth: '100%',
-            overflowX: 'auto',
+          '& .MuiDataGrid-virtualScroller': {
+            width: '100% !important',
+            overflow: 'hidden auto',
           },
-          '.MuiDataGrid-cell': {
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            minWidth: 'unset !important',
-            maxWidth: 'unset !important',
-            padding: '8px',
+          '& .MuiDataGrid-virtualScrollerContent': {
+            width: '100% !important',
+          },
+          '& .MuiDataGrid-virtualScrollerRenderZone': {
+            width: '100% !important',
+          },
+          '& .MuiDataGrid-cell': {
             borderColor: '#e5e7eb',
+            whiteSpace: 'normal',
+            padding: '8px',
           },
-          '.MuiDataGrid-columnHeaders': {
+          '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f8fafc',
             color: '#475569',
             fontWeight: 600,
           },
-          '.MuiDataGrid-row:hover': {
+          '& .MuiDataGrid-row:hover': {
             backgroundColor: '#f8fafc',
           },
-          // Force horizontal scroll instead of wrap
-          '& .MuiDataGrid-virtualScrollerContent': {
-            minWidth: '100% !important',
-          }
-        }}
-        style={{
           width: '100%',
-          maxWidth: '100%',
+          '& .MuiDataGrid-footerContainer': {
+            borderTop: '1px solid #e5e7eb',
+          }
         }}
       />
     </div>

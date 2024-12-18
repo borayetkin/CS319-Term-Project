@@ -1,6 +1,43 @@
 import React, { useState } from "react";
-import { FaEye, FaCheck, FaTimes, FaTrash } from "react-icons/fa";
+import { Button, IconButton, Tooltip } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { 
+  Visibility as VisibilityIcon,
+  Check as CheckIcon,
+  Close as CloseIcon,
+  Delete as DeleteIcon 
+} from "@mui/icons-material";
 import DetailsModal from "./DetailsModal";
+
+// Styled components for custom buttons
+const ActionButton = styled(Button)(({ theme, color }) => ({
+  margin: '0 4px',
+  minWidth: 'unset',
+  padding: '4px 8px',
+  borderRadius: '8px',
+  textTransform: 'none',
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  '&.MuiButton-contained': {
+    boxShadow: 'none',
+    '&:hover': {
+      boxShadow: 'none',
+    },
+  }
+}));
+
+const ActionIconButton = styled(IconButton)(({ theme, color }) => ({
+  padding: '8px',
+  borderRadius: '8px',
+  backgroundColor: 'transparent',
+  '&:hover': {
+    backgroundColor: color === 'error' 
+      ? 'rgba(239, 68, 68, 0.08)'
+      : color === 'success'
+      ? 'rgba(34, 197, 94, 0.08)'
+      : 'rgba(59, 130, 246, 0.08)',
+  },
+}));
 
 const ApplicationsRowActions = ({ event, user, setMessage }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -65,51 +102,51 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
   };
 
   return (
-    <div className="button-container">
-      <button
-        onClick={() => setShowDetailsModal(true)}
-        className="view-details"
-        title="View Details"
-      >
-        <FaEye />
-      </button>
+    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+      <Tooltip title="View Details">
+        <ActionIconButton
+          color="primary"
+          onClick={() => setShowDetailsModal(true)}
+          disabled={actionInProcess}
+        >
+          <VisibilityIcon fontSize="small" />
+        </ActionIconButton>
+      </Tooltip>
+
       {(event.status === "scheduled") && (
-        <>
-          <button
-            className="accept"
+        <Tooltip title="Accept">
+          <ActionIconButton
+            color="success"
             onClick={() => handleAction(event._id, event, "accepted")}
             disabled={actionInProcess}
-            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-            title="Accept"
           >
-            <FaCheck />
-          </button>
-          
-        </>
-        )}
+            <CheckIcon fontSize="small" />
+          </ActionIconButton>
+        </Tooltip>
+      )}
           
       {(event.status === "pending" || event.status === "scheduled") && (
-        <>
-          <button
-            className="decline"
+        <Tooltip title="Decline">
+          <ActionIconButton
+            color="error"
             onClick={() => handleAction(event._id, event, "rejected")}
             disabled={actionInProcess}
-            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-            title="Decline"
           >
-            <FaTimes />
-          </button>
-        </>
+            <CloseIcon fontSize="small" />
+          </ActionIconButton>
+        </Tooltip>
       )}
-      <button
-        className="delete"
-        onClick={() => handleDelete(event._id)}
-        disabled={actionInProcess}
-        style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-        title="Delete"
-      >
-        <FaTrash />
-      </button>
+
+      <Tooltip title="Delete">
+        <ActionIconButton
+          color="error"
+          onClick={() => handleDelete(event._id)}
+          disabled={actionInProcess}
+        >
+          <DeleteIcon fontSize="small" />
+        </ActionIconButton>
+      </Tooltip>
+
       {showDetailsModal && (
         <DetailsModal
           application={event}
