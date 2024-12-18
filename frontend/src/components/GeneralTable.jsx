@@ -34,7 +34,7 @@ const GeneralTable = ({
     studentHighSchool: 150,
     majorOfInterest: 150,
     studentName: 150,
-    actions: 550
+    actions: 250
   };
 
   const getColumns = () => {
@@ -330,7 +330,6 @@ const GeneralTable = ({
       extraColumns.push({
         field: 'actions',
         headerName: 'Actions',
-        
         width: columnWidths.actions,
         renderCell: (params) => {
           if (showType === "Fair" && FairRowActions) {
