@@ -46,7 +46,7 @@
   content: "◐";
   font-size: 1.1rem; /* Increased font size */
   margin-right: 8px;
-  transition: color 0.2s ease-in-out;
+  transition: color 0.05s ease-in-out;
 }
 
 .navbar .nav-links {
