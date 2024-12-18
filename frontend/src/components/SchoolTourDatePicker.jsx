@@ -10,7 +10,7 @@ import {
   FaAngleUp,
 } from "react-icons/fa"; // Import FaRedo icon
 
-const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
+const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [applications, setApplications] = useState({});
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -50,14 +50,18 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
 
   const getAvailability = (time, date) => {
     if (!date) return "white";
+    if (isDisabled(date)) return "disabled";
+
+    if (schoolPriority === "High") return "white";
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     const dateStr = `${year}-${month}-${day}`;
     const key = `${dateStr}-${time}`;
-    const count = applications[key] || 0;
+    let count = applications[key] || 0;
+    if (schoolPriority === "Medium") count-=2;
     if (count >= 3) return "disabled";
-    return count === 0 ? "white" : count === 1 ? "yellow" : "red";
+    return count <= 0 ? "white" : count === 1 ? "yellow" : "red";
   };
   const isTimeSlotSelected = (time, date) => {
     if (
@@ -216,12 +220,14 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp }) => {
 
   const getDateAvailability = (date) => {
     const formattedDate = formatLocalDate(date);
-    const totalTours = Object.keys(applications).reduce((acc, key) => {
+    let totalTours = Object.keys(applications).reduce((acc, key) => {
       if (key.startsWith(formattedDate)) {
         acc += applications[key];
       }
       return acc;
     }, 0);
+    if( schoolPriority === "High") return;
+    if (schoolPriority === "Medium") totalTours-=2;
 
     if (totalTours > 7) return "disabled";
     if (totalTours > 5) return "red";

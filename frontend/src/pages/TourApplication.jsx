@@ -220,13 +220,13 @@ const TourApplication = () => {
           return false;
         }
         break;
-      case 2:
+      case 3:
         if (!formData.visitDate || !formData.visitTime) {
           setMessage("Please select a valid date and time.");
           return false;
         }
         break;
-      case 3:
+      case 2:
         if (
           !formData.city ||
           !formData.district ||
@@ -486,8 +486,8 @@ const TourApplication = () => {
           {step !== 0 && <p>Step {step} of 4</p>}
 
           {step === 1 && <p>Contact Information</p>}
-          {step === 2 && <p>Select Date and Time</p>}
-          {step === 3 && <p>Provide School Information</p>}
+          {step === 2 && <p>Provide School Information</p>}
+          {step === 3 && <p>Select Date and Time</p>}
           {step === 4 && <p>Confirm Your Details</p>}
         </div>
         <form onSubmit={handleSubmit} className={`tour-application-form `}>
@@ -573,9 +573,9 @@ const TourApplication = () => {
               </div>
             </>
           )}
-          {step === 2 && (
+          {step === 3 && (
             <>
-              <div className={step === 2 ? "step-enter" : "step-exit"}>
+              <div className={step === 3 ? "step-enter" : "step-exit"}>
                 {formData.tourType === "individual" ? (
                   <>
                     <label htmlFor="visitDate">Visit Date:</label>
@@ -607,14 +607,15 @@ const TourApplication = () => {
                   <CustomDateTimePicker
                     handleChange={handleChange}
                     reserveDatesImp={formData.reserveDates}
+                    schoolPriority={formData.schoolProirity}
                   />
                 )}
               </div>
             </>
           )}
-          {step === 3 && (
+          {step === 2 && (
             <>
-              <div className={step === 3 ? "step-enter" : "step-exit"}>
+              <div className={step === 2 ? "step-enter" : "step-exit"}>
                 <label htmlFor="city">City:</label>
                 <select
                   id="city"
