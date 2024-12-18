@@ -19,17 +19,17 @@ const GeneralTable = ({
 }) => {
   
   const columnWidths = {
-    name: 150,
+    name: 25230,
     date: 100,
     time: 80,
     status: 120,
     assignedUsers: 120,
     requiredNumberOfGuides: 120,
     contactPerson: 120,
-    email: 240,
-    phoneNumber: 120,
-    studentCount: 100,
-    city: 100,
+    email: 150,
+    phoneNumber: 20,
+    studentCount: 20,
+    city: 20,
     applicationDate: 110,
     priority: 100,
     studentHighSchool: 180,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaCheck, FaTimes, FaTrash } from "react-icons/fa";
 
-const ApplicationsRowActions = ({ event, user, setMessage }) => {
+const ApplicationsRowActions = ({ event, user, setMessage, onActionComplete }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
 
   const handleAction = async (eventId, event, status) => {
@@ -26,7 +26,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
         setMessage(
           `Application ${status} successfully. An email notification has been sent to the applicant.`
         );
-        window.location.reload();
+        onActionComplete && onActionComplete();
       } else {
         const errData = await response.json();
         setMessage(`Failed to ${status} application: ${errData.message}`);
@@ -52,7 +52,7 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       );
       if (response.ok) {
         setMessage("Application deleted successfully.");
-        window.location.reload();
+        onActionComplete && onActionComplete();
       } else {
         setMessage("Failed to delete application.");
       }

@@ -29,6 +29,7 @@ const Applications = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [messageTimeout, setMessageTimeout] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,6 +45,22 @@ const Applications = () => {
       
     }
   }, [weeklySchedules, currentWeekIndex]);
+  useEffect(() => {
+    if (message) {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+      const timeout = setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      setMessageTimeout(timeout);
+    }
+    return () => {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+    };
+  }, [message]);
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/profile", {
@@ -82,6 +99,11 @@ const Applications = () => {
     } catch (error) {
       setMessage("Error fetching applications: " + error.message);
     }
+  };
+
+  const handleActionComplete = async () => {
+    const token = localStorage.getItem("token");
+    await fetchApplications(token, user);
   };
 
   const fetchWeeklySchedules = async (token) => {
@@ -370,6 +392,11 @@ const Applications = () => {
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
+      {message && (
+        <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          {message}
+        </div>
+      )}
       <div className="controls-container">
         <div className="controls-left">
           <TypeSelectionTrio
@@ -591,7 +618,12 @@ const Applications = () => {
           searchTerm={searchTerm}
           showType={tourType}
           setIsLoading={setIsLoading}
-          EventRowActions={ApplicationsRowActions}
+          EventRowActions={(props) => (
+            <ApplicationsRowActions
+              {...props}
+              onActionComplete={handleActionComplete}
+            />
+          )}
           extraRowContent={(application) => (
             <>
               {renderReserveDatesButton(application)}
