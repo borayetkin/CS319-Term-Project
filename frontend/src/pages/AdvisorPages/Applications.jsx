@@ -7,6 +7,7 @@ import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 import { FaSearch } from 'react-icons/fa';
+import DetailsModal from "../../components/DetailsModal";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -26,6 +27,8 @@ const Applications = () => {
   const navigate = useNavigate();
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -359,6 +362,11 @@ const Applications = () => {
     );
   };
 
+  const handleShowDetails = (application) => {
+    setSelectedApplication(application);
+    setShowDetailsModal(true);
+  };
+
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
@@ -590,9 +598,16 @@ const Applications = () => {
               {renderExpandedDates(application)}
             </>
           )}
+          onShowDetails={handleShowDetails}
         />
       )}
       {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}
+      {showDetailsModal && (
+        <DetailsModal
+          application={selectedApplication}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
     </div>
   );
 }

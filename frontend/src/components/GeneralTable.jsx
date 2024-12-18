@@ -15,6 +15,7 @@ const GeneralTable = ({
   EventRowActions,
   FairRowActions,
   viewType = "tours",
+  onShowDetails,
 }) => {
   
   const columnWidths = {
@@ -114,6 +115,35 @@ const GeneralTable = ({
             </div>
           );
         }
+      },
+      {
+        field: 'details',
+        headerName: '',
+        width: 80,
+        sortable: false,
+        renderCell: (params) => (
+          <button
+            onClick={() => onShowDetails(params.row)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#3b82f6',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#f1f5f9';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            Details
+          </button>
+        )
       }
     ];
 
