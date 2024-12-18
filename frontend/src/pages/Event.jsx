@@ -232,6 +232,17 @@ const Event = ({assignGuideOpened = false}) => {
           ))}
 
       </div>
+      {event.__t === "IndividualTour" && (
+        <div className="applied-users">
+          <h2>Applied Users</h2>
+          {event.appliedUsers && event.appliedUsers.map((user) => (
+            <div key={user._id} className="applied-user">
+              <img src={personIconUrl} alt="Profile" />
+              <span>{user.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>)}
     </>
   )

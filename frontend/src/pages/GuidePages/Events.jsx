@@ -15,6 +15,7 @@ const Events = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
+  const [messageTimeout, setMessageTimeout] = useState(null);
   const [sortOption, setSortOption] = useState("visitDate");
   const [showType, setShowType] = useState("SchoolTour"); // Filter for tour type
   const [user, setUser] = useState(null);
@@ -158,6 +159,33 @@ const Events = () => {
     setShowDetailsModal(true);
   };
 
+  // Add message handling effect
+  useEffect(() => {
+    if (message) {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+      const timeout = setTimeout(() => {
+        setMessage("");
+      }, 3000);
+      setMessageTimeout(timeout);
+    }
+    return () => {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+    };
+  }, [message]);
+
+  // Fix the handleActionComplete function
+  const handleActionComplete = async () => {
+    await fetchAcceptedEvents();
+  };
+
+  const handleEventsUpdate = (updatedEvents) => {
+    setEvents(updatedEvents);
+  };
+
   if (error) {
     return (
       <div className="error-container">
@@ -186,7 +214,11 @@ const Events = () => {
         <Link to="/advisor-info" className="advisor-info-link">View Advisors</Link>
       </div>
 
-      {message && <div className="alert-message">{message}</div>}
+      {message && (
+        <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          {message}
+        </div>
+      )}
 
       <div className="controls-container">
         <TypeSelectionTrio
@@ -233,8 +265,22 @@ const Events = () => {
               events={sortedEvents}
               showType={showType}
               searchTerm={searchTerm}
-              EventRowActions={EventRowActions}
-              FairRowActions={FairRowActions}
+              EventRowActions={(props) => (
+                <EventRowActions
+                  {...props}
+                  setMessage={setMessage}
+                  events={sortedEvents}
+                  setEvents={handleEventsUpdate}
+                  onActionComplete={handleActionComplete}
+                />
+              )}
+              FairRowActions={(props) => (
+                <FairRowActions
+                  {...props}
+                  setMessage={setMessage}
+                  onActionComplete={handleActionComplete}
+                />
+              )}
               viewType={viewType}
               onShowDetails={handleShowDetails}
             />

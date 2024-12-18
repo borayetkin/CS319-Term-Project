@@ -19,23 +19,23 @@ const GeneralTable = ({
 }) => {
   
   const columnWidths = {
-    name: 25230,
+    name: 250,
     date: 100,
     time: 80,
     status: 120,
-    assignedUsers: 120,
-    requiredNumberOfGuides: 120,
+    assignedUsers: 5,
+    requiredNumberOfGuides: 65,
     contactPerson: 120,
     email: 150,
-    phoneNumber: 20,
-    studentCount: 20,
-    city: 20,
+    phoneNumber: 120,
+    studentCount: 80,
+    city: 100,
     applicationDate: 110,
     priority: 100,
     studentHighSchool: 180,
     majorOfInterest: 180,
     studentName: 150,
-    actions: 20,
+    actions: 120,
     details: 80
   };
 
@@ -170,17 +170,71 @@ const GeneralTable = ({
           case "assignedUsers":
             extraColumns.push({
               field: 'assignedUsers',
-              headerName: 'Assigned Guides',
+              headerName: '',
               width: columnWidths.assignedUsers,
-              renderCell: (params) => params.row?.assignedUsers?.length || "0"
+              minWidth: columnWidths.assignedUsers,
+              maxWidth: columnWidths.assignedUsers,
+              headerAlign: 'center',
+              align: 'center',
+              flex: 0,
+              sortable: false,
+              disableColumnMenu: true,
+              renderHeader: () => (
+                <div style={{ 
+                  whiteSpace: 'pre-line', 
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.1',
+                  width: '100%',
+                  padding: '0 2px'
+                }}>
+                  Assigned<br/>Guides
+                </div>
+              ),
+              renderCell: (params) => (
+                <div style={{ 
+                  textAlign: 'center', 
+                  width: '100%',
+                  fontSize: '0.875rem'
+                }}>
+                  {params.row?.assignedUsers?.length || "0"}
+                </div>
+              )
             });
             break;
           case "requiredNumberOfGuides":
             extraColumns.push({
               field: 'requiredNumberOfGuides',
-              headerName: 'Required Guides',
+              headerName: '',
               width: columnWidths.requiredNumberOfGuides,
-              renderCell: (params) => params.row?.requiredNumberOfGuides || "N/A"
+              minWidth: columnWidths.requiredNumberOfGuides,
+              maxWidth: columnWidths.requiredNumberOfGuides,
+              headerAlign: 'center',
+              align: 'center',
+              flex: 0,
+              sortable: false,
+              disableColumnMenu: true,
+              renderHeader: () => (
+                <div style={{ 
+                  whiteSpace: 'pre-line', 
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.1',
+                  width: '100%',
+                  padding: '0 2px'
+                }}>
+                  Required<br/>Guides
+                </div>
+              ),
+              renderCell: (params) => (
+                <div style={{ 
+                  textAlign: 'center', 
+                  width: '100%',
+                  fontSize: '0.875rem'
+                }}>
+                  {params.row?.requiredNumberOfGuides || "N/A"}
+                </div>
+              )
             });
             break;
           case "organiserName":
@@ -210,7 +264,7 @@ const GeneralTable = ({
           case "assignedUsers":
             extraColumns.push({
               field: 'assignedUsers',
-              headerName: 'Assigned Guides',
+              headerName: 'Assigned Users',
               width: columnWidths.assignedUsers,
               renderCell: (params) => params.row?.assignedUsers?.length || "0"
             });
@@ -397,13 +451,15 @@ const GeneralTable = ({
       });
     }
 
-    // Modify all extra columns to be centered
+    // Modify the modifyExtraColumn function to respect original column settings
     const modifyExtraColumn = (column) => ({
       ...column,
-      headerAlign: 'center',
-      align: 'center',
-      flex: 1,
-      minWidth: column.width
+      headerAlign: column.headerAlign || 'center',
+      align: column.align || 'center',
+      // Only add flex if not explicitly set to 0
+      ...(column.flex !== 0 && { flex: 1 }),
+      // Only set minWidth if not explicitly set
+      ...(column.minWidth === undefined && { minWidth: column.width })
     });
 
     // Apply the modification to all extra columns
@@ -411,13 +467,17 @@ const GeneralTable = ({
   };
 
   const filteredEvents = events.filter((event) => {
+    // First filter by event type
+    const matchesType = event.__t === showType;
+    
+    // Then apply status and search filters
     const matchesStatus = statusFilter === "all" || event.status === statusFilter;
     const matchesSearch = !searchTerm || 
-      event.applicant?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.applicant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.visitDate?.includes(searchTerm) ||
       event.requiredNumberOfGuides?.toString().includes(searchTerm);
     
-    return matchesStatus && matchesSearch;
+    return matchesType && matchesStatus && matchesSearch;
   });
 
   return (

@@ -1,110 +1,215 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-const EventRowActions = ({ event, user, setMessage }) => {
+import { useParams } from "react-router-dom";
+const EventRowActions = ({ event, user, setMessage, events, setEvents, onActionComplete }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [isAssigned, setIsAssigned] = useState(false);
   const personIconUrl =
     "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
-  const eventIsFull =
-    event.assignedUsers?.length >= event.requiredNumberOfGuides;
+  const isEventSchoolTour = event.__t === "SchoolTour";
+  const endpoint = isEventSchoolTour ? "assign-guide" : "apply";
+  const rolesThatApply = ["guide", "advisor"];
 
-  const applyToEvent = async (eventId,endpoint) => {
+  useEffect(() => {
+    if (user && event) {
+      setHasApplied(checkIfUserHasApplied());
+      setIsAssigned(checkIfUserIsAssigned());
+    }
+  }, [event, user, events]);
+
+  const updateEventInState = (eventId, updatedFields) => {
+    if (!setEvents) return;
+    
+    const updatedEvents = events.map(evt => 
+      evt._id === eventId 
+        ? { ...evt, ...updatedFields }
+        : evt
+    );
+    setEvents(updatedEvents);
+  };
+
+  const applyToEvent = async (eventId, endpoint) => {
     setActionInProcess(true);
     try {
-      const token = localStorage.getItem("token");
-
       const response = await fetch(`http://localhost:3000/api/events/${endpoint}`, {
         method: "POST",
         headers: {
-          userrole: user.role,
-          userid: user._id,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          userrole: user.role,
+          userid: user._id
         },
-        body: JSON.stringify({ eventID: eventId, userID: user._id }),
+        body: JSON.stringify({
+          eventID: eventId,
+          userID: user._id,
+          isSchoolTour: isEventSchoolTour
+        }),
       });
+
       if (response.ok) {
-        setMessage(`Applied To Event successfully.`);
-        window.location.reload();
+        setMessage(`✅ Successfully ${isEventSchoolTour ? 'assigned to' : 'applied to'} event`);
+        
+        if (isEventSchoolTour) {
+          setIsAssigned(true);
+          setHasApplied(true);
+        } else {
+          setHasApplied(true);
+        }
+
+        if (onActionComplete) {
+          await onActionComplete();
+        }
       } else {
-        setMessage(`Failed to apply.`);
+        const error = await response.json();
+        setMessage(`⚠️ Failed to ${isEventSchoolTour ? 'assign' : 'apply'}: ${error.message}`);
       }
     } catch (error) {
-      setMessage("Error: " + error.message);
+      setMessage("⚠️ Error: " + error.message);
     }
     setActionInProcess(false);
   };
-  const rolesThatApply = ["guide", "advisor"];
+
   const removeAssignedEvent = async (eventId) => {
     setActionInProcess(true);
     try {
-      const token = localStorage.getItem("token");
-
       const response = await fetch(
         `http://localhost:3000/api/events/remove-guide`,
         {
           method: "POST",
           headers: {
-            userrole: user.role,
-            userid: user._id,
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ eventID: eventId, userID: user._id }),
         }
       );
+
       if (response.ok) {
-        setMessage(`Removed from Event successfully.`);
-        window.location.reload();
+        setMessage("✅ Successfully unassigned from event");
+        setIsAssigned(false);
+        
+        if (setEvents) {
+          setEvents(prevEvents =>
+            prevEvents.map(e =>
+              e._id === eventId
+                ? {
+                    ...e,
+                    assignedUsers: e.assignedUsers.filter(u => u._id !== user._id)
+                  }
+                : e
+            )
+          );
+        }
       } else {
-        setMessage(`Failed to remove from event.`);
+        const error = await response.json();
+        setMessage(`⚠️ Failed to unassign: ${error.message}`);
       }
     } catch (error) {
-      setMessage("Error: " + error.message);
+      setMessage("⚠️ Error: " + error.message);
     }
     setActionInProcess(false);
   };
-  const checkIfUserHasApplied = () => {
-    return !isEventSchoolTour &&event.appliedUsers?.some(
-      (appliedUser) => appliedUser._id === user?._id
-    ) || isEventSchoolTour && event.assignedUsers?.some(
-      (assignedUser) => assignedUser._id === user?._id
-    );
+
+  const unapplyFromEvent = async (eventId) => {
+    setActionInProcess(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/events/unapply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          userid: user._id
+        },
+        body: JSON.stringify({
+          eventID: eventId
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("✅ Successfully unapplied from event");
+        setHasApplied(false);
+        
+        if (setEvents) {
+          setEvents(prevEvents =>
+            prevEvents.map(e =>
+              e._id === eventId
+                ? {
+                    ...e,
+                    appliedUsers: e.appliedUsers.filter(u => 
+                      typeof u === 'string' ? u !== user._id : u._id !== user._id
+                    )
+                  }
+                : e
+            )
+          );
+        }
+      } else {
+        const error = await response.json();
+        setMessage(`⚠️ ${error.message || "Failed to unapply from event"}`);
+      }
+    } catch (error) {
+      setMessage("⚠️ Error unapplying from event");
+    }
+    setActionInProcess(false);
   };
-  const isEventSchoolTour = event.__t === "SchoolTour";
-  const endpoint = isEventSchoolTour ? "assign-guide" : "apply";
+
+  const eventIsFull = event.assignedUsers?.length >= event.requiredNumberOfGuides;
+
+  const checkIfUserHasApplied = () => {
+    if (!user || !event) return false;
+
+    if (isEventSchoolTour) {
+      return event.assignedUsers?.some(
+        (assignedUser) => assignedUser._id === user._id
+      );
+    } else {
+      return event.appliedUsers?.some(
+        (appliedUser) => appliedUser._id === user._id
+      ) || event.appliedUsers?.includes(user._id);
+    }
+  };
+
+  const checkIfUserIsAssigned = () => {
+    if (!user || !event) return false;
+    return user.assignedEvents?.includes(event._id);
+  };
+
   return (
     <div className="action-buttons">
-      <Link to={`/events/${event._id}`} className="action-button view">
-        <i className="fas fa-eye"></i>
-        View Details
-      </Link>
+      {user &&
+        rolesThatApply.includes(user.role) &&
+        !hasApplied &&
+        !isAssigned &&
+        !eventIsFull && (
+          <button
+            className="action-button apply"
+            onClick={() => applyToEvent(event._id, endpoint)}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
+          >
+            <i className="fas fa-hand-point-up"></i>
+            {isEventSchoolTour ? "Assign" : "Apply"}
+          </button>
+        )}
 
       {user &&
-      rolesThatApply.includes(user.role) &&
-      !checkIfUserHasApplied() &&
-      !eventIsFull ? (
-        <button
-          className="action-button apply"
-          onClick={() => applyToEvent(event._id,endpoint)}
-          disabled={actionInProcess}
-          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
-        >
-          <i className="fas fa-hand-point-up"></i>
-          {isEventSchoolTour ? "Assign" : "Apply"}
-        </button>
-      ) : (
-        user && !isEventSchoolTour &&
+        !isEventSchoolTour &&
         rolesThatApply.includes(user.role) &&
-        checkIfUserHasApplied() &&
-        !eventIsFull && (
-          <span className="status-badge applied">
-            <i className="fas fa-check"></i>
-            Applied
-          </span>
-        )
-      )}
-      {user && user.assignedEvents?.includes(event._id) && (
+        hasApplied &&
+        !isAssigned && (
+          <button
+            className="action-button unapply"
+            onClick={() => unapplyFromEvent(event._id)}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
+          >
+            <i className="fas fa-times"></i>
+            Unapply
+          </button>
+        )}
+
+      {user && isAssigned && (
         <button
           className="action-button unassign"
           onClick={() => removeAssignedEvent(event._id)}

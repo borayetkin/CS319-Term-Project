@@ -206,6 +206,34 @@ const DetailsModal = ({ application, onClose, context = "applications" }) => {
                 </div>
               )}
 
+
+
+              /*FOR DEBUGGING, show applied users*/
+              {!isFair && application.__t === 'IndividualTour' && application.appliedUsers && application.appliedUsers.length > 0 && (
+                <div className="detail-group">
+                  <div className="detail-item">
+                    <label>Applied Guides</label>
+                    <div className="assigned-guides">
+                      {application.appliedUsers.map((user, index) => (
+                        <div key={index} className="guide-item">
+                          <div className="guide-header">
+                            <svg className="icon" viewBox="0 0 24 24" width="14" height="14">
+                              <path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                            </svg>
+                            <span className="guide-name">{user.name || "Unknown Guide"}</span>
+                          </div>
+                          <div className="guide-details">
+                            <p><span>Email:</span> {user.email || "N/A"}</p>
+                            <p><span>Phone:</span> {user.phoneNumber || "N/A"}</p>
+                            <p><span>Major:</span> {user.major || "N/A"}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="detail-group">
                 <div className="detail-item">
                   <label>{isFair ? 'Fair Date' : 'Visit Date'}</label>

@@ -1007,3 +1007,100 @@ exports.resendApplicationEmail = async (req, res) => {
   }
 }
 
+exports.applyToEvent = async (req, res) => {
+  try {
+    const { eventID } = req.body;
+    const { userid } = req.headers;
+
+    const event = await Event.findById(eventID).populate('appliedUsers');
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (event.__t !== 'IndividualTour') {
+      return res.status(400).json({ message: "Can only apply to individual tours" });
+    }
+
+    const hasApplied = event.appliedUsers?.some(id => 
+      id.toString() === userid.toString()
+    );
+
+    if (hasApplied) {
+      return res.status(400).json({ message: "You have already applied to this event" });
+    }
+
+    if (!event.appliedUsers) {
+      event.appliedUsers = [];
+    }
+
+    event.appliedUsers.push(userid);
+    await event.save();
+    
+    createLog(userid, 'guide', 'applyToEvent', eventID, 'success', 'Successfully applied to individual tour');
+    res.status(200).json({ message: "Successfully applied to event" });
+  } catch (error) {
+    console.error('Apply error:', error);
+    res.status(500).json({ message: "Failed to apply to event", error: error.message });
+  }
+};
+
+exports.unapplyFromEvent = async (req, res) => {
+  try {
+    const { eventID } = req.body;
+    const userid = req.headers.userid || req.user.id; // Try both possible sources
+
+    console.log('Unapply request:', { 
+      eventID, 
+      userid,
+      headers: req.headers,
+      body: req.body 
+    });
+
+    if (!eventID) {
+      return res.status(400).json({ message: "Missing eventID parameter" });
+    }
+
+    if (!userid) {
+      return res.status(400).json({ message: "Missing userid parameter" });
+    }
+
+    const event = await Event.findById(eventID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (event.__t !== 'IndividualTour') {
+      return res.status(400).json({ message: "Can only unapply from individual tours" });
+    }
+
+    // Initialize appliedUsers if it doesn't exist
+    if (!event.appliedUsers) {
+      event.appliedUsers = [];
+    }
+
+    // Check if user has applied
+    const hasApplied = event.appliedUsers.some(id => id.toString() === userid.toString());
+    if (!hasApplied) {
+      return res.status(400).json({ message: "You haven't applied to this event" });
+    }
+
+    // Remove user from appliedUsers
+    event.appliedUsers = event.appliedUsers.filter(id => id.toString() !== userid.toString());
+    await event.save();
+    
+    createLog(userid, 'guide', 'unapplyFromEvent', eventID, 'success', 'Successfully unapplied from individual tour');
+    res.status(200).json({ message: "Successfully unapplied from event" });
+  } catch (error) {
+    console.error('Unapply error:', {
+      error: error.message,
+      stack: error.stack,
+      body: req.body,
+      headers: req.headers
+    });
+    res.status(500).json({ 
+      message: "Failed to unapply from event", 
+      error: error.message 
+    });
+  }
+};
+

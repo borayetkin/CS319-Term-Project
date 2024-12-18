@@ -26,6 +26,8 @@ const {
   resubmitEventReserveDates,
   updateUserAvailability,
   checkSchoolApplicationExists,
+  applyToEvent,
+  unapplyFromEvent,
   resendApplicationEmail
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
@@ -72,5 +74,8 @@ router.get("/shcooltours/dates",getSchoolTourCountsByMonth);
 
 router.get("/check-school/:schoolID", checkSchoolApplicationExists);
 
+router.post("/apply", auth, applyToEvent);
+
+router.post("/unapply", auth, unapplyFromEvent);
 
 module.exports = router;

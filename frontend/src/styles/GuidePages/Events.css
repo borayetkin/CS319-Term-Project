@@ -234,4 +234,18 @@
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
+
+.action-button.unapply {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.action-button.unapply:hover {
+  background-color: #ff5252;
+}
+
+.action-button.unapply:disabled {
+  background-color: #ffb3b3;
+  cursor: not-allowed;
+}
 }
