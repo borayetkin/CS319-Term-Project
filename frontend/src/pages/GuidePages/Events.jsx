@@ -216,7 +216,7 @@ const Events = () => {
             showExtraProperties={{
               SchoolTour: ["assignedUsers","requiredNumberOfGuides","contactPerson","email"],
               IndividualTour: ["studentHighSchool","email","phoneNumber" ],
-              Fair: ["assignedUsers","requiredNumberOfGuides","organiserName","email"],
+              Fair: ["assignedUsers","requiredNumberOfGuides","organiserName","email","city"],
             }}
             setMessage={setMessage}
             user={user}
@@ -226,6 +226,7 @@ const Events = () => {
             searchTerm={searchTerm}
             EventRowActions={EventRowActions}
             FairRowActions={FairRowActions}
+            viewType={viewType}
           />
         )}
       </div>
