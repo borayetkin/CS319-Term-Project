@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { FaCheck, FaTimes, FaTrash } from "react-icons/fa";
+import { IconButton, Tooltip } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const ApplicationsRowActions = ({ event, user, setMessage, onActionComplete }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
@@ -63,43 +66,67 @@ const ApplicationsRowActions = ({ event, user, setMessage, onActionComplete }) =
   };
 
   return (
-    <div className="button-container">
+    <div style={{ display: 'flex', gap: '8px' }}>
       {(event.status === "scheduled" || (event.__t === "IndividualTour" && event.status === "pending")) && (
-        <>
-          <button
-            className="accept"
-            onClick={() => handleAction(event._id, event, "accepted")}
-            disabled={actionInProcess}
-            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-            title="Accept"
-          >
-            <FaCheck />
-          </button>
-        </>
+        <Tooltip title="Accept" arrow>
+          <span>
+            <IconButton
+              onClick={() => handleAction(event._id, event, "accepted")}
+              disabled={actionInProcess}
+              size="small"
+              sx={{
+                color: 'success.main',
+                '&:hover': {
+                  backgroundColor: 'success.lighter',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <CheckCircleOutlineIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
       )}
           
       {(event.status === "pending" || event.status === "scheduled") && (
-        <>
-          <button
-            className="decline"
-            onClick={() => handleAction(event._id, event, "rejected")}
-            disabled={actionInProcess}
-            style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-            title="Decline"
-          >
-            <FaTimes />
-          </button>
-        </>
+        <Tooltip title="Decline" arrow>
+          <span>
+            <IconButton
+              onClick={() => handleAction(event._id, event, "rejected")}
+              disabled={actionInProcess}
+              size="small"
+              sx={{
+                color: 'error.main',
+                '&:hover': {
+                  backgroundColor: 'error.lighter',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <CancelOutlinedIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
       )}
-      <button
-        className="delete"
-        onClick={() => handleDelete(event._id)}
-        disabled={actionInProcess}
-        style={{ cursor: actionInProcess ? "not-allowed" : "" }}
-        title="Delete"
-      >
-        <FaTrash />
-      </button>
+
+      <Tooltip title="Delete" arrow>
+        <span>
+          <IconButton
+            onClick={() => handleDelete(event._id)}
+            disabled={actionInProcess}
+            size="small"
+            sx={{
+              color: 'grey.600',
+              '&:hover': {
+                backgroundColor: 'grey.100',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <DeleteOutlineIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
     </div>
   );
 };

@@ -19,8 +19,8 @@ const GeneralTable = ({
 }) => {
   
   const columnWidths = {
-    name: 250,
-    date: 100,
+    name: 350,
+    date: 80,
     time: 80,
     status: 120,
     assignedUsers: 5,
@@ -31,7 +31,7 @@ const GeneralTable = ({
     studentCount: 80,
     city: 100,
     applicationDate: 110,
-    priority: 100,
+    priority: 1,
     studentHighSchool: 180,
     majorOfInterest: 180,
     studentName: 150,
@@ -43,6 +43,39 @@ const GeneralTable = ({
     // First declare extraColumns
     const extraColumns = [];
     
+    // Remove the details column from baseColumns and store it separately
+    const detailsColumn = { 
+      field: 'details',
+      headerName: '',
+      width: columnWidths.details,
+      headerAlign: 'center',
+      align: 'center',
+      sortable: false,
+      renderCell: (params) => (
+        <button
+          onClick={() => onShowDetails(params.row)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#3b82f6',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            borderRadius: '6px',
+            fontSize: '0.875rem',
+            transition: 'all 0.2s',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#f1f5f9';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+        >
+          Details
+        </button>
+      )
+    };
+    
     const baseColumns = [
       { 
         field: 'name', 
@@ -51,7 +84,7 @@ const GeneralTable = ({
         headerAlign: 'center',
         align: 'center',
         flex: 1,
-        minWidth: 150,
+        minWidth: 250,
         renderCell: (params) => {
           if (showType === "Fair") {
             return params.row?.schoolName || "N/A";
@@ -68,7 +101,29 @@ const GeneralTable = ({
         flex: 0,
         renderCell: (params) => {
           const date = showType === "Fair" ? params.row?.fairDate : params.row?.visitDate;
-          return date ? new Date(date).toLocaleDateString() : "N/A";
+          if (!date) return "N/A";
+          
+          const dateObj = new Date(date);
+          const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+          const formattedDate = dateObj.toLocaleDateString();
+          
+          return (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px'
+            }}>
+              <span style={{ 
+                fontSize: '0.75rem', 
+                color: '#6B7280',
+                fontWeight: '500'
+              }}>
+                {dayName}
+              </span>
+              <span>{formattedDate}</span>
+            </div>
+          );
         }
       },
       { 
@@ -129,37 +184,6 @@ const GeneralTable = ({
             </div>
           );
         }
-      },
-      {
-        field: 'details',
-        headerName: '',
-        width: columnWidths.details,
-        headerAlign: 'center',
-        align: 'center',
-        sortable: false,
-        renderCell: (params) => (
-          <button
-            onClick={() => onShowDetails(params.row)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#3b82f6',
-              cursor: 'pointer',
-              padding: '4px 8px',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              transition: 'all 0.2s',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#f1f5f9';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            Details
-          </button>
-        )
       }
     ];
 
@@ -462,8 +486,8 @@ const GeneralTable = ({
       ...(column.minWidth === undefined && { minWidth: column.width })
     });
 
-    // Apply the modification to all extra columns
-    return [...baseColumns, ...extraColumns.map(modifyExtraColumn)];
+    // Return columns with details at the end
+    return [...baseColumns, ...extraColumns.map(modifyExtraColumn), detailsColumn];
   };
 
   const filteredEvents = events.filter((event) => {

@@ -6,6 +6,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import AssignedEventsActions from "../../components/AssignedEventsActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
+import DetailsModal from '../../components/DetailsModal';
 
 
 const AssignedEvents = () => {
@@ -17,6 +18,7 @@ const AssignedEvents = () => {
   const [tourType, setTourType] = useState("SchoolTour");
   const [actionInProcess, setActionInProcess] = useState(false);
   const [showWorkLog, setShowWorkLog] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -225,6 +227,12 @@ const AssignedEvents = () => {
     }
   }
   const extraProperties = setExtraProperties();
+  const handleShowDetails = (event) => {
+    setSelectedEvent(event);
+  };
+  const handleCloseModal = () => {
+    setSelectedEvent(null);
+  };
   return (
     <div className="events-container">
       <div
@@ -284,8 +292,16 @@ const AssignedEvents = () => {
           );
         }}
         showExtraProperties={extraProperties}
-
+        onShowDetails={handleShowDetails}
       />}
+      {selectedEvent && (
+        <DetailsModal
+          application={selectedEvent}
+          onClose={handleCloseModal}
+          context="events"
+          user={user}
+        />
+      )}
       {isLoading && <LoadingSpinner />}
     </div>
   );
