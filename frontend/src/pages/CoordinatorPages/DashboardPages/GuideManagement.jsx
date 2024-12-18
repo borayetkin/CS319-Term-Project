@@ -16,7 +16,6 @@ const GuideManagement = () => {
 
   useEffect(() => {
     fetchFairs();
-    fetchGuides();
   }, []);
 
   const fetchFairs = async () => {
@@ -36,21 +35,7 @@ const GuideManagement = () => {
     }
   };
 
-  const fetchGuides = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/guides", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setGuides(data);
-      } else {
-        setMessage("Failed to fetch guides.");
-      }
-    } catch (error) {
-      setMessage("Error fetching guides: " + error.message);
-    }
-  };
+
 
   const assignGuide = async (fairId) => {
     const guideToAssign = updatedAssignments[fairId];
@@ -177,12 +162,13 @@ const GuideManagement = () => {
                   <option value="" disabled>
                     Select Guide
                   </option>
-                  {guides.map((guide) => (
-                    <option key={guide._id} value={guide._id}>
-                      {guide.name}
+                  {fair.appliedUsers.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name}
                     </option>
                   ))}
                 </select>
+
                 {/* Assign Button */}
                 <button
                   style={{ marginTop: "10px", padding: "5px 10px" }}
