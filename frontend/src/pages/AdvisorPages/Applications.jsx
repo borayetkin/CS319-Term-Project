@@ -6,6 +6,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
+import { FaSearch } from 'react-icons/fa';
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -24,6 +25,7 @@ const Applications = () => {
   const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
   const navigate = useNavigate();
   const [expandedRows, setExpandedRows] = useState(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -400,6 +402,16 @@ const Applications = () => {
                 {tourType === "SchoolTour" && <option value="priority">Priority</option>}
               </select>
             </div>
+            
+            <div className="search-bar">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search applications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
@@ -568,7 +580,7 @@ const Applications = () => {
           user={user}
           events={tourFilteredApplications}
           statusFilter={filterStatus}
-          searchTerm=""
+          searchTerm={searchTerm}
           showType={tourType}
           setIsLoading={setIsLoading}
           EventRowActions={ApplicationsRowActions}

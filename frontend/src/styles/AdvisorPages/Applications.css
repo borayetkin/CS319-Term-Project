@@ -567,3 +567,35 @@ td {
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+/* Update the search bar styles */
+.search-bar {
+  position: relative;
+  min-width: 300px;
+  margin-left: 24px;
+  display: flex;
+  align-items: top;
+}
+
+.search-bar input {
+  width: 100%;
+  height: 36px;
+  padding: 8px 12px 8px 36px; /* Adjusted left padding */
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 35%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  width: 14px; /* Fixed width */
+  height: 14px; /* Fixed height */
+}
