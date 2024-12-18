@@ -44,21 +44,19 @@
 }
 
 .close-button {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  transition: all 0.2s ease;
-  border-radius: 4px;
-  width: 24px;
-  height: 24px;
+  width: 30px !important; /* Make the button square */
+  height: 30px !important; /* Make the button square */
+  position: absolute; /* Position it absolutely */
+  top: 10px; /* Adjust top position */
+  right: 10px; /* Adjust right position */
+  padding: 0; /* Remove padding */
+  background: none; /* Remove background */
+  border: none; /* Remove border */
+  font-size: 1.5rem; /* Adjust font size */
+  cursor: pointer; /* Add cursor pointer */
+  display: flex; /* Center the SVG */
+  align-items: center; /* Center the SVG */
+  justify-content: right; /* Center the SVG */
 }
 
 .close-button:hover {
@@ -70,10 +68,7 @@
   transform: scale(0.95);
 }
 
-.close-button svg {
-  width: 16px;
-  height: 16px;
-}
+
 
 .details-grid {
   display: flex;

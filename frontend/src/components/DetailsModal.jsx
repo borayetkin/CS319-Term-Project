@@ -80,10 +80,10 @@ const DetailsModal = ({ application, onClose, context }) => {
       <div className="modal-content">
         <div className="modal-header">
           <h2>
-            {isFair ? 'Fair Detaiasdasdasdasdadals' : isApplicationContext ? 'Application Details' : 'Event Details'}
+            {isFair ? 'Fair Details' : isApplicationContext ? 'Application Details' : 'Event Details'}
           </h2>
           <button className="close-button" onClick={onClose}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
               <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </button>
