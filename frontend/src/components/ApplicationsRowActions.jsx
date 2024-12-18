@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { FaEye, FaCheck, FaTimes, FaTrash } from "react-icons/fa";
-import DetailsModal from "./DetailsModal";
+import { FaCheck, FaTimes, FaTrash } from "react-icons/fa";
 
 const ApplicationsRowActions = ({ event, user, setMessage }) => {
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [actionInProcess, setActionInProcess] = useState(false);
 
   const handleAction = async (eventId, event, status) => {
@@ -66,13 +64,6 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
 
   return (
     <div className="button-container">
-      <button
-        onClick={() => setShowDetailsModal(true)}
-        className="view-details"
-        title="View Details"
-      >
-        <FaEye />
-      </button>
       {(event.status === "scheduled" || (event.__t === "IndividualTour" && event.status === "pending")) && (
         <>
           <button
@@ -84,9 +75,8 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
           >
             <FaCheck />
           </button>
-          
         </>
-        )}
+      )}
           
       {(event.status === "pending" || event.status === "scheduled") && (
         <>
@@ -110,12 +100,6 @@ const ApplicationsRowActions = ({ event, user, setMessage }) => {
       >
         <FaTrash />
       </button>
-      {showDetailsModal && (
-        <DetailsModal
-          application={event}
-          onClose={() => setShowDetailsModal(false)}
-        />
-      )}
     </div>
   );
 };

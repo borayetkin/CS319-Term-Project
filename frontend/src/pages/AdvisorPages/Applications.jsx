@@ -581,7 +581,7 @@ const Applications = () => {
           showFairs={false}
           showTours={true}
           showExtraProperties={{
-            SchoolTour: [ "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber", "applicationDate"],
+            SchoolTour: [ "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber"],
             IndividualTour: ["studentName", "studentHighSchool", "majorOfInterest", "email", "phoneNumber", "applicationDate"],
           }}
           setMessage={setMessage}

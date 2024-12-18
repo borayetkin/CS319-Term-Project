@@ -19,23 +19,24 @@ const GeneralTable = ({
 }) => {
   
   const columnWidths = {
-    name: 200,
+    name: 150,
     date: 100,
     time: 80,
-    status: 100,
+    status: 120,
     assignedUsers: 120,
     requiredNumberOfGuides: 120,
     contactPerson: 120,
-    email: 180,
+    email: 240,
     phoneNumber: 120,
     studentCount: 100,
     city: 100,
-    applicationDate: 100,
+    applicationDate: 110,
     priority: 100,
-    studentHighSchool: 150,
-    majorOfInterest: 150,
+    studentHighSchool: 180,
+    majorOfInterest: 180,
     studentName: 150,
-    actions: 250
+    actions: 20,
+    details: 80
   };
 
   const getColumns = () => {
@@ -47,7 +48,10 @@ const GeneralTable = ({
         field: 'name', 
         headerName: showType === "Fair" ? 'School Name' : 'Name', 
         width: columnWidths.name,
-        flex: 0,
+        headerAlign: 'center',
+        align: 'center',
+        flex: 1,
+        minWidth: 150,
         renderCell: (params) => {
           if (showType === "Fair") {
             return params.row?.schoolName || "N/A";
@@ -59,6 +63,8 @@ const GeneralTable = ({
         field: 'date', 
         headerName: 'Date', 
         width: columnWidths.date,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
         renderCell: (params) => {
           const date = showType === "Fair" ? params.row?.fairDate : params.row?.visitDate;
@@ -69,6 +75,8 @@ const GeneralTable = ({
         field: 'time', 
         headerName: 'Time', 
         width: columnWidths.time,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
         renderCell: (params) => {
           return showType === "Fair" ? params.row?.fairTime : params.row?.visitTime || "N/A";
@@ -78,6 +86,8 @@ const GeneralTable = ({
         field: 'status', 
         headerName: 'Status', 
         width: columnWidths.status,
+        headerAlign: 'center',
+        align: 'center',
         flex: 0,
         renderCell: (params) => {
           const status = params.row?.status || "N/A";
@@ -101,6 +111,7 @@ const GeneralTable = ({
           };
 
           const colors = getStatusColor(status);
+          const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
           
           return (
             <div style={{
@@ -110,8 +121,11 @@ const GeneralTable = ({
               borderRadius: '12px',
               fontSize: '0.875rem',
               fontWeight: '500',
+              textTransform: 'capitalize',
+              width: '90%',
+              textAlign: 'center'
             }}>
-              {status}
+              {formattedStatus}
             </div>
           );
         }
@@ -119,7 +133,9 @@ const GeneralTable = ({
       {
         field: 'details',
         headerName: '',
-        width: 80,
+        width: columnWidths.details,
+        headerAlign: 'center',
+        align: 'center',
         sortable: false,
         renderCell: (params) => (
           <button
@@ -381,7 +397,17 @@ const GeneralTable = ({
       });
     }
 
-    return [...baseColumns, ...extraColumns];
+    // Modify all extra columns to be centered
+    const modifyExtraColumn = (column) => ({
+      ...column,
+      headerAlign: 'center',
+      align: 'center',
+      flex: 1,
+      minWidth: column.width
+    });
+
+    // Apply the modification to all extra columns
+    return [...baseColumns, ...extraColumns.map(modifyExtraColumn)];
   };
 
   const filteredEvents = events.filter((event) => {
@@ -398,7 +424,7 @@ const GeneralTable = ({
     <div style={{ 
       width: '100%', 
       height: '100%', 
-      overflow: 'hidden',
+      overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -422,37 +448,76 @@ const GeneralTable = ({
         }}
         sx={{
           border: 'none',
+          '& .MuiDataGrid-root': {
+            width: '100%',
+          },
           '& .MuiDataGrid-main': {
-            width: '100% !important',
+            width: '100%',
+            overflow: 'hidden',
           },
           '& .MuiDataGrid-virtualScroller': {
-            width: '100% !important',
-            overflow: 'hidden auto',
+            width: '100%',
+            overflow: 'hidden',
           },
           '& .MuiDataGrid-virtualScrollerContent': {
-            width: '100% !important',
+            width: '100%',
           },
           '& .MuiDataGrid-virtualScrollerRenderZone': {
-            width: '100% !important',
+            width: '100%',
           },
           '& .MuiDataGrid-cell': {
             borderColor: '#e5e7eb',
             whiteSpace: 'normal',
             padding: '8px',
             lineHeight: '1.5',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           },
           '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f8fafc',
             color: '#475569',
             fontWeight: 600,
+            '& .MuiDataGrid-columnHeader': {
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '& .MuiDataGrid-columnHeaderTitle': {
+                width: '100%',
+                textAlign: 'center',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }
+            }
+          },
+          '& .MuiDataGrid-row': {
+            width: '100% !important',
+            minWidth: 'fit-content',
           },
           '& .MuiDataGrid-row:hover': {
             backgroundColor: '#f8fafc',
           },
-          width: '100%',
           '& .MuiDataGrid-footerContainer': {
             borderTop: '1px solid #e5e7eb',
-          }
+            width: '100%',
+          },
+          '& .MuiDataGrid-columnHeader': {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+          },
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          margin: 0,
+          padding: 0,
+          flexGrow: 1,
+          flexShrink: 1,
+          minWidth: '100%',
         }}
       />
     </div>

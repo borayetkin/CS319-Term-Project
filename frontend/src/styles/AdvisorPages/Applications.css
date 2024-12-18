@@ -200,7 +200,7 @@ td {
 /* Action Buttons */
 .button-container {
   display: flex;
-  justify-content: left;
+  justify-content: center;
   gap: 4px;
 }
 

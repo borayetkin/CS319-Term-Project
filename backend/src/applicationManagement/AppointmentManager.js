@@ -318,7 +318,7 @@ exports.getWeeklySchedules = async (req, res) => {
     const currentMonday = await getCurrentMonday();
 
     const weeklyDates = [];
-    for (let i = 2; i <= 7; i++) {
+    for (let i = 0; i <= 7; i++) {
       const weekStart = new Date(currentMonday);
       weekStart.setDate(weekStart.getDate() + i * 7);
       weeklyDates.push(weekStart);
@@ -349,7 +349,7 @@ exports.loadWeeklySchedules = async (req, res) => {
     const currentMonday = await getCurrentMonday();
 
     const weeklyDates = [];
-    for (let i = -2; i <= 7; i++) {
+    for (let i = 0; i <= 7; i++) {
       const weekStart = new Date(currentMonday);
       weekStart.setDate(weekStart.getDate() + i * 7);
       weeklyDates.push(weekStart);
