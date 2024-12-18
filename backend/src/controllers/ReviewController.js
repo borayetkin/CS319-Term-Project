@@ -70,7 +70,7 @@ exports.createReview = async (req, res) => {
 
 
 // Fetch a specific review
-exports.getReview = async (req, res) => {
+exports.getReviewById = async (req, res) => {
   const { reviewId } = req.params;
 
   try {
@@ -88,41 +88,43 @@ exports.getReview = async (req, res) => {
   }
 };
 
-// Not working
-exports.getReviewsByApplicant = async (req, res) => {
-  const { applicantId } = req.params;
+exports.getReviewOfEvent = async (req, res) => {
+  const { eventId } = req.params;
 
   try {
-    const reviews = await Review.find({ applicant: applicantId })
-      .populate("event", "visitDate visitTime");
+    const event = await Event.findById(eventId).populate("review");
 
-    res.status(200).json(reviews);
+    res.status(200).json(event.review);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching reviews.", error: error.message });
+    res.status(500).json({ message: "Error fetching review.", error: error.message });
   }
-};
+}
 
-//Not working
-exports.getReviewsByUser = async (req, res) => {
+exports.getReviewsOfUser = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const reviews = await User.populate("reviews");
+    const user = await User.findOne({ _id: userId }).populate("reviews");
 
-    res.status(200).json(reviews);
+    res.status(200).json(user.reviews);
   } catch (error) {
     res.status(500).json({ message: "Error fetching reviews.", error: error.message });
   }
 };
 
-// Delete a review (NOT WORKING)
+// Delete a review
 exports.deleteReview = async (req, res) => {
   const { reviewId } = req.params;
 
   try {
-    const review = await Review.findByIdAndDelete(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: "Review not found." });
+    const user = await User.updateOne(
+      { 'reviews._id': reviewId }, // Find the user with a matching review ID
+      { $pull: { reviews: { _id: reviewId } } } // Pull (remove) the review with the specific reviewId
+    );
+
+    if (user.nModified === 0) {
+      console.log('No matching review found to delete.');
+      return null;
     }
 
     // Update the event to remove the review reference
@@ -130,6 +132,11 @@ exports.deleteReview = async (req, res) => {
       review: null,
       reviewSubmitted: false,
     });
+
+    const review = await Review.findByIdAndDelete(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found." });
+    }
 
     res.status(200).json({ message: "Review deleted successfully." });
   } catch (error) {

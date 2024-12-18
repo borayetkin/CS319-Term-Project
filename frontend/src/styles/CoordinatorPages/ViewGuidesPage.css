@@ -223,3 +223,112 @@ th {
   }
 } 
 }
+
+/* Reviews Modal Styles */
+.reviews-modal {
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.review-user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-icon {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.applicant-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.school-name {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.review-date {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.review-rating {
+  display: flex;
+  margin: 10px 0;
+}
+
+.star-icon {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-right: 5px;
+}
+
+.star-icon.filled {
+  color: #fbc02d;
+}
+
+.review-comment {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+.no-reviews {
+  text-align: center;
+  color: #777;
+  margin: 20px 0;
+}
+
+.close-button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #0056b3;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: #004494;
+}
+
+
+.review-item:hover {
+  transform: scale(1.02);
+}
+

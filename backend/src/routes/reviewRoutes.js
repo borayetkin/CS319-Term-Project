@@ -8,13 +8,12 @@ const adminAuth = require("../middleware/adminMiddleware");
 router.post("/create", reviewController.createReview);
 
 // Get a specific review by ID
-router.get("/:reviewId", advisorAuth, reviewController.getReview);
-
-// Get all reviews by applicant ID
-router.get("/applicant-reviews/:applicantId", advisorAuth, reviewController.getReviewsByApplicant);
+router.get("/:reviewId", advisorAuth, reviewController.getReviewById);
 
 // Get all reviews by user ID
-router.get("/user-reviews/:userId", advisorAuth, reviewController.getReviewsByUser);
+router.get("/user-reviews/:userId", advisorAuth, reviewController.getReviewsOfUser);
+
+router.get("/event-review/:eventId", advisorAuth, reviewController.getReviewOfEvent);
 
 // Delete a review
 router.delete("/:reviewId", adminAuth, reviewController.deleteReview);
