@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { sendNotification } = require("./NotificationController");
 const { sendFairAssignmentEmail } = require("../config/EmailService");
+const { createLog } = require("./LogController");
 
 // Create a new fair
 exports.createFair = async (req, res) => {
@@ -150,12 +151,14 @@ exports.updateFairStatus = async (req, res) => {
       await Notification.insertMany(notifications);
     }
 
+    createLog(req.user.id, req.user.role, 'updateFairStatus', id, 'success', 'Fair status updated successfully');
     res.status(200).json({
       message: "Fair status updated successfully",
       fair,
     });
   } catch (error) {
     console.error("Error updating fair status:", error);
+    createLog(req.user.id, req.user.role, 'updateFairStatus', id, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to update fair status", error: error.message });
@@ -170,19 +173,23 @@ exports.assignGuideToFair = async (req, res) => {
 
     const fair = await Fair.findById(fairID);
     if (!fair) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'error', 'Fair not found');
       return res.status(404).json({ message: "Fair not found" });
     }
 
     const guide = await User.findById(userID);
     if (!guide) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', userID, 'error', 'Invalid guide ID');
       return res.status(400).json({ message: "Invalid guide ID" });
     }
 
     if (fair.assignedUsers.includes(userID)) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'error', 'Guide already assigned');
       return res.status(400).json({ message: "Guide already assigned." });
     }
 
     if (fair.assignedUsers.length >= fair.requiredNumberOfGuides) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'error', 'Required number of guides already assigned');
       return res
         .status(400)
         .json({ message: "Required number of guides already assigned." });
@@ -196,6 +203,7 @@ exports.assignGuideToFair = async (req, res) => {
       await guide.save();
       await sendFairAssignmentEmail(guide, fair);
     } catch (error) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'error', error.message);
       return res
         .status(400)
         .json({ message: "Failed to assign guide", error: error.message });
@@ -212,13 +220,16 @@ exports.assignGuideToFair = async (req, res) => {
     try {
       sendNotification(notifactionProps);
     } catch (error) {
+      createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'error', 'Failed to send notification');
       return res
         .status(400)
         .json({ message: "Failed to send notification", error: error.message });
     }
+    createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'success', 'Guide assigned successfully');
     res.status(200).json({ message: "Guide assigned successfully.", fair });
   } catch (error) {
     console.error("Error assigning guide:", error);
+    createLog(req.user.id, req.user.role, 'assignGuideToFair', req.params.id, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to assign guide", error: error.message });
@@ -240,11 +251,13 @@ exports.removeGuideFromFair = async (req, res) => {
 
     if (!fair) {
       console.log("Fair not found with ID:", fairID);
+      createLog(req.user.id, req.user.role, 'removeGuideFromFair', fairID, 'error', 'Fair not found');
       return res.status(404).json({ message: "Fair not found" });
     }
 
     if (!fair.assignedUsers.includes(userID)) {
       console.log(`User ID ${userID} is not assigned to the fair.`);
+      createLog(req.user.id, req.user.role, 'removeGuideFromFair', fairID, 'error', 'Guide is not assigned to this fair');
       return res
         .status(400)
         .json({ message: "Guide is not assigned to this fair." });
@@ -259,6 +272,7 @@ exports.removeGuideFromFair = async (req, res) => {
     console.log("Guide fetched:", guide);
     if (!guide) {
       console.log("Guide not found with ID:", userID);
+      createLog(req.user.id, req.user.role, 'removeGuideFromFair', userID, 'error', 'Guide not found');
       return res.status(404).json({ message: "Guide not found" });
     }
     await guide.removeAssignedFair(fairID);
@@ -277,13 +291,16 @@ exports.removeGuideFromFair = async (req, res) => {
     try {
       sendNotification(notifactionProps);
     } catch (error) {
+      createLog(req.user.id, req.user.role, 'removeGuideFromFair', fairID, 'error', 'Failed to send notification');
       return res
         .status(400)
         .json({ message: "Failed to send notification", error: error.message });
     }
+    createLog(req.user.id, req.user.role, 'removeGuideFromFair', fairID, 'success', 'Guide removed successfully');
     res.status(200).json({ message: "Guide removed successfully.", fair });
   } catch (error) {
     console.error("Error removing guide:", error);
+    createLog(req.user.id, req.user.role, 'removeGuideFromFair', req.params.id, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to remove guide", error: error.message });
@@ -297,6 +314,7 @@ exports.deleteFair = async (req, res) => {
 
     const fair = await Fair.findByIdAndDelete(id);
     if (!fair) {
+      createLog(req.user.id, req.user.role, 'deleteFair', id, 'error', 'Fair not found');
       return res.status(404).json({ message: "Fair not found" });
     }
     const recipients = fair.assignedUsers;
@@ -314,18 +332,21 @@ exports.deleteFair = async (req, res) => {
       try {
         sendNotification(notifactionProps);
       } catch (error) {
+        createLog(req.user.id, req.user.role, 'deleteFair', id, 'error', 'Failed to send notification');
         return res.status(400).json({
           message: "Failed to send notification",
           error: error.message,
         });
       }
     }
+    createLog(req.user.id, req.user.role, 'deleteFair', id, 'success', 'Fair deleted successfully');
     res.status(200).json({
       message: "Fair deleted successfully",
       fair,
     });
   } catch (error) {
     console.error("Error deleting fair:", error);
+    createLog(req.user.id, req.user.role, 'deleteFair', req.params.id, 'error', error.message);
     res
       .status(500)
       .json({ message: "Failed to delete fair", error: error.message });
@@ -339,6 +360,7 @@ exports.applyToFair = async (req, res) => {
 
     // Ensure only guides can apply
     if (userrole !== "guide") {
+      createLog(userid, userrole, 'applyToFair', fairID, 'error', 'Only guides can apply to fairs');
       return res
         .status(403)
         .json({ message: "Only guides can apply to fairs." });
@@ -347,17 +369,20 @@ exports.applyToFair = async (req, res) => {
     // Find the guide (user)
     const user = await User.findById(userid || req.user.id);
     if (!user) {
+      createLog(userid, userrole, 'applyToFair', fairID, 'error', 'User not found');
       return res.status(404).json({ message: "User not found" });
     }
 
     // Find the fair
     const fair = await Fair.findById(fairID);
     if (!fair) {
+      createLog(userid, userrole, 'applyToFair', fairID, 'error', 'Fair not found');
       return res.status(404).json({ message: "Fair not found" });
     }
 
     // Check if the guide has already applied
     if (fair.appliedUsers.includes(userid)) {
+      createLog(userid, userrole, 'applyToFair', fairID, 'error', 'Guide already applied to this fair');
       return res
         .status(400)
         .json({ message: "You have already applied to this fair." });
@@ -367,10 +392,11 @@ exports.applyToFair = async (req, res) => {
     fair.appliedUsers.push(userid);
 
     await fair.save();
-
+    createLog(userid, userrole, 'applyToFair', fairID, 'success', user.name +' Applied to fair successfully');
     res.status(200).json({ message: "Applied to fair successfully" });
   } catch (error) {
     console.error("Error applying to fair:", error);
+    createLog(req.user.id, req.user.role, 'applyToFair', req.body.fairID, 'error', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

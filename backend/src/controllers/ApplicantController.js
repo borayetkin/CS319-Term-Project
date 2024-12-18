@@ -2,7 +2,7 @@ const Applicant = require("../models/Applicant");
 const { deleteEvent } = require("./EventController");
 const { sendConfirmationEmail } = require("../config/EmailService");
 const Event = require("../models/Event");
-
+const {createLog} = require("./LogController");
 // Create a new applicant
 exports.createApplicant = async (req, res) => {
   try {
@@ -101,6 +101,7 @@ exports.updateApplicant = async (req, res) => {
     if (!applicant) {
       return res.status(404).send("Applicant not found");
     }
+    createLog(req.user._id, req.user.role, "update", req.params.id, "success", "Applicant updated successfully");
     res.status(200).send(applicant);
   } catch (error) {
     console.error(error);
@@ -122,6 +123,7 @@ exports.deleteApplicant = async (req, res) => {
     if (!applicant) {
       return res.status(404).send();
     }
+    createLog (req.user._id, req.user.role, "delete", req.params.id, "success", "Applicant deleted successfully");
     deleteApplicantApplications(req.params.id);
     res.status(200).send(applicant);
   } catch (error) {

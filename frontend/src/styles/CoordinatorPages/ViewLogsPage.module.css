@@ -1,0 +1,47 @@
+.logsContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logsContainer h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.filterContainer {
+  margin-bottom: 20px;
+}
+
+.filterContainer label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.filterContainer select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.logsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.logsTable th,
+.logsTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.logsTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.logsTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}

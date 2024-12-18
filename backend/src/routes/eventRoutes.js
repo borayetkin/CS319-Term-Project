@@ -22,8 +22,6 @@ const {
   getSchoolTourCountsByMonth,
   markEventAsCompleted,
   takeBackEventAction,
-  confirmEventAction,
-  applyToEvent,
   isReviewSubmitted,
   resubmitEventReserveDates,
   updateUserAvailability,
@@ -60,11 +58,11 @@ router.delete("/:eventId", advisorAuth, deleteEvent);
 //router.post("/:eventId/cancel", auth,  markEventAsCancelled);
 router.post("/:eventId/complete", auth, markEventAsCompleted);
 router.post("/:eventId/take-back", auth, takeBackEventAction);
-router.post("/confirm-action/:eventId", advisorAuth, confirmEventAction);
+
 // Routes for assigning roles
 router.post("/assign-advisor", auth, assignAdvisorToTour);
 router.post("/assign-guide", auth, assignGuideToEvent);
-router.post("/apply", auth, applyToEvent);
+
 router.post("/remove-guide", auth, removeAssignedGuideFromEvent);
 
 // Route for fetching application counts on the date&time

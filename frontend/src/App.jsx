@@ -39,6 +39,7 @@ import AdvisorInformation from "./pages/AdvisorInformation";
 import ResubmitForm from "./pages/ResubmitForm";
 import TraineeshipApplication from "./pages/TraineeshipApplication";
 import ViewTraineesPage from "./pages/AdvisorPages/ViewTraineesPage";
+import ViewLogsPage from "./pages/CoordinatorPages/DashboardPages/ViewLogsPage";
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
           <Route path="adduser" element={<AddUser />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="schoolPriority" element={<SchoolPriorityPage />} />
+          <Route path="logs" element={<ViewLogsPage />} />
         </Route>
 
         {/* Events Route (Admin, Coordinator, Advisor) */}

@@ -11,6 +11,7 @@ const notificationRoutes = require("./src/routes/notificationRoutes");
 const reviewRoutes = require("./src/routes/reviewRoutes");
 const scheduleRoutes = require("./src/routes/scheduleRoutes");
 const traineeRoutes = require("./src/routes/traineeRoutes");
+const logRoutes = require("./src/routes/logRoutes");
 const path = require("path");
 const cors = require("cors"); // Import CORS
 
@@ -47,6 +48,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/schedules", scheduleRoutes);
 app.use("/api", traineeRoutes);
+app.use("/api/logs", logRoutes);
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

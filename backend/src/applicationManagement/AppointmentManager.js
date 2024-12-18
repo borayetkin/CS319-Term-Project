@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const WeeklySchedule = require("./WeeklySchedule");
 const Applicant = require("../models/Applicant");
 const Event = require("../models/Event");
-const { markEventAsCanceled } = require("../controllers/EventController");
+
 const { sendCancelationEmail } = require("../config/EmailService");
 
 // Create a weekly schedule and populate the slots in it
