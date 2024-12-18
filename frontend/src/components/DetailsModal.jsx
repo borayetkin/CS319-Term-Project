@@ -323,6 +323,7 @@ const DetailsModal = ({ application, onClose, context, user }) => {
               )}
 
               <div className="detail-group">
+
                 <div className="detail-item">
                   <label>{isFair ? 'Fair Date' : 'Visit Date'}</label>
                   <p className="datetime">
@@ -340,6 +341,16 @@ const DetailsModal = ({ application, onClose, context, user }) => {
                       <path fill="currentColor" d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/>
                     </svg>
                     {isFair ? application.fairTime : application.visitTime}
+                  </p>
+                </div>
+
+                <div className="detail-item">
+                  <label>{"Reserved Room"}</label>
+                  <p className="datetime">
+                    <svg className="icon" viewBox="0 0 24 24" width="14" height="14">
+                      <path fill="currentColor" d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/>
+                    </svg>
+                    {application.reservedRooms}
                   </p>
                 </div>
               </div>
