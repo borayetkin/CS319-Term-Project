@@ -14,75 +14,91 @@
     "Helvetica Neue", Arial, sans-serif;
 }
 
-.navbar {
-  .logo a {
-    font-size: 1.1rem; /* Increased font size */
-    font-weight: 600;
-    color: #1c1c1e;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease-in-out;
-    background-size: 200% 200%;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .logo a:hover {
-    color: #fff;
-    border-radius: 24px;
-    box-shadow: 0 2px 12px rgba(29, 74, 187, 0.2);
-    background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
-  }
-
-  .logo a::before {
-    content: "◐";
-    font-size: 1.1rem; /* Increased font size */
-    margin-right: 8px;
-    transition: color 0.3s ease-in-out;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    list-style: none;
-    gap: 1rem;
-  }
-
-  .nav-links li {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .nav-links a {
-    font-size: 1.1rem; /* Matches font size with the logo */
-    font-family: inherit; /* Ensures consistent font family */
-    color: #1c1c1e;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease-in-out;
-    background-size: 200% 200%;
-    display: inline-block;
-    position: relative;
-  }
-
-  .nav-links a:hover {
-    color: #fff;
-    border-radius: 24px;
-    box-shadow: 0 2px 12px rgba(29, 74, 187, 0.2);
-    background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
-  }
-
-  .nav-links a.active {
-    color: #fff;
-    background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
-    border-radius: 24px;
-    box-shadow: 0 2px 12px rgba(29, 74, 187, 0.2);
-  }
+.navbar .logo a {
+  font-size: 1.1rem; /* Increased font size */
+  font-weight: 600;
+  color: #1c1c1e;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 16px; /* Increased for smoother transition */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    border-radius 0.2s ease;
+  background-size: 200% 200%;
+  position: relative;
+  overflow: hidden;
 }
+
+.navbar .logo a:hover {
+  color: #fff;
+  border-radius: 15px; /* Slight increase for a subtle effect */
+  background-image: linear-gradient(
+    145deg,
+    rgba(43, 67, 226, 0.7),
+    /* #2b43e2 with transparency */ rgba(187, 29, 150, 0.7),
+    /* #bb1d96 with transparency */ rgba(138, 43, 226, 0.7)
+      /* #8a2be2 with transparency */
+  );
+}
+
+.navbar .logo a::before {
+  content: "◐";
+  font-size: 1.1rem; /* Increased font size */
+  margin-right: 8px;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar .nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 1rem;
+}
+
+.navbar .nav-links li {
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar .nav-links a {
+  font-size: 1.1rem; /* Matches font size with the logo */
+  font-family: inherit; /* Ensures consistent font family */
+  color: #151516;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 16px; /* Increased for smoother transition */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    border-radius 0.2s ease;
+  background-size: 200% 200%;
+  display: inline-block;
+  position: relative;
+}
+
+.navbar .nav-links a:hover {
+  color: #fff;
+  border-radius: 15px; /* Slight increase for a subtle effect */
+  background-image: linear-gradient(
+    145deg,
+    rgba(43, 67, 226, 0.7),
+    /* #2b43e2 with transparency */ rgba(187, 29, 150, 0.7),
+    /* #bb1d96 with transparency */ rgba(138, 43, 226, 0.7)
+      /* #8a2be2 with transparency */
+  );
+}
+
+.navbar .nav-links a.active {
+  color: #fff;
+  background-image: linear-gradient(
+    145deg,
+    rgba(43, 67, 226, 0.7),
+    /* #2b43e2 with transparency */ rgba(187, 29, 150, 0.7),
+    /* #bb1d96 with transparency */ rgba(138, 43, 226, 0.7)
+      /* #8a2be2 with transparency */
+  );
+  border-radius: 15px; /* Consistent with hover */
+}
+
 /* Gradient animation */
 @keyframes gradientAnimation {
   0% {
@@ -98,72 +114,65 @@
     background-position: 0% 50%;
   }
 }
-.navbar {
-  /* Hover animation for all interactive elements */
-  .logo a:hover,
-  .nav-links a:hover,
-  .nav-links a.active {
-    animation: gradientAnimation 6s ease infinite;
-    background-size: 300% 300%;
-  }
+
+.navbar .logo a:hover,
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+  animation: gradientAnimation 6s ease infinite;
+  background-size: 300% 300%;
 }
+
+/* Responsive Design */
 @media (max-width: 600px) {
   .navbar {
     padding: 0.5rem 1rem;
   }
 
-  .nav-links {
+  .navbar .nav-links {
     gap: 0.5rem;
   }
 
-  .nav-links a {
+  .navbar .nav-links a {
     padding: 6px 12px;
     font-size: 1rem;
   }
 }
-.navbar {
-  .notification-icon {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
 
-  .notification-icon a {
-    color: inherit;
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-  }
-
-  .notification-icon a:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .notification-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #dc3545;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 12px;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Adjust the navbar-menu to align items */
-  .navbar-menu {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+.navbar .notification-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
+
+.navbar .notification-icon a {
+  color: inherit;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.navbar .notification-icon a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar .notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Animation for the notification badge */
 @keyframes pulse {
   0% {
@@ -176,8 +185,14 @@
     transform: scale(1);
   }
 }
-.navbar {
-  .notification-badge {
-    animation: pulse 2s infinite;
-  }
+
+.navbar .notification-badge {
+  animation: pulse 2s infinite;
+}
+
+/* Adjust the navbar-menu to align items */
+.navbar .navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
