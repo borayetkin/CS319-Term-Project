@@ -112,8 +112,19 @@ const Profile = () => {
     setAvailability(updatedAvailability);
   };
 
+  const validatePhoneNumber = (phoneNumber) => {
+    const phoneRegex = /^0\d{10}$/;  // Matches: 0 followed by exactly 10 digits
+    return phoneRegex.test(phoneNumber);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (editForm.phoneNumber && !validatePhoneNumber(editForm.phoneNumber)) {
+      setError("Phone number must start with 0 and be exactly 11 digits");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem("token");
@@ -276,11 +287,14 @@ const Profile = () => {
                   value={editForm.phoneNumber}
                   onChange={handleInputChange}
                   placeholder="Enter phone number"
+                  pattern="0[0-9]{10}"
+                  title="Phone number must start with 0 and be exactly 11 digits"
+                  maxLength="11"
                 />
               </div>
             </div>
 
-            {profile.role !== "admin" && profile.role != "coordinator" && (
+            {profile.role !== "coordinator" && profile.role !== "admin" && (
               <div className="info-card editable">
                 <div className="card-icon">
                   <MdSchool />
@@ -411,27 +425,44 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="info-card">
-              <div className="card-icon">
-                <MdSchool />
+            {profile.role !== "coordinator" && profile.role !== "admin" && (
+              <div className="info-card">
+                <div className="card-icon">
+                  <MdSchool />
+                </div>
+                <div className="card-content">
+                  <h3>Department</h3>
+                  <p>{profile.major || "Not specified"}</p>
+                </div>
               </div>
-              <div className="card-content">
-                <h3>Department</h3>
-                <p>{profile.major || "Not specified"}</p>
-              </div>
-            </div>
+            )}
 
-            <div className="info-card">
-              <div className="card-icon">
-                <FaGraduationCap />
+            {profile.role !== "coordinator" && profile.role !== "admin" && (
+              <div className="info-card">
+                <div className="card-icon">
+                  <FaGraduationCap />
+                </div>
+                <div className="card-content">
+                  <h3>Year</h3>
+                  <p>
+                    {profile.year ? `${profile.year}th year` : "Not specified"}
+                  </p>
+                </div>
               </div>
-              <div className="card-content">
-                <h3>Year</h3>
-                <p>
-                  {profile.year ? `${profile.year}th year` : "Not specified"}
-                </p>
+            )}
+
+            {profile.role === "advisor" && (
+              <div className="info-card">
+                <div className="card-icon">
+                  <FaCalendarAlt />
+                </div>
+                <div className="card-content">
+                  <h3>Assigned Day</h3>
+                  <p>{profile.assignedDay || "Not assigned"}</p>
+                </div>
               </div>
-            </div>
+            )}
+
             <div className="profile-edit-button-container">
               <button onClick={handleEditToggle} className="edit-button">
                 <FaEdit /> Edit Profile
@@ -492,15 +523,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="info-card">
-            <div className="card-icon">
-              <MdLanguage />
-            </div>
-            <div className="card-content">
-              <h3>Languages</h3>
-              <p>{profile.languages?.join(", ") || "Not specified"}</p>
-            </div>
-          </div>
+
 
           <div className="info-card">
             <div className="card-icon">

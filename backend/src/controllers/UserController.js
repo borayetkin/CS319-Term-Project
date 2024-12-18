@@ -288,7 +288,15 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getAllGuides = async (req,res) => {
   try {
-    const guides = await User.find({ role: "guide" }).select("-password").populate('assignedEvents').populate('completedEvents');
+    const guides = await User.find({ role: "guide" }).select("-password")
+                                                      .populate('assignedEvents')
+                                                      .populate('completedEvents')
+                                                      .populate({
+                                                        path: 'reviews',
+                                                        populate: [
+                                                          { path: 'applicant', model: 'Applicant' } // Populate the "applicant" field inside "reviews"
+                                                        ]}
+                                                      );
     //console.log("Fetched guides:", guides);
     res.status(200).json(guides);
   } catch (err) {

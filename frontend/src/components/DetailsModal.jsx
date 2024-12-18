@@ -25,14 +25,22 @@ const DetailsModal = ({ application, onClose }) => {
                 </div>
 
                 <div className="detail-item">
-                  <label>Visit Date:</label>
-                  <p>{new Date(application.visitDate).toLocaleDateString()}</p>
+                  <label>Primary Visit Date:</label>
+                  <p>{new Date(application.visitDate).toLocaleDateString()} at {application.visitTime || "N/A"}</p>
                 </div>
 
-                <div className="detail-item">
-                  <label>Visit Time:</label>
-                  <p>{application.visitTime || "N/A"}</p>
-                </div>
+                {application.reserveDates?.length > 0 && (
+                  <div className="detail-item full-width">
+                    <label>Alternative Dates:</label>
+                    <div>
+                      {application.reserveDates.map((date, index) => (
+                        <p key={index}>
+                          {new Date(date.visitDate).toLocaleDateString()} at {date.visitTime || "N/A"}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="detail-item">
                   <label>Student Count:</label>

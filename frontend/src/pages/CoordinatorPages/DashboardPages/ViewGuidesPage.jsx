@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSearch, FiEye, FiMail, FiPhone } from 'react-icons/fi';
+import { FiSearch, FiEye, FiMail, FiPhone, FiStar } from 'react-icons/fi';
 import { RiTeamLine } from 'react-icons/ri';
 import "../../../styles/CoordinatorPages/ViewGuidesPage.css";
 import LoadingSpinner from '../../../components/LoadingSpinner';
@@ -9,6 +9,8 @@ const ViewGuidesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGuide, setSelectedGuide] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,11 +40,68 @@ const ViewGuidesPage = () => {
     setShowDetailsModal(true);
   };
 
+  const handleShowReviews = (guide) => {
+    setReviews(guide.reviews);
+    setShowReviewsModal(true);
+  };
+
   const filteredGuides = guides.filter(guide =>
     guide.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     guide.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     guide.department?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const ReviewsModal = ({ reviews, onClose }) => (
+    <div className="modal-overlay">
+      <div className="modal-content reviews-modal">
+        <h2>Guide Reviews</h2>
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div key={review._id} className="review-item">
+              {/* Review Header */}
+              <div className="review-header">
+                <div className="review-user-info">
+                  <span className="user-icon">👤</span>
+                  <div className="user-details">
+                    <p className="applicant-name">
+                      {review.applicant?.name || "Unknown Applicant"}
+                    </p>
+                  </div>
+                </div>
+                <div className="review-date">
+                  {new Date(review.date).toLocaleDateString()}
+                </div>
+              </div>
+  
+              {/* Star Rating */}
+              <div className="review-rating">
+                {Array.from({ length: 5 }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`star-icon ${i < review.rating ? "filled" : ""}`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+  
+              {/* Review Comment */}
+              <div className="review-comment">
+                <p>{review.comment || "No comment provided"}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="no-reviews">No reviews available for this guide.</p>
+        )}
+        <button className="close-button" onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </div>
+  );
+  
+  
 
   const GuideDetailsModal = ({ guide, onClose }) => {
     if (!guide) return null;
@@ -123,7 +182,7 @@ const ViewGuidesPage = () => {
 
             <div className="detail-item">
               <label>Average Rating:</label>
-              <p>{guide.averageRating?.toFixed(1) || "No ratings yet"}</p>
+              <p>⭐{guide.averageRating?.toFixed(1) || "No ratings yet"}</p>
             </div>
 
 
@@ -215,7 +274,7 @@ const ViewGuidesPage = () => {
                 <td>{guide.major || "N/A"}</td>
                 <td>{guide.year || "N/A"}</td>
                 <td>{guide.totalWorkHours || 0}</td>
-                <td>{guide.averageRating?.toFixed(1) || "N/A"}</td>
+                <td>⭐{guide.averageRating?.toFixed(1) || "N/A"}</td>
                 <td>
                   <div className="action-buttons">
                     <button
@@ -224,6 +283,13 @@ const ViewGuidesPage = () => {
                       title="Show Details"
                     >
                       <FiEye size={16} />
+                    </button>
+                    <button
+                      className="action-button reviews"
+                      onClick={() => handleShowReviews(guide)}
+                      title="Show Reviews"
+                    >
+                      <FiStar size={16} />
                     </button>
                   </div>
                 </td>
@@ -241,6 +307,13 @@ const ViewGuidesPage = () => {
         <GuideDetailsModal
           guide={selectedGuide}
           onClose={() => setShowDetailsModal(false)}
+        />
+      )}
+
+      {showReviewsModal && (
+        <ReviewsModal
+          reviews={reviews}
+          onClose={() => setShowReviewsModal(false)}
         />
       )}
     </div>

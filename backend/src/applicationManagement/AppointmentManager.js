@@ -277,6 +277,7 @@ async function assignEventToSlot(event, slot, weeklySchedule) {
 
   event.visitDate = targetDate;
   event.visitTime = slot.slotTime;
+  event.weekday = slot.slotDay;
   event.status = "scheduled";
   await event.save()
 }

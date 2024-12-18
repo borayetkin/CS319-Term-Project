@@ -14,9 +14,9 @@ const GeneralTable = ({
   showType = "SchoolTour",
   EventRowActions,
   FairRowActions,
+  viewType = "tours",
 }) => {
   
-  // At the start of the component, define default column widths
   const columnWidths = {
     name: 200,
     date: 100,
@@ -38,49 +38,40 @@ const GeneralTable = ({
   };
 
   const getColumns = () => {
+    // First declare extraColumns
+    const extraColumns = [];
+    
     const baseColumns = [
       { 
-        field: 'applicantName', 
-        headerName: 'Name', 
+        field: 'name', 
+        headerName: showType === "Fair" ? 'School Name' : 'Name', 
         width: columnWidths.name,
         flex: 0,
         renderCell: (params) => {
-          if (showType === "SchoolTour") {
-            return (
-              <div style={{ 
-                whiteSpace: 'normal',
-                lineHeight: '1.2',
-                padding: '8px 0',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-                {params.row?.applicant?.name || "N/A"}
-              </div>
-            );
+          if (showType === "Fair") {
+            return params.row?.schoolName || "N/A";
           }
           return params.row?.applicant?.name || "N/A";
         }
       },
       { 
-        field: 'visitDate', 
+        field: 'date', 
         headerName: 'Date', 
         width: columnWidths.date,
         flex: 0,
         renderCell: (params) => {
-          return params.row?.visitDate 
-            ? new Date(params.row.visitDate).toLocaleDateString() 
-            : "N/A";
+          const date = showType === "Fair" ? params.row?.fairDate : params.row?.visitDate;
+          return date ? new Date(date).toLocaleDateString() : "N/A";
         }
       },
       { 
-        field: 'visitTime', 
+        field: 'time', 
         headerName: 'Time', 
         width: columnWidths.time,
         flex: 0,
-        renderCell: (params) => params.row?.visitTime || "N/A"
+        renderCell: (params) => {
+          return showType === "Fair" ? params.row?.fairTime : params.row?.visitTime || "N/A";
+        }
       },
       { 
         field: 'status', 
@@ -91,9 +82,55 @@ const GeneralTable = ({
       }
     ];
 
-    // Add extra properties based on showExtraProperties
-    const extraColumns = [];
-    
+    // Add Fair properties handling
+    if (showType === "Fair" && showExtraProperties.Fair) {
+      showExtraProperties.Fair.forEach(prop => {
+        switch(prop) {
+          case "assignedUsers":
+            extraColumns.push({
+              field: 'assignedUsers',
+              headerName: 'Assigned Guides',
+              width: columnWidths.assignedUsers,
+              renderCell: (params) => params.row?.assignedUsers?.length || "0"
+            });
+            break;
+          case "requiredNumberOfGuides":
+            extraColumns.push({
+              field: 'requiredNumberOfGuides',
+              headerName: 'Required Guides',
+              width: columnWidths.requiredNumberOfGuides,
+              renderCell: (params) => params.row?.requiredNumberOfGuides || "N/A"
+            });
+            break;
+          case "organiserName":
+            extraColumns.push({
+              field: 'organiserName',
+              headerName: 'Organiser',
+              width: columnWidths.contactPerson,
+              renderCell: (params) => params.row?.organiserName || "N/A"
+            });
+            break;
+          case "email":
+            extraColumns.push({
+              field: 'email',
+              headerName: 'Email',
+              width: columnWidths.email,
+              renderCell: (params) => params.row?.email || "N/A"
+            });
+            break;
+          case "city":
+            extraColumns.push({
+              field: 'city',
+              headerName: 'City',
+              width: columnWidths.city,
+              renderCell: (params) => params.row?.city || "N/A"
+            });
+            break;
+        }
+      });
+    }
+
+    // Add SchoolTour properties
     if (showType === "SchoolTour" && showExtraProperties.SchoolTour) {
       showExtraProperties.SchoolTour.forEach(prop => {
         switch(prop) {
@@ -126,7 +163,7 @@ const GeneralTable = ({
               field: 'email',
               headerName: 'Email',
               width: columnWidths.email,
-              renderCell: (params) => params.row?.email || "N/A"
+              renderCell: (params) => params.row?.applicant?.email || "N/A"
             });
             break;
           case "phoneNumber":
@@ -134,7 +171,7 @@ const GeneralTable = ({
               field: 'phoneNumber',
               headerName: 'Phone',
               width: columnWidths.phoneNumber,
-              renderCell: (params) => params.row?.phoneNumber || "N/A"
+              renderCell: (params) => params.row?.applicant?.phoneNumber || "N/A"
             });
             break;
           case "studentCount":
@@ -192,6 +229,7 @@ const GeneralTable = ({
       });
     }
 
+    // Add IndividualTour properties
     if (showType === "IndividualTour" && showExtraProperties.IndividualTour) {
       showExtraProperties.IndividualTour.forEach(prop => {
         switch(prop) {
@@ -208,7 +246,7 @@ const GeneralTable = ({
               field: 'email',
               headerName: 'Email',
               width: columnWidths.email,
-              renderCell: (params) => params.row?.email || "N/A"
+              renderCell: (params) => params.row?.applicant?.email || "N/A"
             });
             break;
           case "phoneNumber":
@@ -216,7 +254,7 @@ const GeneralTable = ({
               field: 'phoneNumber',
               headerName: 'Phone',
               width: columnWidths.phoneNumber,
-              renderCell: (params) => params.row?.phoneNumber || "N/A"
+              renderCell: (params) => params.row?.applicant?.phoneNumber || "N/A"
             });
             break;
           case "majorOfInterest":
@@ -227,14 +265,7 @@ const GeneralTable = ({
               renderCell: (params) => params.row?.majorOfInterest || "N/A"
             });
             break;
-          case "studentName":
-            extraColumns.push({
-              field: 'studentName',
-              headerName: 'Student Name',
-              width: columnWidths.studentName,
-              renderCell: (params) => params.row?.studentName || "N/A"
-            });
-            break;
+          
         }
       });
     }
@@ -247,7 +278,11 @@ const GeneralTable = ({
         width: columnWidths.actions,
         renderCell: (params) => {
           if (showType === "Fair" && FairRowActions) {
-            return <FairRowActions fair={params.row} />;
+            return <FairRowActions 
+              fair={params.row} 
+              user={user} 
+              setMessage={setMessage} 
+            />;
           }
           if (EventRowActions) {
             return <EventRowActions 
@@ -264,7 +299,6 @@ const GeneralTable = ({
     return [...baseColumns, ...extraColumns];
   };
 
-  // Filter events based on status and search term
   const filteredEvents = events.filter((event) => {
     const matchesStatus = statusFilter === "all" || event.status === statusFilter;
     const matchesSearch = !searchTerm || 
@@ -279,53 +313,59 @@ const GeneralTable = ({
     <div style={{ 
       width: '100%', 
       height: '100%', 
-      overflow: 'auto', 
-      maxWidth: '100vw',
-      display: 'flex',  // Added
-      flexDirection: 'column'  // Added
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <DataGrid
-        rows={filteredEvents}
+        rows={viewType === "fairs" ? fairs : filteredEvents}
         columns={getColumns()}
         getRowId={(row) => row._id}
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}
         autoHeight
         disableSelectionOnClick
+        disableColumnMenu
+        disableColumnSelector
+        components={{
+          NoRowsOverlay: () => (
+            <div style={{ padding: '1rem', textAlign: 'center' }}>
+              {viewType === "fairs" ? "No fairs available" : "No events available"}
+            </div>
+          ),
+        }}
         sx={{
-          '.MuiDataGrid-root': {
-            width: 'auto !important',
-            maxWidth: '100%',
+          border: 'none',
+          '& .MuiDataGrid-main': {
+            width: '100% !important',
           },
-          '.MuiDataGrid-virtualScroller': {
-            maxWidth: '100%',
-            overflowX: 'auto',
+          '& .MuiDataGrid-virtualScroller': {
+            width: '100% !important',
+            overflow: 'hidden auto',
           },
-          '.MuiDataGrid-cell': {
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            minWidth: 'unset !important',
-            maxWidth: 'unset !important',
-            padding: '8px',
+          '& .MuiDataGrid-virtualScrollerContent': {
+            width: '100% !important',
+          },
+          '& .MuiDataGrid-virtualScrollerRenderZone': {
+            width: '100% !important',
+          },
+          '& .MuiDataGrid-cell': {
             borderColor: '#e5e7eb',
+            whiteSpace: 'normal',
+            padding: '8px',
           },
-          '.MuiDataGrid-columnHeaders': {
+          '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f8fafc',
             color: '#475569',
             fontWeight: 600,
           },
-          '.MuiDataGrid-row:hover': {
+          '& .MuiDataGrid-row:hover': {
             backgroundColor: '#f8fafc',
           },
-          // Force horizontal scroll instead of wrap
-          '& .MuiDataGrid-virtualScrollerContent': {
-            minWidth: '100% !important',
-          }
-        }}
-        style={{
           width: '100%',
-          maxWidth: '100%',
+          '& .MuiDataGrid-footerContainer': {
+            borderTop: '1px solid #e5e7eb',
+          }
         }}
       />
     </div>
