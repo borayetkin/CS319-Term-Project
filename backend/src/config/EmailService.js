@@ -633,11 +633,13 @@ exports.sendNotificationEmail = async (email, name, changedFields,tourData) => {
         message += `<li><strong>Advisor Notes:</strong> ${changedFields.advisorNotes}</li>`;
       }
 
+      if (changedFields.visitDate) {
       message +=`
         <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
           Alternatively, you can copy and paste the following link into your browser:<br />
           <a href="${resubmissionLink}" style="color: #0056b3; font-weight: bold;">${resubmissionLink}</a>
         </p>`;
+      }
 
       message += `</ul>
         <p>Thank you for your understanding.</p>
