@@ -45,6 +45,11 @@ const schoolTourSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  reservedRooms: {
+  type: String,
+  enum : ["B205", "FFB-22", "FFB-05", "FFB-06","EE-01","MitatCoruh"],
+  default: "B205",
+  },
 });
 
 schoolTourSchema.methods.setAssignedAdvisor = function (advisorId) {
