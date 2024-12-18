@@ -34,7 +34,7 @@ const GeneralTable = ({
     studentHighSchool: 150,
     majorOfInterest: 150,
     studentName: 150,
-    actions: 200
+    actions: 250
   };
 
   const getColumns = () => {
@@ -78,7 +78,42 @@ const GeneralTable = ({
         headerName: 'Status', 
         width: columnWidths.status,
         flex: 0,
-        renderCell: (params) => params.row?.status || "N/A"
+        renderCell: (params) => {
+          const status = params.row?.status || "N/A";
+          const getStatusColor = (status) => {
+            switch(status.toLowerCase()) {
+              case 'pending':
+                return { bg: '#FEF3C7', text: '#92400E' }; // Warm yellow
+              case 'confirmed':
+                return { bg: '#DCFCE7', text: '#166534' }; // Green
+              case 'scheduled':
+                return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
+              case 'completed':
+                return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
+              case 'cancelled':
+                return { bg: '#FEE2E2', text: '#991B1B' }; // Red
+              case 'accepted':
+                return { bg: '#DCFCE7', text: '#166534' }; // Green
+              default:
+                return { bg: '#F3F4F6', text: '#4B5563' }; // Gray
+            }
+          };
+
+          const colors = getStatusColor(status);
+          
+          return (
+            <div style={{
+              backgroundColor: colors.bg,
+              color: colors.text,
+              padding: '4px 12px',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+            }}>
+              {status}
+            </div>
+          );
+        }
       }
     ];
 
@@ -116,14 +151,6 @@ const GeneralTable = ({
               headerName: 'Email',
               width: columnWidths.email,
               renderCell: (params) => params.row?.email || "N/A"
-            });
-            break;
-          case "city":
-            extraColumns.push({
-              field: 'city',
-              headerName: 'City',
-              width: columnWidths.city,
-              renderCell: (params) => params.row?.city || "N/A"
             });
             break;
         }
@@ -207,6 +234,20 @@ const GeneralTable = ({
               width: columnWidths.priority,
               renderCell: (params) => {
                 const priority = params.row?.applicant?.priority || "N/A";
+                
+                const getPriorityColor = (priority) => {
+                  switch(priority) {
+                    case "High":
+                      return { bg: '#FEE2E2', text: '#991B1B' }; // Red for Focus
+                    case "Medium":
+                      return { bg: '#FEF3C7', text: '#92400E' }; // Yellow for Preferred
+                    case "General":
+                      return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue for General
+                    default:
+                      return { bg: '#F3F4F6', text: '#4B5563' }; // Gray for N/A
+                  }
+                };
+
                 let text = "";
                 switch(priority) {
                   case "High":
@@ -221,7 +262,21 @@ const GeneralTable = ({
                   default:
                     text = "N/A";
                 }
-                return text;
+
+                const colors = getPriorityColor(priority);
+
+                return (
+                  <div style={{
+                    backgroundColor: colors.bg,
+                    color: colors.text,
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                  }}>
+                    {text}
+                  </div>
+                );
               }
             });
             break;
@@ -280,8 +335,8 @@ const GeneralTable = ({
           if (showType === "Fair" && FairRowActions) {
             return <FairRowActions 
               fair={params.row} 
-              user={user} 
-              setMessage={setMessage} 
+              user={user}
+              setMessage={setMessage}
             />;
           }
           if (EventRowActions) {
@@ -327,6 +382,7 @@ const GeneralTable = ({
         disableSelectionOnClick
         disableColumnMenu
         disableColumnSelector
+        rowHeight={70}
         components={{
           NoRowsOverlay: () => (
             <div style={{ padding: '1rem', textAlign: 'center' }}>
@@ -353,6 +409,7 @@ const GeneralTable = ({
             borderColor: '#e5e7eb',
             whiteSpace: 'normal',
             padding: '8px',
+            lineHeight: '1.5',
           },
           '& .MuiDataGrid-columnHeaders': {
             backgroundColor: '#f8fafc',
