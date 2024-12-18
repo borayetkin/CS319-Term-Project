@@ -605,32 +605,53 @@ const generateTourDetails = (tourData, email) => {
   }
 };
 
-exports.sendNotificationEmail = async (email, name, changedFields) => {
-  const subject = "Update on Your Scheduled Tour";
+exports.sendNotificationEmail = async (email, name, changedFields,tourData) => {
+  try {
 
-    // Dynamically generate email content for changed fields
-    const changesList = Object.entries(changedFields)
-      .map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`)
-      .join("");
+      const resubmissionLink = `http://localhost:5173/resubmit-form/${tourData._id}`;
 
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      let message = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <h2 style="color: #0056b3;">Hello ${name},</h2>
-        <p>We wanted to let you know about the following updates to your scheduled tour:</p>
-        <ul>${changesList}</ul>
-        <p>If you have any questions, feel free to reach out to us.</p>
-        <p>Thank you for your understanding!</p>
-        <p><strong>ATOM Team</strong></p>
-      </div>
-    `;
+        <p>There have been updates to your scheduled tour:</p>
+        <ul>`;
 
-    try {
+
+      if (changedFields.visitDate) {
+        message += `<li><strong>Date Update:</strong> Unfortunately, your current date is not suitable. The new date our advisor suggests is: <strong>${new Date(changedFields.visitDate).toLocaleDateString()}</strong>.</li>`;
+        message += `
+              <p style="text-align: center; margin:;">
+                <a href="${resubmissionLink}"
+                  style="background-color: #0056b3; color: white; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
+                  Change Preferred Dates
+                </a>
+              </p>`;
+      }
+      if (changedFields.studentCount) {
+        message += `<li><strong>Number of Students:</strong> ${changedFields.studentCount} </li>`;
+      }
+      if (changedFields.advisorNotes) {
+        message += `<li><strong>Advisor Notes:</strong> ${changedFields.advisorNotes}</li>`;
+      }
+
+      message +=`
+        <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
+          Alternatively, you can copy and paste the following link into your browser:<br />
+          <a href="${resubmissionLink}" style="color: #0056b3; font-weight: bold;">${resubmissionLink}</a>
+        </p>`;
+
+      message += `</ul>
+        <p>Thank you for your understanding.</p>
+        <p><strong>Your Event Team</strong></p>
+      </div>`;
+
+
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
-        subject,
-        html: htmlContent,
+        subject: "Update on Your Scheduled Event",
+        html: message,
       });
+
       console.log(`Notification email sent to ${email}`);
     } catch (error) {
       console.error(`Failed to send email to ${email}:`, error);
