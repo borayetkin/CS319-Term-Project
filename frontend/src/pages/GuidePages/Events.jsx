@@ -200,6 +200,12 @@ const Events = () => {
 
   return (
     <div className="events-container">
+      {message && (
+        <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
+          {message}
+        </div>
+      )}
+
       <div className="events-header">
         <h1>Confirmed Events</h1>
         <Link to="/advisor-info" className="advisor-info-link">
