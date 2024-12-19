@@ -496,44 +496,46 @@ const Profile = () => {
         />
       )}
 
-      {profile.role === "guide" && (
-        <div className="guide-info-section">
-          <h2>Guide Information</h2>
-          <div className="profile-grid">
-            <div className="info-card">
-              <div className="card-content">
-                <div className="card-icon">
-                  <h3>Preferred Time and Hours</h3> <FaCalendarAlt /> <FaClock />
-                </div>
-                {profile.availability && profile.availability.length > 0 ? (
-                  <div className="availability-list">
-                    {profile.availability.map((day) => (
-                      <div key={day.day} className="availability-day">
-                        <strong>{day.day}</strong>
-                        {day.timeSlots && day.timeSlots.length > 0 ? (
-                          <ul className="time-slots">
-                            {day.timeSlots.map((slot, index) => (
-                              <li key={index} className="time-slot">
-                                <FaClock className="time-icon" />
-                                {slot}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="no-slots">No time slots selected</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="no-availability">No availability set</p>
-                )}
+      <div className="guide-info-section">
+        <h2>Guide Information</h2>
+        <div className="profile-grid">
+          <div className="info-card">
+            <div className="card-content">
+              <div className="card-icon">
+                <h3>Preferred Time and Hours</h3> <FaCalendarAlt /> <FaClock />
               </div>
+              {profile.availability?.length ? ( // Check if availability is set
+                <ul>
+                  {profile.availability.map((day) => (
+                    <li key={day.day}>
+                      <strong>{day.day}</strong>
+                      <ul>
+                        {day.timeSlots.map((timeSlot) => (
+                          <li key={timeSlot}>{timeSlot}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Not set</p>
+              )}
+            </div>
+          </div>
+
+
+
+          <div className="info-card">
+            <div className="card-icon">
+              <MdWork />
+            </div>
+            <div className="card-content">
+              <h3>Tours Completed</h3>
+              <p>{profile.toursCompleted || "0"}</p>
             </div>
           </div>
         </div>
-      )}
-
+      </div>
     </div>
   );
 };

@@ -261,7 +261,7 @@ const DetailsModal = ({ application, onClose, context, user }) => {
                         <div className="guide-details">
                           <p><span>Email:</span> {application.assignedAdvisor?.email || "N/A"}</p>
                           <p><span>Phone:</span> {application.assignedAdvisor?.phoneNumber || "N/A"}</p>
-                          <p><span>Department:</span> {application.assignedAdvisor?.major || "N/A"}</p>
+                          <p><span>Department:</span> {application.assignedAdvisor?.department || "N/A"}</p>
                         </div>
                       </div>
                     </div>

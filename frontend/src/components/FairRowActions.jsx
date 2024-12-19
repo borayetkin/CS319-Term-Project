@@ -80,6 +80,11 @@ const FairRowActions = ({ fair, user, setMessage }) => {
 
   return (
     <div className="action-buttons">
+      <Link to={`/fairs/${fair._id}`} className="action-button view">
+        <i className="fas fa-eye"></i>
+        View Details
+      </Link>
+      
       {user &&
       rolesThatApply.includes(user.role) &&
       !checkIfUserHasApplied() &&

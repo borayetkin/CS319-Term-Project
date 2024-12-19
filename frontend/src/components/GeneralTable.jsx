@@ -23,7 +23,7 @@ const GeneralTable = ({
     date: 80,
     time: 80,
     status: 120,
-    assignedUsers: 70,
+    assignedUsers: 5,
     requiredNumberOfGuides: 65,
     contactPerson: 120,
     email: 150,

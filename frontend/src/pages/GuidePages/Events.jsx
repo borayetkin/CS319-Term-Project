@@ -200,38 +200,34 @@ const Events = () => {
 
   return (
     <div className="events-container">
+      <div className="events-header">
+        <h1>Confirmed Events</h1>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <i className="fas fa-search search-icon"></i>
+        </div>
+        <Link to="/advisor-info" className="advisor-info-link">View Advisors</Link>
+      </div>
+
       {message && (
         <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
           {message}
         </div>
       )}
 
-      <div className="events-header">
-        <h1>Confirmed Events</h1>
-        <Link to="/advisor-info" className="advisor-info-link">
-          View Advisors
-        </Link>
-      </div>
-
       <div className="controls-container">
-        <div className="controls-left">
-          <TypeSelectionTrio
-            setShowType={setShowType}
-            haveFairButton={true}
-            haveSchoolTourButton={true}
-            haveIndividualTourButton={true}
-            showType={showType}
-          />
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search events..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <i className="fas fa-search search-icon"></i>
-          </div>
-        </div>
+        <TypeSelectionTrio
+          setShowType={setShowType}
+          haveFairButton={true}
+          haveSchoolTourButton={true}
+          haveIndividualTourButton={true}
+          showType={showType}
+        />
         <div className="filter-sort-controls">
           <div className="control-group">
             <label htmlFor="sortOption">
@@ -250,54 +246,56 @@ const Events = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <LoadingSpinner loading={viewType === "fairs" ? "Fairs" : "Events"} />
-      ) : (
-        <>
-          <GeneralTable
-            showFairs={true}
-            showTours={true}
-            showExtraProperties={{
-              SchoolTour: ["assignedUsers","requiredNumberOfGuides","contactPerson","email"],
-              IndividualTour: ["studentHighSchool","email","phoneNumber" ],
-              Fair: ["assignedUsers","requiredNumberOfGuides","organiserName","email","city"],
-            }}
-            setMessage={setMessage}
-            user={user}
-            fairs={sortedFairs}
-            events={sortedEvents}
-            showType={showType}
-            searchTerm={searchTerm}
-            EventRowActions={(props) => (
-              <EventRowActions
-                {...props}
-                setMessage={setMessage}
-                events={sortedEvents}
-                setEvents={handleEventsUpdate}
-                onActionComplete={handleActionComplete}
-              />
-            )}
-            FairRowActions={(props) => (
-              <FairRowActions
-                {...props}
-                setMessage={setMessage}
-                onActionComplete={handleActionComplete}
-              />
-            )}
-            viewType={viewType}
-            onShowDetails={handleShowDetails}
-          />
-
-          {showDetailsModal && (
-            <DetailsModal
-              application={selectedItem}
-              onClose={() => setShowDetailsModal(false)}
-              context="events"
+     
+        {isLoading ? (
+          <LoadingSpinner loading={viewType === "fairs" ? "Fairs" : "Events"} />
+        ) : (
+          <>
+            <GeneralTable
+              showFairs={true}
+              showTours={true}
+              showExtraProperties={{
+                SchoolTour: ["assignedUsers","requiredNumberOfGuides","contactPerson","email"],
+                IndividualTour: ["studentHighSchool","email","phoneNumber" ],
+                Fair: ["assignedUsers","requiredNumberOfGuides","organiserName","email","city"],
+              }}
+              setMessage={setMessage}
+              user={user}
+              fairs={sortedFairs}
+              events={sortedEvents}
+              showType={showType}
+              searchTerm={searchTerm}
+              EventRowActions={(props) => (
+                <EventRowActions
+                  {...props}
+                  setMessage={setMessage}
+                  events={sortedEvents}
+                  setEvents={handleEventsUpdate}
+                  onActionComplete={handleActionComplete}
+                />
+              )}
+              FairRowActions={(props) => (
+                <FairRowActions
+                  {...props}
+                  setMessage={setMessage}
+                  onActionComplete={handleActionComplete}
+                />
+              )}
+              viewType={viewType}
+              onShowDetails={handleShowDetails}
             />
-          )}
-        </>
-      )}
-    </div>
+
+            {showDetailsModal && (
+              <DetailsModal
+                application={selectedItem}
+                onClose={() => setShowDetailsModal(false)}
+                context="events"
+              />
+            )}
+          </>
+        )}
+      </div>
+   
   );
 };
 
