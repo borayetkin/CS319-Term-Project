@@ -861,12 +861,12 @@ exports.isReviewSubmitted = async (req, res) => {
 
 exports.resubmitEventReserveDates = async (req, res) => {
   const { eventId } = req.params; // Extract eventId from the URL
-  const { reserveDates } = req.body; // Extract reserveDates from the request body
+  const { reserveDates, visitDate, visitTime } = req.body; // Extract necessary fields from the request body
 
   try {
-    // Validate the reserveDates input
-    if (!Array.isArray(reserveDates) || reserveDates.length === 0) {
-      return res.status(400).json({ message: "Invalid reserveDates array." });
+    // Validate input based on the type of tour
+    if ((!Array.isArray(reserveDates) || reserveDates.length === 0) && (!visitDate || !visitTime)) {
+      return res.status(400).json({ message: "Invalid input. Provide reserveDates for school tours or visitDate and visitTime for individual tours." });
     }
 
     // Find the event by eventId
@@ -876,24 +876,38 @@ exports.resubmitEventReserveDates = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    // Update the event's reserveDates
-    event.reserveDates = reserveDates;
+    // Check the type of the event
+    if (event.typeStr === "School Tour") {
+      // For school tours, update the reserveDates
+      if (!Array.isArray(reserveDates) || reserveDates.length === 0) {
+        return res.status(400).json({ message: "Please provide valid reserveDates for school tours." });
+      }
+      event.reserveDates = reserveDates;
+    } else if (event.typeStr === "Individual Tour") {
+      // For individual tours, update the visitDate and visitTime
+      if (!visitDate || !visitTime) {
+        return res.status(400).json({ message: "Please provide a valid visitDate and visitTime for individual tours." });
+      }
+      event.visitDate = visitDate;
+      event.visitTime = visitTime;
+    } else {
+      return res.status(400).json({ message: "Invalid tour type. Cannot process the request." });
+    }
 
-    //Update event status
-    event.status = 'pending';
+    // Update event status
+    event.status = "pending";
 
     // Save the updated event
     await event.save();
     res.status(200).json({
-      message: "Event reserveDates resubmitted successfully.",
+      message: "Event resubmitted successfully.",
       event,
     });
   } catch (error) {
-    console.error("Error resubmitting event reserveDates:", error);
+    console.error("Error resubmitting event:", error);
     res.status(500).json({ message: "Server error.", error: error.message });
   }
 };
-
 exports.updateUserAvailability = async (req, res) => {
   try {
     const userId = req.user.id;

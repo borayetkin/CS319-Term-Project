@@ -46,7 +46,7 @@ router.get("/accepted", auth, getAcceptedEvents);
 router.get("/user", auth, getAssigneddEventsOfUser);
 router.get("/advisor", auth, getApplicationsOfAdvisor);
 router.get("/completed",auth, getCompletedNonVerifiedEvents);
-router.get("/:id", auth, getEvent);
+router.get("/:id", getEvent);
 
 // Add this route to fetch event details by ID
 router.get("/details/:id", auth, getEvent);
