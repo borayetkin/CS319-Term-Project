@@ -382,7 +382,7 @@ const TourApplication = () => {
       if (applicationExists) {
         const warningMessage = `
         An application for this school already exists. You can update the details from the email sent to the applicant's email address.<br />
-        <br> If you think there is a mistake or further assistance, contact us at:
+        <br> If you think there is a mistake or need any further assistance, contact us at:
         <a href="mailto:atomanager.notifications@gmail.com" style="color: #0056b3; text-decoration: none;">
           atomanager.notifications@gmail.com
         </a> <br/>

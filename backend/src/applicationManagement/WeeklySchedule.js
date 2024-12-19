@@ -9,6 +9,7 @@ const weeklyScheduleSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  
   slots: [
     {
       slotDay: {
@@ -20,15 +21,24 @@ const weeklyScheduleSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      event: {
+      events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Event",
         required: false,
-      },
+      }],
+      availableEvents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
+        required: false,
+      }],
       isEmpty: {
         type: Boolean,
         default: true,
       },
+      isFull: {
+        type: Boolean,
+        default: false
+      }
     },
   ],
 });
