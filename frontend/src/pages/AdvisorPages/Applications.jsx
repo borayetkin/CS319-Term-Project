@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch } from "react-icons/fa";
 import DetailsModal from "../../components/DetailsModal";
 
 const Applications = () => {
@@ -21,28 +21,35 @@ const Applications = () => {
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
   const [showWeeklySchedules, setShowWeeklySchedules] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState({});
-  const [popup, setPopup] = useState({ show: false, slot: null, schoolNames: [], loadingItem: null, });
+  const [popup, setPopup] = useState({
+    show: false,
+    slot: null,
+    schoolNames: [],
+    loadingItem: null,
+  });
   const [slotInformation, setSlotInformation] = useState([]);
-  const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] = useState(false);
+  const [isLoadingWeeklySchedules, setIsLoadingWeeklySchedules] =
+    useState(false);
   const navigate = useNavigate();
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [messageTimeout, setMessageTimeout] = useState(null);
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+  const [actionType, setActionType] = useState(""); // "reject" or "delete"
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserProfile(token);
       fetchWeeklySchedules(token);
-      
     }
   }, []);
-  useEffect ( () => {
+  useEffect(() => {
     if (weeklySchedules && weeklySchedules.length > 0) {
       fetchAllPossibleSlots(weeklySchedules[currentWeekIndex]?.weekBeginning);
-      
     }
   }, [weeklySchedules, currentWeekIndex]);
   useEffect(() => {
@@ -101,6 +108,52 @@ const Applications = () => {
     }
   };
 
+  const handleConfirmation = async () => {
+    if (!selectedApplicationId) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const endpoint =
+        actionType === "reject"
+          ? `http://localhost:3000/api/applications/reject/${selectedApplicationId}`
+          : `http://localhost:3000/api/applications/delete/${selectedApplicationId}`;
+      const method = actionType === "reject" ? "PUT" : "DELETE";
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        setMessage(`Application ${actionType}ed successfully!`);
+        handleActionComplete();
+      } else {
+        setMessage(`Failed to ${actionType} application.`);
+      }
+    } catch (error) {
+      setMessage(`Error: Unable to ${actionType} application.`);
+    } finally {
+      setShowConfirmationPopup(false);
+      setActionType("");
+      setSelectedApplicationId(null);
+    }
+  };
+
+  const handleRejectApplication = (applicationId) => {
+    setActionType("reject");
+    setSelectedApplicationId(applicationId);
+    setShowConfirmationPopup(true);
+  };
+
+  const handleDeleteApplication = (applicationId) => {
+    setActionType("delete");
+    setSelectedApplicationId(applicationId);
+    setShowConfirmationPopup(true);
+  };
+
   const handleActionComplete = async () => {
     const token = localStorage.getItem("token");
     await fetchApplications(token, user);
@@ -115,7 +168,6 @@ const Applications = () => {
       if (response.ok) {
         const data = await response.json();
         setWeeklySchedules(data);
-
       } else {
         setMessage("Failed to fetch weekly schedules");
       }
@@ -126,14 +178,13 @@ const Applications = () => {
   };
   const fetchAllPossibleSlots = async (weekBeginning) => {
     try {
-
       const response = await fetch(
         `http://localhost:3000/api/schedules/week-all?weekBeginning=${weekBeginning}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
-          }
+          },
         }
       );
       if (response.ok) {
@@ -145,7 +196,7 @@ const Applications = () => {
     } catch (error) {
       setMessage("Error fetching all possible slots: " + error.message);
     }
-  }
+  };
   const handleRebuildSchedules = async () => {
     try {
       const response = await fetch(
@@ -172,32 +223,39 @@ const Applications = () => {
       const eventId = slot.event._id;
       slot.event = null;
       slot.isEmpty = true;
-  
-      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: true }));
-  
+
+      setLoadingSlots((prev) => ({
+        ...prev,
+        [slot.slotDay + slot.slotTime]: true,
+      }));
+
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/api/schedules/remove-from-schedule", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify( { eventId } ), // Send only the eventId
-      });
-  
+      const response = await fetch(
+        "http://localhost:3000/api/schedules/remove-from-schedule",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ eventId }), // Send only the eventId
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
         setMessage(`Error removing event: ${errorData.message}`);
         return;
       }
-  
     } catch (error) {
       setMessage("Error removing event: " + error.message);
     } finally {
-      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: false }));
+      setLoadingSlots((prev) => ({
+        ...prev,
+        [slot.slotDay + slot.slotTime]: false,
+      }));
     }
   };
-  
 
   const handleAddEvent = async (weekBeginning, slotDay, slotTime) => {
     try {
@@ -213,10 +271,9 @@ const Applications = () => {
           body: JSON.stringify({ weekBeginning, slotDay, slotTime }),
         }
       );
-    
+
       const schoolNames = await response.json();
       return schoolNames;
-      
     } catch (error) {
       setMessage("Error fetching matching events: " + error.message);
       return [];
@@ -227,7 +284,10 @@ const Applications = () => {
     try {
       setPopup((prev) => ({ ...prev, loadingItem: schoolName }));
       const token = localStorage.getItem("token");
-      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: true }));
+      setLoadingSlots((prev) => ({
+        ...prev,
+        [slot.slotDay + slot.slotTime]: true,
+      }));
       await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
         method: "POST",
         headers: {
@@ -246,10 +306,12 @@ const Applications = () => {
       setMessage("Error assigning event: " + error.message);
     } finally {
       setPopup({ show: false, slot: null, schoolNames: [], loadingItem: null });
-      setLoadingSlots((prev) => ({ ...prev, [slot.slotDay + slot.slotTime]: false }));
+      setLoadingSlots((prev) => ({
+        ...prev,
+        [slot.slotDay + slot.slotTime]: false,
+      }));
     }
   };
-
 
   const sortApplications = (applications) => {
     const sortedApplications = [...applications];
@@ -262,7 +324,7 @@ const Applications = () => {
           accepted: 3,
           // All other statuses will have higher numbers
           "canceled-resubmission-requested": 4,
-          rejected: 5
+          rejected: 5,
         };
 
         // Get status priorities (default to highest number if status not found)
@@ -275,8 +337,11 @@ const Applications = () => {
         }
 
         // For pending and scheduled status, sort by priority if it's a SchoolTour
-        if ((a.status === 'pending' || a.status === 'scheduled') && 
-            a.__t === 'SchoolTour' && b.__t === 'SchoolTour') {
+        if (
+          (a.status === "pending" || a.status === "scheduled") &&
+          a.__t === "SchoolTour" &&
+          b.__t === "SchoolTour"
+        ) {
           return getPriorityScore(b) - getPriorityScore(a);
         }
 
@@ -284,7 +349,7 @@ const Applications = () => {
         return new Date(b.visitDate) - new Date(a.visitDate);
       });
     }
-    
+
     // Rest of the sorting options remain the same
     return sortedApplications.sort((a, b) => {
       switch (sortOption) {
@@ -317,16 +382,18 @@ const Applications = () => {
     }
   };
   const checkIfSlotIsAvailable = (slot) => {
-
-    return slotInformation.some((s) => s.slot.slotDay === slot.slotDay && s.slot.slotTime === slot.slotTime);
-
+    return slotInformation.some(
+      (s) =>
+        s.slot.slotDay === slot.slotDay && s.slot.slotTime === slot.slotTime
+    );
   };
-
 
   const handleWeekChange = (direction) => {
     setCurrentWeekIndex((prevIndex) => {
       const newIndex = prevIndex + direction;
-      return newIndex < 0 ? weeklySchedules.length - 1 : newIndex % weeklySchedules.length;
+      return newIndex < 0
+        ? weeklySchedules.length - 1
+        : newIndex % weeklySchedules.length;
     });
   };
 
@@ -339,7 +406,7 @@ const Applications = () => {
   );
 
   const toggleRowExpansion = (applicationId) => {
-    setExpandedRows(prev => {
+    setExpandedRows((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(applicationId)) {
         newSet.delete(applicationId);
@@ -351,14 +418,15 @@ const Applications = () => {
   };
 
   const renderReserveDatesButton = (application) => {
-    if (!application.reserveDates || application.reserveDates.length <= 1) return null;
-    
+    if (!application.reserveDates || application.reserveDates.length <= 1)
+      return null;
+
     return (
-      <button 
+      <button
         className="expand-dates-button"
         onClick={() => toggleRowExpansion(application._id)}
       >
-        {expandedRows.has(application._id) ? 'Hide Dates' : 'Show All Dates'}
+        {expandedRows.has(application._id) ? "Hide Dates" : "Show All Dates"}
       </button>
     );
   };
@@ -374,7 +442,8 @@ const Applications = () => {
             <ul>
               {application.reserveDates.map((date, index) => (
                 <li key={index}>
-                  {new Date(date.visitDate).toLocaleDateString()} at {date.visitTime}
+                  {new Date(date.visitDate).toLocaleDateString()} at{" "}
+                  {date.visitTime}
                 </li>
               ))}
             </ul>
@@ -393,8 +462,32 @@ const Applications = () => {
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
       {message && (
-        <div className={`message-popup ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
+        <div
+          className={`message-popup ${
+            message.includes("Error") || message.includes("Failed")
+              ? "error"
+              : "success"
+          }`}
+        >
           {message}
+        </div>
+      )}
+      {showConfirmationPopup && (
+        <div className="confirmation-popup-overlay">
+          <div className="confirmation-popup">
+            <h3>Are you sure you want to {actionType} this application?</h3>
+            <div className="popup-actions">
+              <button className="popup-confirm" onClick={handleConfirmation}>
+                Yes
+              </button>
+              <button
+                className="popup-cancel"
+                onClick={() => setShowConfirmationPopup(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
         </div>
       )}
       <div className="controls-container">
@@ -405,7 +498,7 @@ const Applications = () => {
             haveFairButton={false}
             upperCase={false}
           />
-          
+
           <div className="filter-sort-group">
             <div className="filter-controls">
               <label htmlFor="filter">Filter by Status:</label>
@@ -417,7 +510,9 @@ const Applications = () => {
                 <option value="all">All</option>
                 <option value="pending">Pending</option>
                 <option value="scheduled">Scheduled</option>
-                <option value="canceled-resubmission-requested">Canceled</option>
+                <option value="canceled-resubmission-requested">
+                  Canceled
+                </option>
                 <option value="accepted">Accepted</option>
                 <option value="rejected">Rejected</option>
               </select>
@@ -434,10 +529,12 @@ const Applications = () => {
                 <option value="appliedDate">Applied Date</option>
                 <option value="schoolName">School Name</option>
                 <option value="status">Status</option>
-                {tourType === "SchoolTour" && <option value="priority">Priority</option>}
+                {tourType === "SchoolTour" && (
+                  <option value="priority">Priority</option>
+                )}
               </select>
             </div>
-            
+
             <div className="search-bar">
               <FaSearch className="search-icon" />
               <input
@@ -452,7 +549,9 @@ const Applications = () => {
 
         <div className="controls-right">
           <button
-            className={`weekly-schedule-toggle ${showWeeklySchedules ? "soft-red" : "green"}`}
+            className={`weekly-schedule-toggle ${
+              showWeeklySchedules ? "soft-red" : "green"
+            }`}
             onClick={() => setShowWeeklySchedules(!showWeeklySchedules)}
           >
             {showWeeklySchedules ? "Hide Schedule" : "Show Schedule"}
@@ -466,95 +565,127 @@ const Applications = () => {
         </div>
       </div>
 
-      { showWeeklySchedules ? !isLoadingWeeklySchedules &&( 
-        <div className="weekly-schedule">
-          <div className="weekly-controls">
-            <button onClick={() => handleWeekChange(-1)}>← Previous</button>
-            <p className="date-range">
-              {new Date(weeklySchedules[currentWeekIndex]?.weekBeginning).toLocaleDateString("en-GB")} - 
-              {new Date(weeklySchedules[currentWeekIndex]?.weekEnding).toLocaleDateString("en-GB")}
-            </p>
-            <button onClick={() => handleWeekChange(1)}>Next →</button></div>
-          <div className="schedule-info">
-            <p><span className="legend accepted"></span> Accepted</p>
-            <p><span className="legend scheduled"></span> Scheduled</p> 
-          </div>
-          {weeklySchedules.length > 0 && weeklySchedules[currentWeekIndex]?.slots ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                    <th key={day}>{day}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {["09:00", "11:00", "13:30", "16:00"].map((time) => (
-                  <tr key={time}>
-                    <td>{time}</td>
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => {
-                      const slot = weeklySchedules[currentWeekIndex].slots.find(
-                        (s) => s.slotDay === day && s.slotTime === time
-                      );
-                      return (
-                        <td key={day}>
-                          {slot ? (
-                            slot.event ? (
-                              <div
-                                className="event"
-                                style={{
-                                  backgroundColor:
-                                    slot.event.status === "scheduled"
-                                      ? "#fef3c7"
-                                      : slot.event.status === "accepted"
-                                      ? "#d1fae5"
-                                      : "#edf2f7",
-                                }}
-                              >
-                                {slot.event.schoolName}
-                                <span
-                                  className="remove-cross"
-                                  onClick={() =>
-                                    handleRemoveEvent(slot)
-                                  }
+      {showWeeklySchedules ? (
+        !isLoadingWeeklySchedules && (
+          <div className="weekly-schedule">
+            <div className="weekly-controls">
+              <button onClick={() => handleWeekChange(-1)}>← Previous</button>
+              <p className="date-range">
+                {new Date(
+                  weeklySchedules[currentWeekIndex]?.weekBeginning
+                ).toLocaleDateString("en-GB")}{" "}
+                -
+                {new Date(
+                  weeklySchedules[currentWeekIndex]?.weekEnding
+                ).toLocaleDateString("en-GB")}
+              </p>
+              <button onClick={() => handleWeekChange(1)}>Next →</button>
+            </div>
+            <div className="schedule-info">
+              <p>
+                <span className="legend accepted"></span> Accepted
+              </p>
+              <p>
+                <span className="legend scheduled"></span> Scheduled
+              </p>
+            </div>
+            {weeklySchedules.length > 0 &&
+            weeklySchedules[currentWeekIndex]?.slots ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    {[
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ].map((day) => (
+                      <th key={day}>{day}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {["09:00", "11:00", "13:30", "16:00"].map((time) => (
+                    <tr key={time}>
+                      <td>{time}</td>
+                      {[
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday",
+                      ].map((day) => {
+                        const slot = weeklySchedules[
+                          currentWeekIndex
+                        ].slots.find(
+                          (s) => s.slotDay === day && s.slotTime === time
+                        );
+                        return (
+                          <td key={day}>
+                            {slot ? (
+                              slot.event ? (
+                                <div
+                                  className="event"
+                                  style={{
+                                    backgroundColor:
+                                      slot.event.status === "scheduled"
+                                        ? "#fef3c7"
+                                        : slot.event.status === "accepted"
+                                        ? "#d1fae5"
+                                        : "#edf2f7",
+                                  }}
                                 >
-                                  ✖
-                                </span>
-                              </div>
-                            ) : ( checkIfSlotIsAvailable(slot) ? (
-                              <button
-                                className="add-event-button"
-                                onClick={async () => {
-                                  const schoolNames = await handleAddEvent(
-                                    weeklySchedules[currentWeekIndex].weekBeginning,
-                                    day,
-                                    time
-                                  );
-                                  setPopup({ show: true, slot, schoolNames });
-                                }}
-                              >
-                                +Add Event
-                              </button>) : (
-                                <div className="event" style={{ backgroundColor: "#f9f9f9" }}>
+                                  {slot.event.schoolName}
+                                  <span
+                                    className="remove-cross"
+                                    onClick={() => handleRemoveEvent(slot)}
+                                  >
+                                    ✖
+                                  </span>
+                                </div>
+                              ) : checkIfSlotIsAvailable(slot) ? (
+                                <button
+                                  className="add-event-button"
+                                  onClick={async () => {
+                                    const schoolNames = await handleAddEvent(
+                                      weeklySchedules[currentWeekIndex]
+                                        .weekBeginning,
+                                      day,
+                                      time
+                                    );
+                                    setPopup({ show: true, slot, schoolNames });
+                                  }}
+                                >
+                                  +Add Event
+                                </button>
+                              ) : (
+                                <div
+                                  className="event"
+                                  style={{ backgroundColor: "#f9f9f9" }}
+                                >
                                   No event Possible
                                 </div>
                               )
-                            )
-                          ) : (
-                            <p>No event</p>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No schedules available</p>
-          )}
-            { popup.show && (
+                            ) : (
+                              <p>No event</p>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No schedules available</p>
+            )}
+            {popup.show && (
               <div className="popup-overlay">
                 <div className="popup-content">
                   <h3>Please select an Event:</h3>
@@ -572,8 +703,14 @@ const Applications = () => {
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
-                            cursor: popup.loadingItem ? "not-allowed" : "pointer",
-                            opacity: popup.loadingItem && popup.loadingItem !== schoolName ? 0.5 : 1,
+                            cursor: popup.loadingItem
+                              ? "not-allowed"
+                              : "pointer",
+                            opacity:
+                              popup.loadingItem &&
+                              popup.loadingItem !== schoolName
+                                ? 0.5
+                                : 1,
                           }}
                         >
                           <span>{schoolName}</span>
@@ -590,7 +727,12 @@ const Applications = () => {
                   <button
                     className="popup-close"
                     onClick={() =>
-                      setPopup({ show: false, slot: null, schoolNames: [], loadingItem: null })
+                      setPopup({
+                        show: false,
+                        slot: null,
+                        schoolNames: [],
+                        loadingItem: null,
+                      })
                     }
                   >
                     Close
@@ -598,18 +740,30 @@ const Applications = () => {
                 </div>
               </div>
             )}
-
-        </div>
-
-        
+          </div>
+        )
       ) : (
         <GeneralTable
           key={tourType}
           showFairs={false}
           showTours={true}
           showExtraProperties={{
-            SchoolTour: [ "priority", "city", "studentCount", "contactPerson", "email", "phoneNumber"],
-            IndividualTour: ["studentName", "studentHighSchool", "majorOfInterest", "email", "phoneNumber", "applicationDate"],
+            SchoolTour: [
+              "priority",
+              "city",
+              "studentCount",
+              "contactPerson",
+              "email",
+              "phoneNumber",
+            ],
+            IndividualTour: [
+              "studentName",
+              "studentHighSchool",
+              "majorOfInterest",
+              "email",
+              "phoneNumber",
+              "applicationDate",
+            ],
           }}
           setMessage={setMessage}
           user={user}
@@ -621,6 +775,12 @@ const Applications = () => {
           EventRowActions={(props) => (
             <ApplicationsRowActions
               {...props}
+              onReject={(applicationId) =>
+                handleRejectApplication(applicationId)
+              }
+              onDelete={(applicationId) =>
+                handleDeleteApplication(applicationId)
+              }
               onActionComplete={handleActionComplete}
             />
           )}
@@ -633,7 +793,9 @@ const Applications = () => {
           onShowDetails={handleShowDetails}
         />
       )}
-      {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules))&& <LoadingSpinner />}
+      {(isLoading || (showWeeklySchedules && isLoadingWeeklySchedules)) && (
+        <LoadingSpinner />
+      )}
       {showDetailsModal && (
         <DetailsModal
           application={selectedApplication}
@@ -644,7 +806,5 @@ const Applications = () => {
       )}
     </div>
   );
-}
-;
-
+};
 export default Applications;

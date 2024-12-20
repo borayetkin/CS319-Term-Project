@@ -11,7 +11,7 @@
   align-items: flex-end;
   gap: 16px;
   padding: 10px;
-  margin-bottom:0px;
+  margin-bottom: 0px;
   box-sizing: border-box;
 }
 
@@ -76,19 +76,11 @@
   height: auto;
 }
 
-
-
-
-
 .typeSelectionTrio .active {
   background-color: #2563eb;
   color: white;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
-
-
-
-
 
 /* Weekly Controls and Date Range */
 .weekly-controls {
@@ -109,10 +101,6 @@
   color: #1a202c;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
-
-
 
 /* Weekly Schedule */
 .weekly-schedule {
@@ -315,11 +303,11 @@ td {
 
 /* Event Background Variants */
 .scheduled-event {
-  background-color: rgba(234, 179, 8, 0.3); 
+  background-color: rgba(234, 179, 8, 0.3);
 }
 
 .accepted-event {
-  background-color: rgba(72, 187, 120, 0.3); 
+  background-color: rgba(72, 187, 120, 0.3);
 }
 
 /* Empty Slot Button Styling */
@@ -337,10 +325,9 @@ td {
 }
 
 .add-event-button:hover {
-  background-color: rgb(199, 195, 250); 
-  transform: scale(1.05); 
+  background-color: rgb(199, 195, 250);
+  transform: scale(1.05);
 }
-
 
 /* Popup for Adding Events */
 .popup-overlay {
@@ -499,8 +486,7 @@ td {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 
-              0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Show Schedule button */
@@ -533,8 +519,6 @@ td {
   transform: translateY(1px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
-
 
 /* Status badges */
 .applications-page-container .status-badge {
@@ -613,12 +597,12 @@ td {
 }
 
 .message-popup.success {
-  background-color: #10B981;
+  background-color: #10b981;
   color: white;
 }
 
 .message-popup.error {
-  background-color: #EF4444;
+  background-color: #ef4444;
   color: white;
 }
 
@@ -631,4 +615,67 @@ td {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+.confirmation-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.confirmation-popup {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.confirmation-popup h3 {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.popup-confirm {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-confirm:hover {
+  background-color: #059669;
+}
+
+.popup-cancel {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-cancel:hover {
+  background-color: #dc2626;
 }
