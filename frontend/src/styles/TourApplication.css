@@ -16,10 +16,10 @@
   padding: 3rem;
   background: linear-gradient(
     135deg,
-    rgba(220, 217, 223, 0.7),
-    rgba(230, 224, 234, 0.7),
-    rgba(222, 214, 230, 0.7),
-    rgba(243, 241, 245, 0.7)
+    rgba(223, 222, 225, 0.8),
+    rgba(230, 224, 234, 0.8),
+    rgba(218, 229, 239, 0.8),
+    rgba(217, 216, 219, 0.8)
   );
   max-width: 550px;
   width: 100%;
@@ -75,7 +75,7 @@
 
 .tour-type-button:hover {
   background-color: #444e98;
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .tour-type-description {
@@ -141,6 +141,7 @@
   min-height: 100px;
 }
 
+/* Submit Button Styling */
 .tour-application-submit {
   background-color: #5a67b3;
   color: white;
@@ -158,18 +159,6 @@
 .tour-application-submit:hover {
   background-color: #444e98;
   transform: scale(1.02);
-}
-
-.tour-application-submit.disabled {
-  background-color: #cccccc; /* Grey background for disabled state */
-  color: #666666; /* Lighter text color */
-  cursor: not-allowed; /* Change cursor to indicate disabled state */
-  box-shadow: none; /* Remove shadow */
-}
-
-.tour-application-submit.disabled:hover {
-  background-color: #cccccc; /* Ensure no hover effect on disabled state */
-  transform: none; /* Prevent scaling */
 }
 
 /* Styling for labels */
@@ -266,7 +255,7 @@ input[type="tel"]::placeholder {
 
 /* Navigation button styling */
 .navigation-button {
-  background-color: #21253d;
+  background-color: #2c345c;
   color: white;
   padding: 0.75rem;
   font-size: 1.2rem;
@@ -281,8 +270,8 @@ input[type="tel"]::placeholder {
 }
 
 .navigation-button:hover {
-  background-color: #1a1c2c;
-  transform: scale(1.02);
+  background-color: #42486e;
+  transform: scale(1.01);
 }
 
 /* Animation for step transitions */
@@ -332,7 +321,6 @@ input[type="tel"]::placeholder {
   padding: 10px;
   border-radius: 8px;
   color: #f10000;
-  border: 1px solid #ffeeba;
   margin: 20px 0;
   animation: fade-in 0.3s ease-in-out;
 }
@@ -429,43 +417,4 @@ input[type="tel"]::placeholder {
 
 .confirmation-step p.gray-text {
   color: gray; /* Style for optional gray text like reserve visit details */
-}
-
-.terms-agreement {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #2b3349;
-}
-
-.terms-agreement a {
-  color: #5a67b3;
-  text-decoration: underline;
-  transition: color 0.3s;
-}
-
-.terms-agreement a:hover {
-  color: #444e98;
-}
-
-.terms-agreement label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.terms-agreement input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #5a67b3; /* For consistent checkbox color */
-}
-
-.terms-text {
-  margin-top: 15px;
-  font-size: 0.9rem;
-  color: #2b3349;
-  line-height: 1.5;
-  background-color: #f9f9fb;
-  border-left: 4px solid #5a67b3;
-  padding: 10px 15px;
-  border-radius: 8px;
 }
