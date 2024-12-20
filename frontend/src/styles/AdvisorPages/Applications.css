@@ -79,7 +79,7 @@
 .typeSelectionTrio .active {
   background-color: #2563eb;
   color: white;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  /*box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);*/
 }
 
 /* Weekly Controls and Date Range */
@@ -99,7 +99,7 @@
   border-radius: 8px;
   padding: 10px 16px;
   color: #1a202c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
 /* Weekly Schedule */
@@ -108,7 +108,7 @@
   padding: 20px;
   background: linear-gradient(to bottom right, #f9fafb, #ffffff);
   border-radius: 20px;
-  box-shadow: 10px 10px 12px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 10px 10px 12px rgba(0, 0, 0, 0.1);*/
 }
 
 .schedule-info {
@@ -445,7 +445,7 @@ td {
   margin: 8px;
   border-radius: 8px;
   background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);*/
 }
 
 .reserved-dates-container h4 {
@@ -486,7 +486,7 @@ td {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);*/
 }
 
 /* Show Schedule button */
@@ -510,14 +510,14 @@ td {
 .weekly-schedule-toggle:hover,
 .rebuild-schedules-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);*/
 }
 
 /* Active/pressed state */
 .weekly-schedule-toggle:active,
 .rebuild-schedules-button:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);*/
 }
 
 /* Status badges */
