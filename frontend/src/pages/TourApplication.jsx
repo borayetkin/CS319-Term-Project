@@ -25,16 +25,73 @@ const generateTimeSlots = () => {
 };
 
 const majors = [
-  { label: "EĞİTİM FAKÜLTESİ", options: ["Temel Eğitim (Sınıf Öğretmenliği)", "Eğitim Bilimleri", "Öğretmen Yetiştirme", "Yabancı Dil Olarak İngilizce Öğretimi"] },
-  { label: "FEN FAKÜLTESİ", options: ["Fizik", "Kimya", "Matematik", "Moleküler Biyoloji ve Genetik"] },
-  { label: "GÜZEL SANATLAR, TASARIM VE MİMARLIK FAKÜLTESİ", options: ["Grafik Tasarımı", "Güzel Sanatlar", "İç Mimarlık ve Çevre Tasarımı", "İletişim ve Tasarımı", "Kentsel Tasarım ve Peyzaj Mimarlığı", "Mimarlık"] },
-  { label: "İKTİSADİ, İDARİ VE SOSYAL BİLİMLER FAKÜLTESİ", options: ["İktisat", "Psikoloji", "Siyaset Bilimi ve Kamu Yönetimi", "Tarih", "Uluslararası İlişkiler"] },
-  { label: "İNSANİ BİLİMLER VE EDEBİYAT FAKÜLTESİ", options: ["Amerikan Kültürü ve Edebiyatı", "Arkeoloji", "Felsefe", "İngiliz Dili ve Edebiyatı", "İngilizce, Fransızca Mütercim ve Tercümanlık", "Türk Edebiyatı"] },
+  {
+    label: "EĞİTİM FAKÜLTESİ",
+    options: [
+      "Temel Eğitim (Sınıf Öğretmenliği)",
+      "Eğitim Bilimleri",
+      "Öğretmen Yetiştirme",
+      "Yabancı Dil Olarak İngilizce Öğretimi",
+    ],
+  },
+  {
+    label: "FEN FAKÜLTESİ",
+    options: ["Fizik", "Kimya", "Matematik", "Moleküler Biyoloji ve Genetik"],
+  },
+  {
+    label: "GÜZEL SANATLAR, TASARIM VE MİMARLIK FAKÜLTESİ",
+    options: [
+      "Grafik Tasarımı",
+      "Güzel Sanatlar",
+      "İç Mimarlık ve Çevre Tasarımı",
+      "İletişim ve Tasarımı",
+      "Kentsel Tasarım ve Peyzaj Mimarlığı",
+      "Mimarlık",
+    ],
+  },
+  {
+    label: "İKTİSADİ, İDARİ VE SOSYAL BİLİMLER FAKÜLTESİ",
+    options: [
+      "İktisat",
+      "Psikoloji",
+      "Siyaset Bilimi ve Kamu Yönetimi",
+      "Tarih",
+      "Uluslararası İlişkiler",
+    ],
+  },
+  {
+    label: "İNSANİ BİLİMLER VE EDEBİYAT FAKÜLTESİ",
+    options: [
+      "Amerikan Kültürü ve Edebiyatı",
+      "Arkeoloji",
+      "Felsefe",
+      "İngiliz Dili ve Edebiyatı",
+      "İngilizce, Fransızca Mütercim ve Tercümanlık",
+      "Türk Edebiyatı",
+    ],
+  },
   { label: "İŞLETME FAKÜLTESİ", options: ["İşletme"] },
   { label: "HUKUK FAKÜLTESİ", options: ["Hukuk Fakültesi"] },
-  { label: "MÜHENDİSLİK FAKÜLTESİ", options: ["Bilgisayar Mühendisliği", "Elektrik – Elektronik Mühendisliği", "Endüstri Mühendisliği", "Makine Mühendisliği"] },
-  { label: "MÜZİK VE SAHNE SANATLARI FAKÜLTESİ", options: ["Müzik", "Tiyatro"] },
-  { label: "UYGULAMALI BİLİMLER FAKÜLTESİ", options: ["Bilişim Sistemleri ve Teknolojileri", "Turizm ve Otel İşletmeciliği"] }
+  {
+    label: "MÜHENDİSLİK FAKÜLTESİ",
+    options: [
+      "Bilgisayar Mühendisliği",
+      "Elektrik – Elektronik Mühendisliği",
+      "Endüstri Mühendisliği",
+      "Makine Mühendisliği",
+    ],
+  },
+  {
+    label: "MÜZİK VE SAHNE SANATLARI FAKÜLTESİ",
+    options: ["Müzik", "Tiyatro"],
+  },
+  {
+    label: "UYGULAMALI BİLİMLER FAKÜLTESİ",
+    options: [
+      "Bilişim Sistemleri ve Teknolojileri",
+      "Turizm ve Otel İşletmeciliği",
+    ],
+  },
 ];
 
 const TourApplication = () => {
@@ -59,6 +116,8 @@ const TourApplication = () => {
   });
   const [message, setMessage] = useState("");
   const [schools, setSchools] = useState([]);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [filteredSchools, setFilteredSchools] = useState([]);
   const navigate = useNavigate();
   const [emailError, setEmailError] = useState("");
@@ -69,7 +128,7 @@ const TourApplication = () => {
   const phoneTimeoutRef = useRef(null);
   const dateTimeTimeoutRef = useRef(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setShowToastMessage] = useState('');
+  const [toastMessage, setShowToastMessage] = useState("");
   // Fetch schools from backend on component mount
   useEffect(() => {
     const fetchSchools = async () => {
@@ -278,7 +337,7 @@ const TourApplication = () => {
     );
     return school;
   };
-  
+
   const handleSchoolSelection = (e) => {
     const schoolName = e.target.value;
     const school = findSchool(schoolName, formData.city, formData.district);
@@ -298,7 +357,7 @@ const TourApplication = () => {
         `http://localhost:3000/api/events/check-school/${formData.schoolID}`
       );
       const data = await response.json();
-  
+
       if (response.ok && data.exists) {
         return true; // Application already exists
       }
@@ -318,18 +377,24 @@ const TourApplication = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setShowToastMessage(data.message || 'Email has been resent successfully!');
+        setShowToastMessage(
+          data.message || "Email has been resent successfully!"
+        );
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
       } else {
         console.error("Failed to resend email");
-        setShowToastMessage(data.message || 'Failed to resend email. Please try again.');
+        setShowToastMessage(
+          data.message || "Failed to resend email. Please try again."
+        );
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
       }
     } catch (error) {
       console.error("Error resending email:", error);
-      setShowToastMessage('An unexpected error occurred. Please try again later.');
+      setShowToastMessage(
+        "An unexpected error occurred. Please try again later."
+      );
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
@@ -337,6 +402,10 @@ const TourApplication = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!termsAccepted) {
+      setMessage("You must accept the terms and agreements to proceed.");
+      return;
+    }
     const submitButton = document.getElementById("submitButton");
     if (submitButton) {
       //submitButton.setAttribute("disabled", "true");
@@ -392,7 +461,7 @@ const TourApplication = () => {
         submitButton.disabled = false;
         return; // Stop further submission
       }
-    }  
+    }
 
     const { tourType, ...tourData } = formData;
     const endpoint =
@@ -505,19 +574,22 @@ const TourApplication = () => {
           <div className="styled-warning-container">
             <div className="styled-warning">
               <div dangerouslySetInnerHTML={{ __html: message }} />
-                {message.includes("resend") && (
-                  <button className="resend-button" onClick={handleResendApplicationEmail}>
-                    Resend Application Email
-                  </button>
-                )}
-              </div>
-              {showToast && (
-                <div className="toast-notification">
-                  {toastMessage} {/* Display dynamic toast message */}
-                </div>
+              {message.includes("resend") && (
+                <button
+                  className="resend-button"
+                  onClick={handleResendApplicationEmail}
+                >
+                  Resend Application Email
+                </button>
               )}
+            </div>
+            {showToast && (
+              <div className="toast-notification">
+                {toastMessage} {/* Display dynamic toast message */}
               </div>
             )}
+          </div>
+        )}
 
         {step === 0 && (
           <p className="tour-application-description">
@@ -843,6 +915,58 @@ const TourApplication = () => {
               <p>
                 <strong>Additional Notes:</strong> {formData.additionalNotes}
               </p>
+              {/* Terms and Agreements Section */}
+              <div className="terms-agreement">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                  />
+                  I have read and agree to the{" "}
+                  <span
+                    className="terms-link"
+                    onClick={() => setShowTerms(!showTerms)}
+                    style={{
+                      color: "#5a67b3",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Terms and Agreements
+                  </span>
+                  .
+                </label>
+                {showTerms && (
+                  <div className="terms-text">
+                    <p>
+                      Bilkent Üniversitesi, tüm üniversite paydaşları için
+                      sağlıklı ve uygar bir üniversite ortamı oluşturmayı
+                      hedeflemektedir. Üniversite Senato ve Yönetim Kurulu’nun
+                      ortak kararıyla, Bilkent Üniversitesi’nin açık ve kapalı
+                      tüm alanlarında, 1 Eylül 2022 tarihinden başlayarak,
+                      sigara ve diğer tütün ürünleri ile elektronik sigaraların
+                      kullanılması mümkün olmayacaktır. Bu tarihe kadar kampüs
+                      içerisinde sigara içilebilen alanlar kademeli olarak
+                      sınırlandırılacaktır.
+                    </p>
+                    <p>
+                      Sigara içilmesi yasak alanlarda sigara içen öğrenciler
+                      üniversitenin Sivil Savunma ve Güvenlik Müdürlüğü
+                      tarafından tespit edilmekte ve disiplin soruşturması
+                      açılmak üzere doğrudan fakülte dekanlıklarına ve
+                      yüksekokul müdürlüklerine bildirilmektedir. Kural ihlali
+                      yapan öğrencilerin akademik personel tarafından da
+                      bildirilmesi mümkündür.
+                    </p>
+                    <p>
+                      Yukarıdaki bilgilerin ışığında siz de bu politikaya destek
+                      verebilir, yasak alanlarda sigara içenlere bu davranışın
+                      kampüs hayatıyla bağdaşmadığını hatırlatabilirsiniz.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           <div className="form-navigation">
@@ -868,8 +992,11 @@ const TourApplication = () => {
             {step === 4 && (
               <button
                 type="submit"
-                className="tour-application-submit"
+                className={`tour-application-submit ${
+                  termsAccepted ? "" : "disabled"
+                }`}
                 id="submitButton"
+                disabled={!termsAccepted} // Button disabled unless terms are accepted
               >
                 Submit Application
               </button>
@@ -881,4 +1008,4 @@ const TourApplication = () => {
   );
 };
 
-export  {majors ,TourApplication};
+export { majors, TourApplication };

@@ -141,7 +141,6 @@
   min-height: 100px;
 }
 
-/* Submit Button Styling */
 .tour-application-submit {
   background-color: #5a67b3;
   color: white;
@@ -159,6 +158,18 @@
 .tour-application-submit:hover {
   background-color: #444e98;
   transform: scale(1.02);
+}
+
+.tour-application-submit.disabled {
+  background-color: #cccccc; /* Grey background for disabled state */
+  color: #666666; /* Lighter text color */
+  cursor: not-allowed; /* Change cursor to indicate disabled state */
+  box-shadow: none; /* Remove shadow */
+}
+
+.tour-application-submit.disabled:hover {
+  background-color: #cccccc; /* Ensure no hover effect on disabled state */
+  transform: none; /* Prevent scaling */
 }
 
 /* Styling for labels */
@@ -321,7 +332,7 @@ input[type="tel"]::placeholder {
   padding: 10px;
   border-radius: 8px;
   color: #f10000;
-  border: 1px solid #ffeeba; 
+  border: 1px solid #ffeeba;
   margin: 20px 0;
   animation: fade-in 0.3s ease-in-out;
 }
@@ -338,7 +349,7 @@ input[type="tel"]::placeholder {
 }
 
 .styled-warning .resend-button {
-  display: block; 
+  display: block;
   margin: 20px auto 10px auto;
   background-color: #2563eb;
   color: white;
@@ -395,10 +406,6 @@ input[type="tel"]::placeholder {
   }
 }
 
-
-
-
-
 .confirmation-step {
   text-align: left; /* Align text to the left */
   font-size: 1rem;
@@ -422,4 +429,43 @@ input[type="tel"]::placeholder {
 
 .confirmation-step p.gray-text {
   color: gray; /* Style for optional gray text like reserve visit details */
+}
+
+.terms-agreement {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #2b3349;
+}
+
+.terms-agreement a {
+  color: #5a67b3;
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.terms-agreement a:hover {
+  color: #444e98;
+}
+
+.terms-agreement label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.terms-agreement input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #5a67b3; /* For consistent checkbox color */
+}
+
+.terms-text {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #2b3349;
+  line-height: 1.5;
+  background-color: #f9f9fb;
+  border-left: 4px solid #5a67b3;
+  padding: 10px 15px;
+  border-radius: 8px;
 }
