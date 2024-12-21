@@ -79,6 +79,16 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  // Add class when component mounts
+  document.body.classList.add('login-page');
+  
+  // Remove class when component unmounts
+  return () => {
+    document.body.classList.remove('login-page');
+  };
+}, []);
+
 // ... rest of the component ...
 
   const handleChange = (e) => {
