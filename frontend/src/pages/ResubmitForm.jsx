@@ -21,7 +21,8 @@ const ResubmitForm = () => {
         const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
         if (response.ok) {
           const eventData = await response.json();
-          setTypeStr(eventData.typeStr); // Set the typeStr ("Individual Tour" or "School Tour")
+          setTypeStr(eventData.__t); // Set the typeStr ("Individual Tour" or "School Tour")
+          console.log(typeStr);
         } else {
           throw new Error("Unable to fetch event details.");
         }
@@ -64,7 +65,7 @@ const ResubmitForm = () => {
     e.preventDefault();
 
     // Validate inputs based on tour type
-    if (typeStr === "School Tour" && reserveDates.length === 0) {
+    if (typeStr === "SchoolTour" && reserveDates.length === 0) {
       setError("Please select at least one date and time.");
       return;
     }
@@ -81,7 +82,7 @@ const ResubmitForm = () => {
     setIsSubmitting(true);
 
     const payload =
-      typeStr === "School Tour"
+      typeStr === "SchoolTour"
         ? { reserveDates }
         : { visitDate: individualDate, visitTime: individualTime };
 
@@ -93,6 +94,7 @@ const ResubmitForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ reserveDates }),
           body: JSON.stringify(payload),
         }
       );
@@ -132,14 +134,14 @@ const ResubmitForm = () => {
         <p>Loading event details...</p>
       ) : (
         <form onSubmit={handleSubmit} className="resubmit-form">
-          {typeStr === "School Tour" ? (
-            <div className="form-group">
-              <label htmlFor="date-picker">Select Dates:</label>
-              <CustomDateTimePicker
-                handleChange={handleReserveDatesChange}
-                reserveDatesImp={reserveDates}
-              />
-            </div>
+          {typeStr === "SchoolTour" ? (
+        <div className="form-group">
+          <label htmlFor="date-picker">Select Dates:</label>
+          <CustomDateTimePicker
+            handleChange={handleReserveDatesChange}
+            reserveDatesImp={reserveDates}
+          />
+        </div>
           ) : (
             <>
               <div className="form-group">
@@ -176,7 +178,7 @@ const ResubmitForm = () => {
             className="submit-button"
             disabled={
               isSubmitting ||
-              (typeStr === "School Tour" && reserveDates.length === 0)
+              (typeStr === "SchoolTour" && reserveDates.length === 0)
             }
           >
             {isSubmitting ? "Submitting..." : "Resubmit"}

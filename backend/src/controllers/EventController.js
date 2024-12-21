@@ -384,36 +384,74 @@ exports.updateEventTwo = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Identify changed fields
+    // Helper function: Deep comparison for objects and arrays
+    function deepEqual(value1, value2) {
+      if (value1 === value2) return true; // Check for primitive values and reference equality
+
+      if (typeof value1 !== "object" || typeof value2 !== "object" || value1 === null || value2 === null) {
+        return false; // If either value is not an object/array, they are not equal
+      }
+
+      const keys1 = Object.keys(value1);
+      const keys2 = Object.keys(value2);
+
+      if (keys1.length !== keys2.length) return false; // Different number of keys
+
+      for (let key of keys1) {
+        if (!keys2.includes(key) || !deepEqual(value1[key], value2[key])) {
+          return false; // Key mismatch or values for the same key are not deeply equal
+        }
+      }
+
+      return true; // All keys and values match
+    }
+
+    // Identify changed fields using the deepEqual function
     const changedFields = {};
     for (let key in updateData) {
-      if (updateData[key] !== event[key]) {
+      if (!deepEqual(updateData[key], event[key])) {
         changedFields[key] = updateData[key];
         event[key] = updateData[key]; // Update the event object
       }
     }
+
+    // Debug: Log the changed fields
+    console.log("Changed Fields:", changedFields);
 
     // If no changes, return
     if (Object.keys(changedFields).length === 0) {
       return res.status(400).json({ message: "No changes detected" });
     }
 
+    // Check if only "reservedRooms" has changed
+    const isReservedRoomsOnly =
+      Object.keys(changedFields).length === 1 && changedFields.hasOwnProperty("reservedRooms");
+
+    // Debug: Log whether the email should be sent
+    console.log("Is Reserved Rooms Only:", isReservedRoomsOnly);
+
     // Save the updated event
     const updatedEvent = await event.save();
 
-    // Populate applicant and send email
+    // Populate applicant
     await updatedEvent.populate("applicant");
     const applicant = updatedEvent.applicant;
 
-    if (applicant) {
+    // Send email notification only if other fields are changed
+    if (applicant && !isReservedRoomsOnly) {
       await sendNotificationEmail(applicant.email, applicant.name, changedFields, updatedEvent);
+      console.log("Email sent to:", applicant.email);
+    } else {
+      console.log("No email sent as only reservedRooms was updated.");
     }
 
     res.status(200).json(updatedEvent);
   } catch (error) {
+    console.error("Error updating event:", error);
     res.status(500).json({ message: `Error updating event: ${error.message}` });
   }
 };
+
 
 // Update an event
 exports.updateEvent = async (req, res) => {
