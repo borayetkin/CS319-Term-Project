@@ -742,7 +742,7 @@ const Applications = () => {
             )}
           </div>
         )
-      ) : (
+      ) : ( !isLoading && 
         <GeneralTable
           key={tourType}
           showFairs={false}

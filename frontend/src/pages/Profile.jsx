@@ -531,7 +531,7 @@ const Profile = () => {
             </div>
             <div className="card-content">
               <h3>Tours Completed</h3>
-              <p>{profile.toursCompleted || "0"}</p>
+              <p>{profile.completedEvents.length || "0"}</p>
             </div>
           </div>
         </div>

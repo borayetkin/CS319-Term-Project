@@ -738,7 +738,7 @@ exports.markEventAsCompleted = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // Check if the user is assigned to the event
-    if (!event.appliedUsers.some((user) => user._id == userId)) {
+    if (!event.assignedUsers.some((user) => user._id == userId)) {
       createLog(req.user.id, req.user.role, 'markEventAsCompleted', eventId, 'error', 'User not assigned to event');
       return res
         .status(403)
