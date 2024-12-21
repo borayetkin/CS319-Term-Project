@@ -1129,7 +1129,7 @@ exports.sendNotificationAboutEventToGuide = async (req, res) => {
     console.log('Send notification request:', { eventID, userid });
     
 
-    const event = await Event.findById(eventID);
+    const event = await Event.findById(eventID).populate('applicant');
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -1141,7 +1141,7 @@ exports.sendNotificationAboutEventToGuide = async (req, res) => {
     const generateEventDetails = (event) => {
       const { typeStr, visitDate, visitTime, city, district } = event;
       const visitDateStrWithoutTime = visitDate.toISOString().split("T")[0];
-      return `${typeStr} on ${visitDateStrWithoutTime} at ${visitTime} in ${city}, ${district}`;
+      return `${typeStr} on ${visitDateStrWithoutTime} at ${visitTime} , for ${event.applicant.name}  `;
     }
     const notificationMessage = `You can assign to an event with the following details: ${generateEventDetails(event)}, and you have marked the hour of the event as available.`;
     const notificationProps = {

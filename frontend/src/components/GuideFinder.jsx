@@ -49,7 +49,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
     return isDayAvailable && isTimeAvailable;
   };
   const canNotifyGuide = (guide) => {
-    return guide.availability.some((availability) => checkAvailabilityMatch(availability, eventOrFair));
+    return !isUserAssigned(guide._id)&& guide.availability.some((availability) => checkAvailabilityMatch(availability, eventOrFair));
   };
   const filterGuides = () => {
     let filtered = guides;
