@@ -204,7 +204,7 @@ const FairRowActions = ({ fair, user, setMessage, setFairs, handleCompleteFair =
               className={"action-button apply"}
               disabled={actionInProcess}
               style={buttonStyle}
-              onClick={() => handleCompleteFair(fair._id)}
+              onClick={() => handleCompleteFair(fair._id,workHours)}
             >
               <FaCheck />
               Complete
