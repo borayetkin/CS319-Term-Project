@@ -23,21 +23,24 @@ const GeneralTable = ({
     date: 80,
     time: 80,
     status: 120,
-    assignedUsers: 5,
-    requiredNumberOfGuides: 65,
+    assignedUsers: 90,
+    requiredNumberOfGuides: 90,
     contactPerson: 120,
     email: 150,
     phoneNumber: 120,
-    studentCount: 80,
+    studentCount: 60,
     city: 100,
     applicationDate: 110,
     priority: 1,
     studentHighSchool: 180,
     majorOfInterest: 180,
     studentName: 150,
-    actions: 120,
+    actions: 10,
     details: 80
   };
+
+  // Add state for pagination
+  const [pageSize, setPageSize] = React.useState(10);
 
   const getColumns = () => {
     // First declare extraColumns
@@ -154,9 +157,9 @@ const GeneralTable = ({
                 return { bg: '#DCFCE7', text: '#166534' }; // Green
               case 'scheduled':
                 return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
-              case 'completed':
+              case 'completed-verified':
                 return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue
-              case 'cancelled':
+              case 'rejected':
                 return { bg: '#FEE2E2', text: '#991B1B' }; // Red
               case 'accepted':
                 return { bg: '#DCFCE7', text: '#166534' }; // Green
@@ -288,17 +291,71 @@ const GeneralTable = ({
           case "assignedUsers":
             extraColumns.push({
               field: 'assignedUsers',
-              headerName: 'Assigned Users',
+              headerName: '',
               width: columnWidths.assignedUsers,
-              renderCell: (params) => params.row?.assignedUsers?.length || "0"
+              minWidth: columnWidths.assignedUsers,
+              maxWidth: columnWidths.assignedUsers,
+              headerAlign: 'center',
+              align: 'center',
+              flex: 0,
+              sortable: false,
+              disableColumnMenu: true,
+              renderHeader: () => (
+                <div style={{ 
+                  whiteSpace: 'pre-line', 
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.1',
+                  width: '100%',
+                  padding: '0 2px'
+                }}>
+                  Assigned<br/>Guides
+                </div>
+              ),
+              renderCell: (params) => (
+                <div style={{ 
+                  textAlign: 'center', 
+                  width: '100%',
+                  fontSize: '0.875rem'
+                }}>
+                  {params.row?.assignedUsers?.length || "0"}
+                </div>
+              )
             });
             break;
           case "requiredNumberOfGuides":
             extraColumns.push({
               field: 'requiredNumberOfGuides',
-              headerName: 'Required Guides',
+              headerName: '',
               width: columnWidths.requiredNumberOfGuides,
-              renderCell: (params) => params.row?.requiredNumberOfGuides || "N/A"
+              minWidth: columnWidths.requiredNumberOfGuides,
+              maxWidth: columnWidths.requiredNumberOfGuides,
+              headerAlign: 'center',
+              align: 'center',
+              flex: 0,
+              sortable: false,
+              disableColumnMenu: true,
+              renderHeader: () => (
+                <div style={{ 
+                  whiteSpace: 'pre-line', 
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.1',
+                  width: '100%',
+                  padding: '0 2px'
+                }}>
+                  Required<br/>Guides
+                </div>
+              ),
+              renderCell: (params) => (
+                <div style={{ 
+                  textAlign: 'center', 
+                  width: '100%',
+                  fontSize: '0.875rem'
+                }}>
+                  {params.row?.requiredNumberOfGuides || "N/A"}
+                </div>
+              )
             });
             break;
           case "contactPerson":
@@ -328,9 +385,36 @@ const GeneralTable = ({
           case "studentCount":
             extraColumns.push({
               field: 'studentCount',
-              headerName: 'Student Count',
+              headerName: '',
               width: columnWidths.studentCount,
-              renderCell: (params) => params.row?.studentCount || "N/A"
+              minWidth: columnWidths.studentCount,
+              maxWidth: columnWidths.studentCount,
+              headerAlign: 'center',
+              align: 'center',
+              flex: 0,
+              sortable: false,
+              disableColumnMenu: true,
+              renderHeader: () => (
+                <div style={{ 
+                  whiteSpace: 'pre-line', 
+                  textAlign: 'center',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.1',
+                  width: '100%',
+                  padding: '0 2px'
+                }}>
+                  Student<br/>Count
+                </div>
+              ),
+              renderCell: (params) => (
+                <div style={{ 
+                  textAlign: 'center', 
+                  width: '100%',
+                  fontSize: '0.875rem'
+                }}>
+                  {params.row?.studentCount || "N/A"}
+                </div>
+              )
             });
             break;
           case "city":
@@ -516,8 +600,10 @@ const GeneralTable = ({
         rows={viewType === "fairs" ? fairs : filteredEvents}
         columns={getColumns()}
         getRowId={(row) => row._id}
-        pageSize={10}
-        rowsPerPageOptions={[5, 10, 20]}
+        pageSize={pageSize}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        rowsPerPageOptions={[5, 10, 20, 50]}
+        pagination
         autoHeight
         disableSelectionOnClick
         disableColumnMenu
@@ -602,6 +688,12 @@ const GeneralTable = ({
           flexGrow: 1,
           flexShrink: 1,
           minWidth: '100%',
+          '& .MuiDataGrid-pagination': {
+            borderTop: '1px solid #e5e7eb',
+          },
+          '& .MuiTablePagination-root': {
+            overflow: 'visible',
+          },
         }}
       />
     </div>

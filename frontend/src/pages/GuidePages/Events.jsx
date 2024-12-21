@@ -256,7 +256,7 @@ const Events = () => {
               showTours={true}
               showExtraProperties={{
                 SchoolTour: ["assignedUsers","requiredNumberOfGuides","contactPerson","email"],
-                IndividualTour: ["studentHighSchool","email","phoneNumber" ],
+                IndividualTour: ["studentHighSchool","email","phoneNumber","majorOfInterest" ],
                 Fair: ["assignedUsers","requiredNumberOfGuides","organiserName","email","city"],
               }}
               setMessage={setMessage}

@@ -83,7 +83,7 @@ const ApplicationsRowActions = ({
   };
 
   return (
-    <div style={{ display: "flex", gap: "8px" }}>
+    <div style={{ display: "flex", gap: "2px" }}>
       {/* Accept Button */}
       {(event.status === "scheduled" ||
         (event.__t === "IndividualTour" && event.status === "pending")) && (
@@ -99,6 +99,7 @@ const ApplicationsRowActions = ({
                   backgroundColor: "success.lighter",
                 },
                 transition: "all 0.2s ease",
+                boxShadow: "none",
               }}
             >
               <CheckCircleOutlineIcon />
@@ -125,6 +126,7 @@ const ApplicationsRowActions = ({
                   backgroundColor: "error.lighter",
                 },
                 transition: "all 0.2s ease",
+                boxShadow: "none",
               }}
             >
               <CancelOutlinedIcon />
@@ -150,6 +152,7 @@ const ApplicationsRowActions = ({
                 backgroundColor: "grey.100",
               },
               transition: "all 0.2s ease",
+              boxShadow: "none",
             }}
           >
             <DeleteOutlineIcon />

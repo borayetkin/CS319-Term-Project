@@ -511,10 +511,11 @@ const Applications = () => {
                 <option value="pending">Pending</option>
                 <option value="scheduled">Scheduled</option>
                 <option value="canceled-resubmission-requested">
-                  Canceled
+                  Cancelled
                 </option>
                 <option value="accepted">Accepted</option>
                 <option value="rejected">Rejected</option>
+                <option value="completed-verified">Completed</option>
               </select>
             </div>
             <div className="sort-controls">
