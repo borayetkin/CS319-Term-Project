@@ -939,6 +939,10 @@ exports.resubmitEventReserveDates = async (req, res) => {
   const { eventId } = req.params; // Extract eventId from the URL
   const { reserveDates, visitDate, visitTime } = req.body; // Extract necessary fields from the request body
 
+    console.log("Request body:", req.body);
+    console.log("in resubmitEventReserveDates");
+    console.log(reserveDates);
+
   try {
     // Validate input based on the type of tour
     if ((!Array.isArray(reserveDates) || reserveDates.length === 0) && (!visitDate || !visitTime)) {
@@ -952,14 +956,15 @@ exports.resubmitEventReserveDates = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    // Check the type of the event
-    if (event.typeStr === "School Tour") {
-      // For school tours, update the reserveDates
+    if (event.__t === "SchoolTour") {
+      console.log("in school tour");
+      event.reserveDates = reserveDates;
       if (!Array.isArray(reserveDates) || reserveDates.length === 0) {
         return res.status(400).json({ message: "Please provide valid reserveDates for school tours." });
       }
       event.reserveDates = reserveDates;
-    } else if (event.typeStr === "Individual Tour") {
+    } else if (event.__t === "IndividualTour") {
+      console.log("in individual tour");
       // For individual tours, update the visitDate and visitTime
       if (!visitDate || !visitTime) {
         return res.status(400).json({ message: "Please provide a valid visitDate and visitTime for individual tours." });

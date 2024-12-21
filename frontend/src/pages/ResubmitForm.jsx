@@ -51,15 +51,13 @@ const ResubmitForm = () => {
     return timeSlots;
   };
 
-  const handleReserveDatesChange = ({ target }) => {
-    const dates = target.value;
-    const updatedDates = dates.reserveDates;
-    const formattedDates = updatedDates.map(({ date, time }) => ({
-      visitDate: date,
-      visitTime: time,
-    }));
-    setReserveDates(formattedDates);
-  };
+const handleReserveDatesChange = (updatedDates) => {
+  const formattedDates = updatedDates.map(({ visitDate, visitTime }) => ({
+    visitDate,
+    visitTime,
+  }));
+  setReserveDates(formattedDates);
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,6 +84,8 @@ const ResubmitForm = () => {
         ? { reserveDates }
         : { visitDate: individualDate, visitTime: individualTime };
 
+    console.log(payload);
+
     try {
       const response = await fetch(
         `http://localhost:3000/api/events/resubmit-form/${eventId}`,
@@ -94,7 +94,6 @@ const ResubmitForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ reserveDates }),
           body: JSON.stringify(payload),
         }
       );
