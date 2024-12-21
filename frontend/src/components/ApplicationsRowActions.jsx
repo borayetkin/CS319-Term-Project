@@ -9,11 +9,9 @@ const ApplicationsRowActions = ({
   user,
   setMessage,
   onActionComplete,
+  onConfirmAction
 }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
-  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
-  const [confirmationAction, setConfirmationAction] = useState(null); // "reject" or "delete"
-  const [eventIdToActOn, setEventIdToActOn] = useState(null);
 
   const handleAction = async (eventId, event, status) => {
     setActionInProcess(true);
@@ -73,17 +71,8 @@ const ApplicationsRowActions = ({
     setActionInProcess(false);
   };
 
-  const confirmAction = async () => {
-    setShowConfirmationPopup(false);
-    if (confirmationAction === "reject") {
-      await handleAction(eventIdToActOn, event, "rejected");
-    } else if (confirmationAction === "delete") {
-      await handleDelete(eventIdToActOn);
-    }
-  };
-
   return (
-    <div style={{ display: "flex", gap: "2px" }}>
+    <div style={{ display: "flex", gap: "6px" }}>
       {/* Accept Button */}
       {(event.status === "scheduled" ||
         (event.__t === "IndividualTour" && event.status === "pending")) && (
@@ -113,11 +102,7 @@ const ApplicationsRowActions = ({
         <Tooltip title="Decline" arrow>
           <span>
             <IconButton
-              onClick={() => {
-                setConfirmationAction("reject");
-                setEventIdToActOn(event._id);
-                setShowConfirmationPopup(true);
-              }}
+              onClick={() => onConfirmAction('reject', event._id, event)}
               disabled={actionInProcess}
               size="small"
               sx={{
@@ -139,11 +124,7 @@ const ApplicationsRowActions = ({
       <Tooltip title="Delete" arrow>
         <span>
           <IconButton
-            onClick={() => {
-              setConfirmationAction("delete");
-              setEventIdToActOn(event._id);
-              setShowConfirmationPopup(true);
-            }}
+            onClick={() => onConfirmAction('delete', event._id, event)}
             disabled={actionInProcess}
             size="small"
             sx={{
@@ -159,28 +140,6 @@ const ApplicationsRowActions = ({
           </IconButton>
         </span>
       </Tooltip>
-
-      {/* Confirmation Popup */}
-      {showConfirmationPopup && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>
-              Are you sure you want to {confirmationAction} this application?
-            </h3>
-            <div className="popup-actions">
-              <button className="popup-confirm" onClick={confirmAction}>
-                Yes
-              </button>
-              <button
-                className="popup-cancel"
-                onClick={() => setShowConfirmationPopup(false)}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
