@@ -228,6 +228,12 @@ exports.assignGuideToFair = async (req, res) => {
         .status(400)
         .json({ message: "Failed to send notification", error: error.message });
     }
+
+    // Remove the user from appliedUsers list
+    fair.appliedUsers = fair.appliedUsers.filter( id => id.toString() !== userID);
+    await fair.save();
+    
+
     createLog(req.user.id, req.user.role, 'assignGuideToFair', fairID, 'success', 'Guide assigned successfully');
     res.status(200).json({ message: "Guide assigned successfully.", fair });
   } catch (error) {
@@ -400,6 +406,54 @@ exports.applyToFair = async (req, res) => {
   } catch (error) {
     console.error("Error applying to fair:", error);
     createLog(req.user.id, req.user.role, 'applyToFair', req.body.fairID, 'error', error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.unapplyFromFair = async (req, res) => {
+  try {
+    const { fairID } = req.body; // Fair ID from the request body
+    const { userrole, userid } = req.headers; // User role and ID from headers
+
+    // Ensure only guides can unapply
+    if (userrole !== "guide") {
+      createLog(userid, userrole, 'unapplyFromFair', fairID, 'error', 'Only guides can unapply from fairs');
+      return res
+        .status(403)
+        .json({ message: "Only guides can unapply from fairs." });
+    }
+
+    // Find the guide (user)
+    const user = await User.findById(userid || req.user.id);
+    if (!user) {
+      createLog(userid, userrole, 'unapplyFromFair', fairID, 'error', 'User not found');
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the fair
+    const fair = await Fair.findById(fairID);
+    if (!fair) {
+      createLog(userid, userrole, 'unapplyFromFair', fairID, 'error', 'Fair not found');
+      return res.status(404).json({ message: "Fair not found" });
+    }
+
+    // Check if the guide has applied
+    if (!fair.appliedUsers.includes(userid)) {
+      createLog(userid, userrole, 'unapplyFromFair', fairID, 'error', 'Guide has not applied to this fair');
+      return res
+        .status(400)
+        .json({ message: "You have not applied to this fair." });
+    }
+
+    // Remove the guide from the list of applied users
+    fair.appliedUsers = fair.appliedUsers.filter(id => id.toString() !== userid);
+
+    await fair.save();
+    createLog(userid, userrole, 'unapplyFromFair', fairID, 'success', user.name +' Unapplied from fair successfully');
+    res.status(200).json({ message: "Unapplied from fair successfully" });
+  } catch (error) {
+    console.error("Error unapplying from fair:", error);
+    createLog(req.user.id, req.user.role, 'unapplyFromFair', req.body.fairID, 'error', error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

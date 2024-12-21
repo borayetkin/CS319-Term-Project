@@ -125,7 +125,7 @@ const AssignedEvents = () => {
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
               event._id === eventId
-                ? { ...event, status: "completed-non-verified" , hoursOfWork: workHours}
+                ? { ...event, status: "completed-verified" , hoursOfWork: workHours}
                 : event
             )
           );

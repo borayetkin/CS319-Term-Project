@@ -279,6 +279,7 @@ const Events = () => {
                   {...props}
                   setMessage={setMessage}
                   onActionComplete={handleActionComplete}
+                  setFairs = {setFairs}
                 />
               )}
               viewType={viewType}

@@ -14,6 +14,7 @@ const {
     removeGuideFromFair,
     deleteFair,
     applyToFair,
+    unapplyFromFair, // Import the new controller method
 } = require("../controllers/FairController.js");
 
 //get
@@ -30,6 +31,7 @@ router.post('/:id/remove-guide', auth, removeGuideFromFair);
 
 //post for guide
 router.post("/apply", auth, applyToFair);
+router.post("/unapply", auth, unapplyFromFair); // Add the new route
 
 router.patch('/:id/status', adminAuth, updateFairStatus);
 

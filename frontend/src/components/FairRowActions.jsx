@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-const FairRowActions = ({ fair, user, setMessage }) => {
+const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
   const personIconUrl =
     "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
@@ -25,7 +25,11 @@ const FairRowActions = ({ fair, user, setMessage }) => {
 
       if (response.ok) {
         setMessage("Applied to Fair successfully.");
-        window.location.reload();
+        setFairs((prevFairs) =>
+          prevFairs.map((f) =>
+            f._id === fairId ? { ...f, appliedUsers: [...f.appliedUsers, user] } : f
+          )
+        );
       } else {
         const errorData = await response.json();
         setMessage(`Failed to apply: ${errorData.message}`);
@@ -35,6 +39,42 @@ const FairRowActions = ({ fair, user, setMessage }) => {
     }
     setActionInProcess(false);
   };
+
+  const unapplyFromFair = async (fairId) => {
+    setActionInProcess(true);
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`http://localhost:3000/api/fairs/unapply`, {
+        method: "POST",
+        headers: {
+          userrole: user.role,
+          userid: user._id,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ fairID: fairId }),
+      });
+
+      if (response.ok) {
+        setMessage("Unapplied from Fair successfully.");
+        setFairs((prevFairs) =>
+          prevFairs.map((f) =>
+            f._id === fairId
+              ? { ...f, appliedUsers: f.appliedUsers.filter((u) => u._id !== user._id) }
+              : f
+          )
+        );
+      } else {
+        const errorData = await response.json();
+        setMessage(`Failed to unapply: ${errorData.message}`);
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+    }
+    setActionInProcess(false);
+  };
+
   const rolesThatApply = ["guide", "advisor"];
 
   const removeAssignedFair = async (fairId) => {
@@ -61,7 +101,13 @@ const FairRowActions = ({ fair, user, setMessage }) => {
 
       if (response.ok) {
         setMessage("Removed from Fair successfully.");
-        window.location.reload();
+        setFairs((prevFairs) =>
+          prevFairs.map((f) =>
+            f._id === fairId
+              ? { ...f, assignedUsers: f.assignedUsers.filter((u) => u._id !== user._id) }
+              : f
+          )
+        );
       } else {
         const errorData = await response.json();
         setMessage(
@@ -73,7 +119,9 @@ const FairRowActions = ({ fair, user, setMessage }) => {
     }
     setActionInProcess(false);
   };
-
+  const checkIfUserHasAssigned = () => {
+    return fair.assignedUsers?.some((assignedUser) => assignedUser._id === user?._id);
+  }
   const checkIfUserHasApplied = () => {
     return fair.appliedUsers?.some((appliedUser) => appliedUser._id === user?._id);
   };
@@ -87,8 +135,8 @@ const FairRowActions = ({ fair, user, setMessage }) => {
       
       {user &&
       rolesThatApply.includes(user.role) &&
-      !checkIfUserHasApplied() &&
-      !fairIsFull ? (
+      !checkIfUserHasApplied() && !checkIfUserHasAssigned() &&
+      !fairIsFull && (
         <button
           className="action-button apply"
           onClick={() => applyToFair(fair._id)}
@@ -98,20 +146,23 @@ const FairRowActions = ({ fair, user, setMessage }) => {
           <i className="fas fa-hand-point-up"></i>
           Apply
         </button>
-      ) : (
-        user &&
-        rolesThatApply.includes(user.role) &&
-        checkIfUserHasApplied() &&
-        !fairIsFull && (
-          <span className="status-badge applied">
-            <i className="fas fa-check"></i>
-            Applied
-          </span>
-        )
       )}
       {user &&
         rolesThatApply.includes(user.role) &&
-        user.assignedFairs?.includes(fair._id) && (
+        checkIfUserHasApplied() && !checkIfUserHasAssigned()&& (
+          <button
+            className="action-button unapply"
+            onClick={() => unapplyFromFair(fair._id)}
+            disabled={actionInProcess}
+            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
+          >
+            <i className="fas fa-times"></i>
+            Unapply
+          </button>
+        )}
+      {user &&
+        rolesThatApply.includes(user.role) &&
+        checkIfUserHasAssigned() && (
           <button
             className="action-button unassign"
             onClick={() => removeAssignedFair(fair._id)}
