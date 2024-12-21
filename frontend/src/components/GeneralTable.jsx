@@ -582,7 +582,7 @@ const GeneralTable = ({
     const matchesStatus = statusFilter === "all" || event.status === statusFilter;
     const matchesSearch = !searchTerm || 
       event.applicant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.visitDate?.includes(searchTerm) ||
+      new Date(event.visitDate).toLocaleDateString().includes(searchTerm) ||  // Only search local format
       event.requiredNumberOfGuides?.toString().includes(searchTerm);
     
     return matchesType && matchesStatus && matchesSearch;

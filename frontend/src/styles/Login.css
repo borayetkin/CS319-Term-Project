@@ -1,14 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
 :root {
   --lerp-0: 1;
   --lerp-1: 0.5625;
   --lerp-2: 0.25;
   --lerp-3: 0.0625;
   --lerp-4: 0;
-  --gradient-1: linear-gradient(45deg, #8a2be2, #bb1d96);
-  --gradient-3: linear-gradient(45deg, #bb1d96, #2b43e2);
-  --gradient-5: linear-gradient(45deg, #2b43e2, #8a2be2);
-  --gradient-7: linear-gradient(45deg, #bb1d96, #8a2be2);
-  --gradient-9: linear-gradient(45deg, #2b43e2, #bb1d96);
   --surface-1: rgba(255, 255, 255, 0.1);
   --radius-3: 8px;
   --size-1: 4px;
@@ -21,127 +18,33 @@
 .login-container {
   display: flex;
   height: 100vh;
-  background-color: #f4f4f4;
 }
-.login-container {
+
 .login-left {
   flex: 1.6;
-  background-image: url("login_background3.png");
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(135deg, 
+    #0c1d48 0%, 
+    #1e3a8a 50%, 
+    #312e81 100%
+  );
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
-  padding: 50px;
   position: relative;
   overflow: hidden;
 }
 
-.login-left::after {
+.login-left::before {
   content: '';
   position: absolute;
-  width: 100px;
-  height: 100px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: transparent;
-  box-shadow: 
-    0 0 50px #fff,
-    0 0 100px #fff,
-    0 0 150px #fff,
-    0 0 200px #fff;
-  animation: atom 12s linear infinite;
-  z-index: 0;
-}
-
-.login-left::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(138, 43, 226, 0.5),
-    rgba(187, 29, 150, 0.8),
-    rgba(43, 67, 226, 0.2)
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(99, 102, 241, 0.1) 0%,
+    rgba(99, 102, 241, 0) 50%
   );
-  background-size: 300% 300%;
-  animation: gradientAnimation 6s ease infinite;
-  z-index: 1;
-}
-
-/* The elements inside the .login-left container should be above the gradient layer */
-.login-left > * {
-  position: relative;
-  z-index: 2;
-}
-}
-/* Keyframes for the gradient animation */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  25% {
-    background-position: 75% 30%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Add the atom animation keyframes */
-@keyframes atom {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg) scale(1);
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    transform: translate(-50%, -50%) rotate(180deg) scale(1.5);
-    filter: hue-rotate(180deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg) scale(1);
-    filter: hue-rotate(360deg);
-  }
-}
-.login-container {
-/* Add electron particles */
-.login-left::after {
-  box-shadow:
-    0 0 60px #fff,
-    0 0 100px #fff,
-    0 0 150px #fff,
-    0 0 200px #8a2be2,
-    0 0 250px #bb1d96,
-    0 0 300px #2b43e2;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-}
-
-.login-title {
-  font-size: 0rem;
-  margin-bottom: 0;
-}
-
-.login-logo {
-  font-size: 0rem;
-  font-weight: bold;
-}
-
-.login-subtitle {
-  font-size: 0rem;
-  margin-top: 20px;
-  color: white;
+  animation: pulse 15s ease-in-out infinite;
 }
 
 .login-right {
@@ -150,7 +53,155 @@
   justify-content: center;
   align-items: center;
   background-color: white;
-  overflow: hidden;
+}
+
+.login-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.atom-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.title-line {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  color: white;
+  letter-spacing: -0.5px;
+  opacity: 0.8;
+  position: absolute;
+  top: -48px;
+  left: 0;
+}
+
+.atom-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.atom-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 180px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -3px;
+  line-height: 1;
+}
+
+.atom-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: inline-flex;
+  transform-origin: center;
+  margin: 0 4px;
+}
+
+.atom-container.moving {
+}
+
+.nucleus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+}
+
+.orbital {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  border: 12px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.orbital-1 {
+  transform: translate(-50%, -50%) rotateX(60deg);
+}
+
+.orbital-2 {
+  transform: translate(-50%, -50%) rotateX(60deg) rotateY(60deg);
+}
+
+.orbital-3 {
+  transform: translate(-50%, -50%) rotateX(60deg) rotateY(-60deg);
+}
+
+.block {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-top: -6px;
+  margin-left: -6px;
+}
+
+.orbital-1 .block {
+  animation: moveElectron 6s linear infinite;
+}
+
+.orbital-2 .block {
+  animation: moveElectron 3s linear infinite 2s;
+}
+
+.orbital-3 .block {
+  animation: moveElectron 2s linear infinite 4s;
+}
+
+@keyframes moveElectron {
+  0% {
+    transform: rotate(0deg) translateX(90px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(90px) rotate(-360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  }
 }
 
 .login-box {
@@ -163,12 +214,16 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .login-box h2 {
   font-size: 2rem;
-  margin: 0; /* Remove default margin to maintain even spacing */
-  text-align: center; /* Center-align the title */
+  margin: 0;
+  text-align: center;
 }
 
 .login-input {
@@ -178,6 +233,18 @@
   border-radius: 5px;
   font-size: 1rem;
   margin: 8px 0 16px 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.login-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .login-remember {
@@ -211,7 +278,14 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  background-size: 200% 200%;
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 8px;
+  margin-top: 40px;
+
+  transition: all 0.2s ease;
 }
 
 .login-button:hover {
@@ -219,12 +293,13 @@
   border-radius: 24px;
   box-shadow: 0 2px 12px rgba(29, 74, 187, 0.5);
   transform: scale(1);
+  margin-top: 40px;
   background-image: linear-gradient(145deg, #2b43e2, #bb1d96, #8a2be2);
 }
 
 .login-footer {
   text-align: center;
-  margin-top: 20px; /* Adjusted for better spacing */
+  margin-top: 20px;
 }
 
 .signup-link {
@@ -239,7 +314,7 @@
 .login-forgot {
   display: flex;
   align-items: center;
-  gap: 10px; /* Space between checkbox and text */
+  gap: 10px;
   color: #999;
   font-size: 0.9rem;
   text-decoration: none;
@@ -261,330 +336,19 @@ label {
   margin-bottom: 4px;
 }
 
-/* Add the new blocks styles */
-.blocks {
-  position: absolute;
-  display: flex;
-  list-style-type: none;
-  padding: var(--size-2);
-  border-radius: var(--radius-3);
-  gap: var(--size-4);
-  background: hsl(0 0% 100% / 0.1);
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-  backdrop-filter: blur(10px);
-  z-index: 2;
-  will-change: transform;
-  transform: translate(0, 0);
-  transition: transform 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Hide text elements */
+.login-title, .login-logo, .login-subtitle {
+  display: none;
 }
 
-.block {
-  width: 60px;
-  height: 60px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  transition: flex 0.2s;
-  flex: calc(0.2 + (var(--lerp, 0) * 1.5));
-  position: relative;
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.block__item {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: var(--radius-3);
-  background: var(--bg), var(--surface-1);
-  display: grid;
-  place-items: center;
-  transition: transform 0.2s;
-  transform-origin: 50% 100%;
-  position: relative;
-  transform: translateY(calc(var(--lerp) * -75%));
-  will-change: transform;
+.subtitle-text {
+  font-family: 'Outfit', sans-serif;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 400;
   color: white;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.block:hover .block__item {
-  transform: translateY(-10px) scale(1.1);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-:is(.block:hover, .block:focus-visible) {
-  --lerp: var(--lerp-0);
-  z-index: 5;
-}
-
-.block:has( + :is(.block:hover, .block:focus-visible)),
-:is(.block:hover, .block:focus-visible) + .block {
-  --lerp: var(--lerp-1);
-  z-index: 4;
-}
-
-.block:has( + .block + :is(.block:hover, .block:focus-visible)),
-:is(.block:hover, .block:focus-visible) + .block + .block {
-  --lerp: var(--lerp-2);
-  z-index: 3;
-}
-
-.block:has( + .block + .block + :is(.block:hover, .block:focus-visible)),
-:is(.block:hover, .block:focus-visible) + .block + .block + .block {
-  --lerp: var(--lerp-3);
-  z-index: 2;
-}
-
-.block__item::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  transition: all 0.2s;
-  opacity: 0;
-}
-
-.block:hover .block__item::after {
-  opacity: 1;
-  inset: -4px;
-  border-color: rgba(255, 255, 255, 0.6);
-  filter: blur(2px);
-}
-
-.block:hover .block__item {
-  transform: translateY(-10px) rotateX(10deg);
-}
-}
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-.login-container {
-.block__item {
-  animation: pulse 2s infinite;
-  animation-delay: calc(var(--index) * 0.5s);
-}
-}
-.block:nth-child(1) .block__item { --bg: var(--gradient-1); }
-.block:nth-child(2) .block__item { --bg: var(--gradient-3); }
-.block:nth-child(3) .block__item { --bg: var(--gradient-5); }
-.block:nth-child(4) .block__item { --bg: var(--gradient-7); }
-
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
-}
-.login-container {
-.block {
-  animation: float 3s ease-in-out infinite;
-  animation-delay: calc(var(--index) * 0.5s);
-}
-
-/* Add outline styles */
-.block .block__item {
-  transition: outline 0.2s;
-  outline: transparent var(--size-1) solid;
-}
-
-:is(.block:hover, .block:focus-visible) .block__item {
-  outline: var(--surface-1) var(--size-1) solid;
-}
-
-/* Add these new styles */
-.atom-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
-  perspective: 1200px;
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: scale 0.1s ease-out;
-}
-
-.nucleus {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
-  background: radial-gradient(circle at 30% 30%, #fff, #8a2be2);
-  border-radius: 50%;
-  box-shadow: 
-    0 0 20px #fff,
-    0 0 40px #8a2be2,
-    0 0 60px #bb1d96;
-  animation: pulse 2s ease-in-out infinite;
-  z-index: 10;
-}
-
-.orbital {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.05s ease-out;
-}
-
-/* Different orbital paths */
-.orbital-1 {
-  animation: orbit1 8s linear infinite;
-  transform: translate(-50%, -50%) rotateX(60deg) rotateY(0deg);
-}
-
-.orbital-2 {
-  animation: orbit2 12s linear infinite;
-  transform: translate(-50%, -50%) rotateX(-45deg) rotateY(45deg);
-}
-
-.orbital-3 {
-  animation: orbit3 15s linear infinite;
-  transform: translate(-50%, -50%) rotateX(30deg) rotateY(-30deg);
-}
-
-.orbital-4 {
-  animation: orbit4 10s linear infinite;
-  transform: translate(-50%, -50%) rotateX(-60deg) rotateY(60deg);
-}
-
-.block {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  transform-style: preserve-3d;
-  transition: transform 0.1s ease-out;
-}
-
-.block__item {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--bg);
-  display: grid;
-  place-items: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 0 15px rgba(255, 255, 255, 0.5),
-    0 0 30px rgba(138, 43, 226, 0.5);
-
-  backdrop-filter: blur(5px);
-  transition: all 0.15s ease-out;
-}
-}
-/* Orbital animations */
-@keyframes orbit1 {
-  from { transform: translate(-50%, -50%) rotateX(60deg) rotateY(0deg) rotateZ(0deg); }
-  to { transform: translate(-50%, -50%) rotateX(60deg) rotateY(0deg) rotateZ(360deg); }
-}
-
-@keyframes orbit2 {
-  from { transform: translate(-50%, -50%) rotateX(-45deg) rotateY(45deg) rotateZ(0deg); }
-  to { transform: translate(-50%, -50%) rotateX(-45deg) rotateY(45deg) rotateZ(360deg); }
-}
-
-@keyframes orbit3 {
-  from { transform: translate(-50%, -50%) rotateX(30deg) rotateY(-30deg) rotateZ(0deg); }
-  to { transform: translate(-50%, -50%) rotateX(30deg) rotateY(-30deg) rotateZ(360deg); }
-}
-
-@keyframes orbit4 {
-  from { transform: translate(-50%, -50%) rotateX(-60deg) rotateY(60deg) rotateZ(0deg); }
-  to { transform: translate(-50%, -50%) rotateX(-60deg) rotateY(60deg) rotateZ(360deg); }
-}
-
-/* Position letters in their orbits */
-.orbital-1 .block { transform: translateX(120px); }
-.orbital-2 .block { transform: translateX(160px); }
-.orbital-3 .block { transform: translateX(200px); }
-.orbital-4 .block { transform: translateX(240px); }
-
-@keyframes self-rotate {
-  from { transform: rotateY(0deg); }
-  to { transform: rotateY(360deg); }
-}
-
-@keyframes pulse {
-  0% { 
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 20px #fff, 0 0 40px #8a2be2, 0 0 60px #bb1d96;
-  }
-  50% { 
-    transform: translate(-50%, -50%) scale(1.2);
-    box-shadow: 0 0 30px #fff, 0 0 60px #8a2be2, 0 0 90px #bb1d96;
-  }
-  100% { 
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 20px #fff, 0 0 40px #8a2be2, 0 0 60px #bb1d96;
-  }
-}
-
-/* Add orbital trails */
-.orbital::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.orbital-1::before { width: 240px; height: 240px; }
-.orbital-2::before { width: 320px; height: 320px; }
-.orbital-3::before { width: 400px; height: 400px; }
-.orbital-4::before { width: 480px; height: 480px; }
-
-/* Hover effects */
-.block:hover .block__item {
-  animation-play-state: paused;
-  transform: scale(1.2);
-  box-shadow: 
-    0 0 30px rgba(255, 255, 255, 0.8),
-    0 0 60px var(--bg);
-}
-.login-container {
-/* Mouse tracking update */
-.atom-container {
-  transition: transform 0.1s ease-out;
-}
-
-/* Add glow effects */
-.block__item::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 50%;
-  box-shadow: 0 0 20px var(--bg);
-  filter: blur(5px);
-  opacity: 0.5;
-  animation: glow 2s ease-in-out infinite;
-}
-}
-@keyframes glow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
+  opacity: 0.7;
+  letter-spacing: -0.5px;
+  margin-top: 16px;
 }
 
 

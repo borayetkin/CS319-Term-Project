@@ -8,62 +8,78 @@ const Login = () => {
     password: "",
   });
 
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({
+    email: null,
+    password: null,
+    general: null
+  });
 
-  // Add mouse tracking animation
-  useEffect(() => {
-    const atomContainer = document.querySelector('.atom-container');
-    const loginLeft = document.querySelector('.login-left');
-    let rafId;
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
+  // Improved mouse tracking animation
+  // ... previous imports and component definition ...
 
-    const lerp = (start, end, factor) => {
-      return start + (end - start) * factor;
-    };
+useEffect(() => {
+  const atomContainer = document.querySelector('.atom-container');
+  const loginLeft = document.querySelector('.login-left');
+  let currentX = 0;
+  let currentY = 0;
+  let targetX = 0;
+  let targetY = 0;
+  let animationFrameId;
 
-    const animate = () => {
-      currentX = lerp(currentX, targetX, 0.1);
-      currentY = lerp(currentY, targetY, 0.1);
-      
-      if (atomContainer) {
-        atomContainer.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) 
-                                       rotate3d(${-currentY * 0.01}, ${currentX * 0.01}, 0, ${Math.sqrt(currentX * currentX + currentY * currentY) * 0.05}deg)`;
-      }
-      
-      rafId = requestAnimationFrame(animate);
-    };
+  // Get the atom's natural position in the layout
+  const atomRect = atomContainer.getBoundingClientRect();
+  const initialX = atomRect.left;
+  const initialY = atomRect.top;
 
-    const handleMouseMove = (e) => {
-      const rect = loginLeft.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      
-      targetX = x * 0.15;
-      targetY = y * 0.15;
-    };
+  // Reset the atom's position to its natural state
+  atomContainer.style.transform = 'translate(0, 0)';
 
-    const handleMouseLeave = () => {
-      targetX = 0;
-      targetY = 0;
-    };
+  const lerp = (start, end, factor) => start + (end - start) * factor;
 
-    if (loginLeft && atomContainer) {
-      loginLeft.addEventListener('mousemove', handleMouseMove);
-      loginLeft.addEventListener('mouseleave', handleMouseLeave);
-      rafId = requestAnimationFrame(animate);
+  const animate = () => {
+    currentX = lerp(currentX, targetX, 0.1);
+    currentY = lerp(currentY, targetY, 0.1);
+    
+    atomContainer.style.transform = `translate(${currentX - initialX}px, ${currentY - initialY}px)`;
+    animationFrameId = requestAnimationFrame(animate);
+  };
+
+  const handleMouseMove = (e) => {
+    const rect = loginLeft.getBoundingClientRect();
+    // Center the atom on the cursor
+    targetX = e.clientX - (atomContainer.offsetWidth / 2);
+    targetY = e.clientY - (atomContainer.offsetHeight / 2);
+    
+    if (!animationFrameId) {
+      animate();
     }
+    atomContainer.classList.add('moving');
+  };
 
-    return () => {
-      if (loginLeft) {
-        loginLeft.removeEventListener('mousemove', handleMouseMove);
-        loginLeft.removeEventListener('mouseleave', handleMouseLeave);
-      }
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
+  const handleMouseLeave = () => {
+    // Return to the natural position
+    targetX = initialX;
+    targetY = initialY;
+    atomContainer.classList.remove('moving');
+  };
+
+  if (loginLeft && atomContainer) {
+    loginLeft.addEventListener('mousemove', handleMouseMove);
+    loginLeft.addEventListener('mouseleave', handleMouseLeave);
+  }
+
+  return () => {
+    if (loginLeft) {
+      loginLeft.removeEventListener('mousemove', handleMouseMove);
+      loginLeft.removeEventListener('mouseleave', handleMouseLeave);
+    }
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+    }
+  };
+}, []);
+
+// ... rest of the component ...
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,6 +87,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Clear previous errors
+    setErrors({
+      email: null,
+      password: null,
+      general: null
+    });
 
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
@@ -83,54 +105,59 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        // Store token in localStorage or sessionStorage
         localStorage.setItem("token", data.token);
-        window.location.href = "/"; // Redirect to homepage after login
+        window.location.href = "/";
       } else {
-        setError(data.message); // Display error message from server
+        // Handle specific error cases
+        switch (data.type) {
+          case 'email':
+            setErrors(prev => ({ ...prev, email: data.message }));
+            break;
+          case 'password':
+            setErrors(prev => ({ ...prev, password: data.message }));
+            break;
+          default:
+            setErrors(prev => ({ ...prev, general: data.message }));
+        }
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setError("An error occurred during login.");
+      setErrors(prev => ({ ...prev, general: "An error occurred during login." }));
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-left">
-        <div className="atom-container">
-          <div className="nucleus"></div>
-          <div className="orbital orbital-1">
-            <a className="block" style={{"--index": "0", "--bg": "var(--gradient-1)"}} tabIndex="0">
-              <span className="block__item">A</span>
-            </a>
-          </div>
-          <div className="orbital orbital-2">
-            <a className="block" style={{"--index": "1", "--bg": "var(--gradient-3)"}} tabIndex="0">
-              <span className="block__item">T</span>
-            </a>
-          </div>
-          <div className="orbital orbital-3">
-            <a className="block" style={{"--index": "2", "--bg": "var(--gradient-5)"}} tabIndex="0">
-              <span className="block__item">O</span>
-            </a>
-          </div>
-          <div className="orbital orbital-4">
-            <a className="block" style={{"--index": "3", "--bg": "var(--gradient-7)"}} tabIndex="0">
-              <span className="block__item">M</span>
-            </a>
+        
+        <div className="login-text">
+          <div className="atom-group">
+            <div className="title-line">LOG INTO</div>
+            <div className="atom-line">
+              <div className="atom-text">AT</div>
+              <div className="atom-container">
+                <div className="nucleus"></div>
+                <div className="orbital orbital-1">
+                  <div className="block"></div>
+                </div>
+                <div className="orbital orbital-2">
+                  <div className="block"></div>
+                </div>
+                <div className="orbital orbital-3">
+                  <div className="block"></div>
+                </div>
+              </div>
+              <div className="atom-text">M</div>
+            </div>
+            <div className="subtitle-text">Advanced Tanıtım Ofisi Manager</div>
           </div>
         </div>
-        
-        <h1 className="login-title">Log Into</h1>
-        <h2 className="login-logo">ATOM</h2>
-        <p className="login-subtitle">Advanced Tanıtım Ofisi Manager</p>
       </div>
 
       <div className="login-right">
         <div className="login-box">
           <h2>Login</h2>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          {errors.general && <p style={{ color: "red" }}>{errors.general}</p>}
           <form onSubmit={handleSubmit}>
             <label htmlFor="email">Email:</label>
             <input
@@ -142,6 +169,7 @@ const Login = () => {
               className="login-input"
               required
             />
+            {errors.email && <p style={{ color: "red", fontSize: "0.8em" }}>{errors.email}</p>}
 
             <label htmlFor="password">Password:</label>
             <input
@@ -153,6 +181,7 @@ const Login = () => {
               className="login-input"
               required
             />
+            {errors.password && <p style={{ color: "red", fontSize: "0.8em" }}>{errors.password}</p>}
 
             <div className="login-remember">
               <label>

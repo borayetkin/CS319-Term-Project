@@ -230,50 +230,46 @@ const FairRowActions = ({ fair, user, setMessage, setFairs, handleCompleteFair =
     <div className="action-buttons">
  
       { (isPast) ? renderForPastAssignedFair()  : <>
-        <Link to={`/fairs/${fair._id}`} className="action-button view">
-        <i className="fas fa-eye"></i>
-        View Details
-      </Link>
-      {user && !checkIfFairIsFull() && 
-      rolesThatApply.includes(user.role) &&
-      !checkIfUserHasApplied() && !checkIfUserHasAssigned() &&
-         (
-        <button
-          className="action-button apply"
-          onClick={() => applyToFair(fair._id)}
-          disabled={actionInProcess}
-          style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
-        >
-          <i className="fas fa-hand-point-up"></i>
-          Apply
-        </button>
-      )}
-      {user &&
+        {user && !checkIfFairIsFull() && 
         rolesThatApply.includes(user.role) &&
-        checkIfUserHasApplied() && !checkIfUserHasAssigned()&& (
+        !checkIfUserHasApplied() && !checkIfUserHasAssigned() &&
+           (
           <button
-            className="action-button unapply"
-            onClick={() => unapplyFromFair(fair._id)}
+            className="action-button apply"
+            onClick={() => applyToFair(fair._id)}
             disabled={actionInProcess}
             style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
           >
-            <i className="fas fa-times"></i>
-            Unapply
+            <i className="fas fa-hand-point-up"></i>
+            Apply
           </button>
         )}
-      {user &&
-        rolesThatApply.includes(user.role) &&
-        checkIfUserHasAssigned() && (
-          <button
-            className="action-button unassign"
-            onClick={() => removeAssignedFair(fair._id)}
-            disabled={actionInProcess}
-            style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
-          >
-            <i className="fas fa-user-minus"></i>
-            Unassign
-          </button>
-        )}
+        {user &&
+          rolesThatApply.includes(user.role) &&
+          checkIfUserHasApplied() && !checkIfUserHasAssigned()&& (
+            <button
+              className="action-button unapply"
+              onClick={() => unapplyFromFair(fair._id)}
+              disabled={actionInProcess}
+              style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
+            >
+              <i className="fas fa-times"></i>
+              Unapply
+            </button>
+          )}
+        {user &&
+          rolesThatApply.includes(user.role) &&
+          checkIfUserHasAssigned() && (
+            <button
+              className="action-button unassign"
+              onClick={() => removeAssignedFair(fair._id)}
+              disabled={actionInProcess}
+              style={{ cursor: actionInProcess ? "not-allowed" : "pointer" }}
+            >
+              <i className="fas fa-user-minus"></i>
+              Unassign
+            </button>
+          )}
         </>
 }
       
