@@ -18,6 +18,7 @@ const {
     getUserFairs,
     markFairAsCompleted,
     takeBackFairAction,
+    markFairAsCanceled
 } = require("../controllers/FairController.js");
 
 //get
@@ -45,5 +46,5 @@ router.delete('/:id', adminAuth, deleteFair);
 // Add these routes with your other fair routes
 router.post('/:fairId/complete', auth, markFairAsCompleted);
 router.post('/:fairId/take-back', auth, takeBackFairAction);
-
+router.post('/:fairId/mark-cancelled', auth, markFairAsCanceled);
 module.exports = router;

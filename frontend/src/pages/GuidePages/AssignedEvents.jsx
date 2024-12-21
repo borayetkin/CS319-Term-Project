@@ -7,10 +7,11 @@ import GeneralTable from "../../components/GeneralTable";
 import AssignedEventsActions from "../../components/AssignedEventsActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 import DetailsModal from '../../components/DetailsModal';
-
+import FairRowActions from "../../components/FairRowActions";
 
 const AssignedEvents = () => {
   const [assignedEvents, setAssignedEvents] = useState([]);
+  const [assignedFairs, setAssignedFairs] = useState([]);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -19,10 +20,13 @@ const AssignedEvents = () => {
   const [actionInProcess, setActionInProcess] = useState(false);
   const [showWorkLog, setShowWorkLog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showFairs, setShowFairs] = useState(false);
+  const [error, setError] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAssignedEvents(token);
+      fetchAssignedFairs(token);
       fetchUserProfile(token);
     }
   }, []);
@@ -31,13 +35,13 @@ const AssignedEvents = () => {
     if (showWorkLog && token) {
       setShowPastEvents(true);
       fetchCompletedEvents(token);
+      fetchCompletedFairs(token);
     }
     if (!showWorkLog && token) {
       setShowPastEvents(false);
       fetchAssignedEvents(token);
-      
+      fetchAssignedFairs(token);
     }
-   
   }, [showWorkLog]);
   const fetchUserProfile = async (token) => {
     try {
@@ -64,7 +68,6 @@ const AssignedEvents = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         
         setAssignedEvents(data);
         setIsLoading(false);
@@ -78,41 +81,70 @@ const AssignedEvents = () => {
     }
   };
   const fetchAssignedEvents = async (token) => {
+  
     try {
-      let events = [];
-      
-      // Fetch tours
-      const eventsResponse = await fetch("http://localhost:3000/api/events/user", {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await fetch("http://localhost:3000/api/events/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
-      if (eventsResponse.ok) {
-        const eventsData = await eventsResponse.json();
-        events = eventsData;
-      }
 
-      // Fetch fairs
-      const fairsResponse = await fetch("http://localhost:3000/api/fairs/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      if (fairsResponse.ok) {
-        const fairsData = await fairsResponse.json();
-        // Add __t property to fairs to match tour structure
-        const formattedFairs = fairsData.map(fair => ({
-          ...fair,
-          __t: "Fair",
-          visitDate: fair.fairDate, // normalize date field
-          status: fair.status || "accepted"
-        }));
-        events = [...events, ...formattedFairs];
-      }
+      if (response.ok) {
+        const data = await response.json();
 
-      setAssignedEvents(events);
-      setIsLoading(false);
+        setAssignedEvents(data);
+        setIsLoading(false);
+      } else {
+        setMessage("Failed to fetch assigned events.");
+        setIsLoading(false);
+      }
     } catch (error) {
-      console.error("Error fetching events:", error);
       setIsLoading(false);
+      setMessage("Error fetching assigned events: " + error.message);
+    }
+
+  };
+
+  const fetchAssignedFairs = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/fairs/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAssignedFairs(data);
+        setIsLoading(false);
+      } else {
+        setMessage("Failed to fetch assigned fairs.");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setMessage("Error fetching assigned fairs: " + error.message);
+    }
+  };
+
+  const fetchCompletedFairs = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/fairs/user?completed=true", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAssignedFairs(data);
+        setIsLoading(false);
+      } else {
+        setMessage("Failed to fetch completed fairs.");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setMessage("Error fetching completed fairs: " + error.message);
     }
   };
 
@@ -159,7 +191,7 @@ const AssignedEvents = () => {
     if (token) {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/events/${eventId}/cancel`,
+          `http://localhost:3000/api/events/${eventId}/mark-cancelled`,
           {
             method: "POST",
             headers: {
@@ -185,56 +217,115 @@ const AssignedEvents = () => {
     }
     setActionInProcess(false);
   };
-  const handleTakeBack = async (eventId, eventType) => {
+  const handleTakeBack = async (eventId) => {
     setActionInProcess(true);
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const endpoint = eventType === "Fair"
-          ? `http://localhost:3000/api/fairs/${eventId}/take-back`
-          : `http://localhost:3000/api/events/${eventId}/take-back`;
-
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const response = await fetch(
+          `http://localhost:3000/api/events/${eventId}/take-back`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (response.ok) {
+          // Update the event status in state to mark it as accepted
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
-              event._id === eventId ? { ...event, status: "accepted", hoursOfWork: 0 } : event
+              event._id === eventId ? { ...event, status: "accepted" , hoursOfWork: 0} : event
             )
           );
-          setMessage("✅ Event status reset successfully");
         } else {
-          const error = await response.json();
-          setMessage(`⚠️ ${error.message || "Failed to reset event status"}`);
+          alert("Failed to take back the event.");
         }
       } catch (error) {
-        console.error("Error resetting event status:", error);
-        setMessage("⚠️ Error resetting event status");
+        console.error("Error taking back event:", error);
       }
     }
     setActionInProcess(false);
   };
-  const filteredEvents = assignedEvents.filter((event) => {
-    const eventDate = event.visitDate || event.fairDate;
-    const isPastEvent = new Date(eventDate) < new Date();
-    const isFutureEvent = new Date(eventDate) > new Date();
-    
-    if (!eventDate) return false;
 
-    const matchesTourType = 
-      (tourType === "Fair" && event.__t === "Fair") ||
-      (tourType !== "Fair" && event.__t === tourType);
+  const handleCompleteFair = async (fairId, workHours) => {
+    setActionInProcess(true);
 
-    return (
-      ((showPastEvents || showWorkLog) && isPastEvent) ||
-      (!showPastEvents && isFutureEvent)
-    ) && matchesTourType;
-  });
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/fairs/${fairId}/complete`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ workHours }),
+          }
+        );
+
+        if (response.ok) {
+          setAssignedFairs((prevFairs) =>
+            prevFairs.map((fair) =>
+              fair._id === fairId
+                ? { ...fair, status: "completed-verified", hoursOfWork: workHours }
+                : fair
+            )
+          );
+        } else {
+          alert("Failed to complete the fair.");
+        }
+      } catch (error) {
+        console.error("Error completing fair:", error);
+      }
+    }
+    setActionInProcess(false);
+  };
+
+  const handleTakeBackFair = async (fairId) => {
+    setActionInProcess(true);
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/fairs/${fairId}/take-back`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          setAssignedFairs((prevFairs) =>
+            prevFairs.map((fair) =>
+              fair._id === fairId ? { ...fair, status: "accepted", hoursOfWork: 0 } : fair
+            )
+          );
+        } else {
+          alert("Failed to take back the fair.");
+        }
+      } catch (error) {
+        console.error("Error taking back fair:", error);
+      }
+    }
+    setActionInProcess(false);
+  };
+
+  const filteredEvents = assignedEvents.filter(
+    (event) =>
+      (((showPastEvents ||showWorkLog) && new Date(event.visitDate) < new Date()) ||
+      (!showPastEvents && new Date(event.visitDate) > new Date())) && (event.__t === tourType)
+  );
+
+  const filteredFairs = assignedFairs.filter(
+    (fair) =>
+      ((showPastEvents && new Date(fair.fairDate) < new Date()) ||
+      (!showPastEvents && new Date(fair.fairDate) > new Date()))
+  );
+
   const setExtraProperties = () => {
     if (showPastEvents && !showWorkLog){
       return {
@@ -255,6 +346,8 @@ const AssignedEvents = () => {
       };
     }
   }
+ 
+  
   const extraProperties = setExtraProperties();
   const handleShowDetails = (event) => {
     setSelectedEvent(event);
@@ -262,58 +355,6 @@ const AssignedEvents = () => {
   const handleCloseModal = () => {
     setSelectedEvent(null);
   };
-  const handleComplete = async (event) => {
-    console.log("Event data received:", event); // Debug log
-
-    if (!event || !event._id) {
-      console.log("Invalid event data:", { event }); // Debug what's invalid
-      setMessage("⚠️ Invalid event data");
-      return;
-    }
-
-    setActionInProcess(true);
-    const token = localStorage.getItem("token");
-    
-    if (token) {
-      try {
-        const endpoint = event.__t === "Fair" 
-          ? `http://localhost:3000/api/fairs/${event._id}/complete`
-          : `http://localhost:3000/api/events/${event._id}/complete`;
-
-        console.log("Completing event:", { endpoint, event }); // Debug log
-
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ 
-            workHours: event.hoursOfWork || 3, // Default to 3 hours if not specified
-            fairId: event._id, // Add for fairs
-            eventId: event._id // Add for events
-          }),
-        });
-
-        if (response.ok) {
-          setAssignedEvents((prevEvents) =>
-            prevEvents.map((e) =>
-              e._id === event._id ? { ...e, status: "completed-verified" } : e
-            )
-          );
-          setMessage("✅ Event marked as completed successfully");
-        } else {
-          const errorData = await response.json();
-          setMessage(`⚠️ ${errorData.message || "Failed to complete event"}`);
-        }
-      } catch (error) {
-        console.error("Error completing event:", error);
-        setMessage("⚠️ Error completing event");
-      }
-    }
-    setActionInProcess(false);
-  };
-
   return (
     <div className="events-container">
       <div
@@ -323,7 +364,7 @@ const AssignedEvents = () => {
           marginBottom: "20px",
         }}
       >
-        <h1>Assigned Future Events</h1>
+        <h1>{tourType === "Fair" ? "Assigned Fairs" : "Assigned Future Events"}</h1>
 
         { !showWorkLog && (<button
           style={{ width: "auto" }}
@@ -331,7 +372,7 @@ const AssignedEvents = () => {
             setShowPastEvents((prev) => !prev);
           }}
         >
-          {showPastEvents ? "Show Future Events" : "Show Past Events"}
+          {showPastEvents ? ( tourType === "Fair" ? "Show Future Fairs" :"Show Future Events") : ( tourType === "Fair" ?"Show Past Fairs" :"Show Past Events")}
         </button>)} 
         {  (
           <button
@@ -348,15 +389,17 @@ const AssignedEvents = () => {
       {message && <p>{message}</p>}
 
       {!isLoading &&<GeneralTable
-        showFairs={false}
+        showFairs={true}
         showTours={true}
         events={filteredEvents}
+        fairs={filteredFairs}
         filter={tourType}
         setMessage={setMessage}
         statusFilter="all"
         searchTerm=""
         user={user}
         showType={tourType}
+        viewType={tourType === "Fair" ? "fairs" : "events"}
         setIsLoading={setIsLoading}
         EventRowActions={({ event, user, setMessage }) => {
           return (
@@ -364,14 +407,24 @@ const AssignedEvents = () => {
               event={event}
               user={user}
               setMessage={setMessage}
-              handleCompleteEvent={handleComplete}
+              handleCompleteEvent={handleCompleteEvent}
               handleCancelEvent={handleMarkCanceled}
-              handleTakeBackAction={(eventId) => handleTakeBack(eventId, event.__t)}
+              handleTakeBackAction={handleTakeBack}
               actionInProcess={actionInProcess}
               setActionInProcess={setActionInProcess}
             />
           );
         }}
+        FairRowActions={({ fair, user, setMessage }) => (
+          <FairRowActions
+            fair={fair}
+            user={user}
+            setMessage={setMessage}
+            setFairs={setAssignedFairs}
+            handleCompleteFair={handleCompleteFair}
+            handleCancelFair={handleMarkCanceled}
+          />
+        )}
         showExtraProperties={extraProperties}
         onShowDetails={handleShowDetails}
       />}

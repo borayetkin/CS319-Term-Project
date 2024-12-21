@@ -140,7 +140,13 @@ const Events = () => {
       return 0;
     });
   }
-  const sortedFairs = sortFairs(fairs, sortOption);
+  const filteredFairs = fairs.filter((fair) => {
+    const matchesSearch = searchTerm.trim() === "" || (fair.organiserName || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const isPast = new Date(fair.fairDate) < new Date();
+    return matchesSearch && !isPast;
+  });
+
+  const sortedFairs = sortFairs(filteredFairs, sortOption);
   const filteredEvents = events.filter((event) => {
     const matchesType = showType ? event.__t === showType : true;
     const isPast = new Date(event.visitDate) < new Date();

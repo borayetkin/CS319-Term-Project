@@ -461,14 +461,27 @@ exports.unapplyFromFair = async (req, res) => {
 // Get fairs for a specific user
 exports.getUserFairs = async (req, res) => {
   try {
+    const {completed} = req.query;
+    let fairs;
+    if (completed === 'true') {
+      const user = await User.findById(req.user.id);
+       fairs = await Fair.find({
+        _id: { $in: user.completedFairs }
+      }).populate('assignedUsers', 'name email phoneNumber major').exec();
+    }
+    else{
     const userId = req.user.id;
-    const fairs = await Fair.find({
+    fairs = await Fair.find({
       assignedUsers: userId,
       status: "accepted"
     })
     .populate('assignedUsers', 'name email phoneNumber major')
     .exec();
-
+  }
+  if (!fairs) {
+    createLog(req.user.id, req.user.role, 'getUserFairs', '', 'error', 'Fairs not found');
+    return res.status(404).json({ message: "Fairs not found" });
+  }
     res.status(200).json(fairs);
   } catch (error) {
     console.error("Error fetching user's fairs:", error);
@@ -478,53 +491,55 @@ exports.getUserFairs = async (req, res) => {
     });
   }
 };
-
+exports.markFairAsCanceled = async (req, res) => {
+  try{
+    const fairId = req.params.fairId || req.body.fairId;
+    const userId = req.user.id;
+    const fair = await Fair.findById(fairId);
+    if (!fair) {
+      createLog(userId, req.user.role, 'markFairAsCanceled', fairId, 'error', 'Fair not found');
+      return res.status(404).json({ message: "Fair not found" });
+    }
+    if (!fair.assignedUsers.includes(userId)) {
+      createLog(userId, req.user.role, 'markFairAsCanceled', fairId, 'error', 'User not assigned to fair');
+      return res.status(403).json({ message: "User not assigned to this fair" });
+    }
+    fair.status = "canceled";
+    await fair.save();
+    createLog(userId, req.user.role, 'markFairAsCanceled', fairId, 'success', 'Fair marked as canceled');
+    res.status(200).json({ message: "Fair marked as canceled successfully" });
+  } catch (error) {
+    console.error("Error in markFairAsCanceled:", error);
+    createLog(req.user.id, req.user.role, 'markFairAsCanceled', req.params.fairId, 'error', error.message);
+    res.status(500).json({ message: "Failed to cancel fair", error: error.message });
+  }
+};
 exports.markFairAsCompleted = async (req, res) => {
   try {
     const fairId = req.params.fairId || req.body.fairId;
     const userId = req.user.id;
     const workHours = req.body.workHours || 3;
 
-    console.log('Starting markFairAsCompleted with:', { fairId, userId, workHours });
-
-    let fair = await Fair.findById(fairId);
+    let fair = await Fair.findById(fairId).populate("assignedUsers");
     if (!fair) {
       createLog(userId, req.user.role, 'markFairAsCompleted', fairId, 'error', 'Fair not found');
       return res.status(404).json({ message: "Fair not found" });
     }
 
-    const isAssigned = fair.assignedUsers.some(id => id.toString() === userId.toString());
+    const isAssigned = fair.assignedUsers.some(id => id._id.toString() === userId.toString());
     if (!isAssigned) {
       createLog(userId, req.user.role, 'markFairAsCompleted', fairId, 'error', 'User not assigned to fair');
       return res.status(403).json({ message: "User not assigned to this fair" });
     }
-
-    // Update all assigned users
-    for (const assignedUserId of fair.assignedUsers) {
-      try {
-        const user = await User.findById(assignedUserId);
-        if (user) {
-          // Remove from assignedFairs and add to completedEvents
-          await user.removeAssignedFair(fairId);
-          if (!user.completedEvents) {
-            user.completedEvents = [];
-          }
-          if (!user.completedEvents.includes(fairId)) {
-            user.completedEvents.push(fairId);
-          }
-          if (!user.totalWorkHours) {
-            user.totalWorkHours = 0;
-          }
-          user.totalWorkHours += workHours;
-          await user.save();
-        }
-      } catch (userError) {
-        console.error('Error updating user:', assignedUserId, userError);
-      }
+    for (let i = 0; i < fair.assignedUsers.length; i++) {
+      let user = fair.assignedUsers[i];
+      await user.completeFair(fairId, workHours);
     }
+    // Update all assigned users
+
 
     // Update fair status and hours - Changed to match event completion status
-    fair.status = "completed-non-verified";  // Changed from "completed" to "completed-non-verified"
+    fair.status = "completed";  // Changed from "completed" to "completed-non-verified"
     fair.hoursOfWork = workHours;
     await fair.save();
 

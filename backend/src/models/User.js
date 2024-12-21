@@ -115,11 +115,7 @@ userSchema.methods.completeEvent = function (eventId, workHours) {
     this.assignedEvents.splice(assignedIndex, 1);
   }
 
-  // Remove from assigned fairs if it exists
-  const fairIndex = this.assignedFairs.indexOf(eventId);
-  if (fairIndex > -1) {
-    this.assignedFairs.splice(fairIndex, 1);
-  }
+
 
   // Add to completed events if not already there
   if (!this.completedEvents.includes(eventId)) {
@@ -134,6 +130,26 @@ userSchema.methods.completeEvent = function (eventId, workHours) {
 
   return this.save();
 };
+userSchema.methods.completeFair = function (fairId, workHours) {
+  // Remove from assigned fairs if it exists
+  const fairIndex = this.assignedFairs.indexOf(fairId);
+  if (fairIndex > -1) {
+    this.assignedFairs.splice(fairIndex, 1);
+  }
+
+  // Add to completed fairs if not already there
+  if (!this.completedFairs.includes(fairId)) {
+    this.completedFairs.push(fairId);
+  }
+
+  // Update work hours
+  if (!this.totalWorkHours) {
+    this.totalWorkHours = 0;
+  }
+  this.totalWorkHours += workHours;
+
+  return this.save();
+}
 userSchema.methods.takeBackCompletedEvent = function (eventId,workHours) {
   if (this.completedEvents.includes(eventId)) {
     let ind = this.completedEvents.indexOf(eventId);

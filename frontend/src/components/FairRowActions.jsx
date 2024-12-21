@@ -1,8 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
+import { FaCheck, FaMinus } from "react-icons/fa";
+
+const FairRowActions = ({ fair, user, setMessage, setFairs, handleCompleteFair = ()=>{}, handleCancelFair = () =>{}  }) => {
   const [actionInProcess, setActionInProcess] = useState(false);
+  const [workHours, setWorkHours] = useState(0);
+  const [showWorkHoursPopup, setShowWorkHoursPopup] = useState(false);
   const personIconUrl =
     "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const fairIsFull = fair.currentGuides >= fair.requiredNumberOfGuides;
@@ -130,17 +134,110 @@ const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
     return fair.assignedUsers.length >= fair.requiredNumberOfGuides;
   }
 
+  const handleWorkHours = (e) => {
+    const value = e.target.value;
+    if (value < 0 || value > 10 || value * 1000 % 100 !== 0) {
+      return;
+    }
+    setWorkHours(e.target.value);
+  };
+
+  const handlePopupClick = (e) => {
+    if (e.target.className === "popup-overlay") {
+      setShowWorkHoursPopup(false);
+    }
+  };
+
+  const popupOverlayStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    zIndex: 100,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  const popupContentStyle = {
+    backgroundColor: "white",
+    padding: "20px",
+    borderRadius: "5px",
+  };
+
+  const buttonStyle = {
+    cursor: actionInProcess ? "not-allowed" : "pointer",
+  };
+
+  const containerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "10px",
+    minHeight: "150px!important",
+  };
+
+  const innerContainerStyle = {
+    display: "flex",
+    flexDirection: "row",
+    gap: "20px",
+    maxHeight: "50px",
+  };
+
+  const renderForPastAssignedFair = () => {
+
+    const isCompleted = fair.status.includes("completed") || fair.status.includes("canceled");
+      return ( !isCompleted &&
+        <div style={containerStyle}>
+          <button
+            className={"action-button apply"}
+            disabled={actionInProcess}
+            style={buttonStyle}
+            onClick={() => setShowWorkHoursPopup(true)}
+          >
+            Enter Work Hours
+          </button>
+          {workHours > 0 && `Entered ${workHours}`}
+          <div style={innerContainerStyle}>
+            <button
+              className={"action-button apply"}
+              disabled={actionInProcess}
+              style={buttonStyle}
+              onClick={() => handleCompleteFair(fair._id)}
+            >
+              <FaCheck />
+              Complete
+            </button>
+            <button
+              className={"action-button unassign"}
+              disabled={actionInProcess}
+              style={buttonStyle}
+              onClick={() => handleCancelFair(fair._id)}
+            >
+              <FaMinus />
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    
+  };
+  const isPast = new Date(fair.fairDate) < new Date();
+
+
   return (
     <div className="action-buttons">
-      <Link to={`/fairs/${fair._id}`} className="action-button view">
+ 
+      { (isPast) ? renderForPastAssignedFair()  : <>
+        <Link to={`/fairs/${fair._id}`} className="action-button view">
         <i className="fas fa-eye"></i>
         View Details
       </Link>
-      
       {user && !checkIfFairIsFull() && 
       rolesThatApply.includes(user.role) &&
       !checkIfUserHasApplied() && !checkIfUserHasAssigned() &&
-      !fairIsFull && (
+         (
         <button
           className="action-button apply"
           onClick={() => applyToFair(fair._id)}
@@ -177,6 +274,26 @@ const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
             Unassign
           </button>
         )}
+        </>
+}
+      
+      {showWorkHoursPopup && (
+        <div className="popup-overlay" onClick={handlePopupClick} style={popupOverlayStyle}>
+          <div className="popup-content" style={popupContentStyle}>
+            <label htmlFor="workHours">Enter Work Hours: </label>
+            <input
+              name="workHours"
+              type="number"
+              placeholder=""
+              value={workHours}
+              onChange={handleWorkHours}
+              style={{ maxWidth: "80px", cursor: actionInProcess ? "not-allowed" : "pointer" }}
+              disabled={actionInProcess}
+            />
+            <button onClick={() => setShowWorkHoursPopup(false)} style={{ marginLeft: "10px" }}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
