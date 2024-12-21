@@ -4,6 +4,7 @@ const Advisor = require("../models/Advisor");
 const SchoolTour = require("../models/SchoolTour");
 const IndividualTour = require("../models/IndividualTour");
 const Applicant = require("../models/Applicant");
+const {sendNotification} = require("../controllers/NotificationController");
 const fs = require("fs");
 const path = require("path");
 const {
@@ -591,7 +592,7 @@ exports.assignGuideToEvent = async (req, res) => {
       createLog(req.user.id, req.user.role, 'assignGuideToEventByOther', eventID, 'success', `Guide ${guide.name} assigned successfully to event`);
     }
     createLog(req.user.id, req.user.role, 'assignGuideToEvent', eventID, 'success', 'Guide assigned successfully');
-    return res.status(200).json({ message: "Guide assigned successfully" });
+    return res.status(200).json({ message: "Guide assigned successfully" , assignedGuide : guide});
   } catch (error) {
     console.error(error);
     createLog(req.user.id, req.user.role, 'assignGuideToEvent', req.body.eventID, 'error', error.message);
@@ -1120,3 +1121,40 @@ exports.unapplyFromEvent = async (req, res) => {
   }
 };
 
+exports.sendNotificationAboutEventToGuide = async (req, res) => {
+  try {
+    const { eventId, guideId} = req.body;
+    const eventID = eventId || req.params.eventID;
+    const userid = guideId || req.headers.userid;
+    console.log('Send notification request:', { eventID, userid });
+    
+
+    const event = await Event.findById(eventID);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    const user = await User.findById (userid);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const notificationTitle = "You Can Assign To An Event!";
+    const generateEventDetails = (event) => {
+      const { typeStr, visitDate, visitTime, city, district } = event;
+      const visitDateStrWithoutTime = visitDate.toISOString().split("T")[0];
+      return `${typeStr} on ${visitDateStrWithoutTime} at ${visitTime} in ${city}, ${district}`;
+    }
+    const notificationMessage = `You can assign to an event with the following details: ${generateEventDetails(event)}, and you have marked the hour of the event as available.`;
+    const notificationProps = {
+      title: notificationTitle,
+      message: notificationMessage,
+      recipient: userid,
+    };
+    await sendNotification(notificationProps);
+    createLog(userid, 'guide', 'sendNotificationAboutEventToGuide', eventID, 'success', 'Notification sent to guide about event');
+    res.status(200).json({ message: "Notification sent successfully" });
+  }
+  catch (error) {
+    console.error('Notification error:', error);
+    res.status(500).json({ message: "Failed to send notification", error: error.message });
+  }
+}

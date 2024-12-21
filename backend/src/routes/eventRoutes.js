@@ -28,7 +28,8 @@ const {
   checkSchoolApplicationExists,
   applyToEvent,
   unapplyFromEvent,
-  resendApplicationEmail
+  resendApplicationEmail,
+  sendNotificationAboutEventToGuide,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -77,5 +78,5 @@ router.get("/check-school/:schoolID", checkSchoolApplicationExists);
 router.post("/apply", auth, applyToEvent);
 
 router.post("/unapply", auth, unapplyFromEvent);
-
+router.post("/notify-guide", auth, sendNotificationAboutEventToGuide);
 module.exports = router;
