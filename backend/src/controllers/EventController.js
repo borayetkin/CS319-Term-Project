@@ -15,6 +15,7 @@ const {
 } = require("../config/EmailService");
 const { removeEventFromSchedule } = require("../applicationManagement/AppointmentManager");
 const { createLog } = require("./LogController");
+const jwt = require("jsonwebtoken");
 
 // Get events with status "accepted"
 exports.getAcceptedEvents = async (req, res) => {
@@ -148,6 +149,7 @@ exports.createSchoolTour = async (req, res) => {
     schoolTour.setWeekday();
 
     const savedTour = await schoolTour.save();
+    await savedTour.generateReferenceCode(); // Generate reference code
     await savedTour.populate("applicant");
     await sendConfirmationEmail(email, contactPerson, "processing", savedTour);
     res.status(201).json({
@@ -200,6 +202,7 @@ exports.createIndividualTour = async (req, res) => {
     individualTour.setWeekday();
 
     const savedTour = await individualTour.save();
+    await savedTour.generateReferenceCode(); // Generate reference code
     await savedTour.populate("applicant");
     await sendConfirmationEmail(
       savedTour.applicant.email,
@@ -322,6 +325,40 @@ exports.getEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Find event by reference code
+exports.getEventByReferenceCode = async (req, res) => {
+  try {
+    const { referenceCode } = req.params;
+    const { city, district, schoolName } = req.query;
+
+    const query = { referenceCode };
+
+    if (city) query.city = city;
+    if (district) query.district = district;
+    if (schoolName) {
+      query.schoolName = schoolName
+    };
+    
+    let event = await Event.findOne(query)
+      .populate("applicant");
+    if(!event) {
+      query.schoolName ="";
+      query.studentHighSchool = schoolName;
+      event = await IndividualTour.findOne(query)
+      .populate("applicant");
+    }
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error("Error in getEventByReferenceCode:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 const acceptTourApplicationByCoordinator = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -1196,3 +1233,64 @@ exports.sendNotificationAboutEventToGuide = async (req, res) => {
     res.status(500).json({ message: "Failed to send notification", error: error.message });
   }
 }
+
+// Generate session token for applicants
+exports.generateApplicantSessionToken = async (req, res) => {
+  try {
+    const { referenceCode } = req.params;
+    const { city, district, schoolName } = req.query;
+
+    const query = { referenceCode };
+
+    if (city) query.city = city;
+    if (district) query.district = district;
+    if (schoolName) {
+      query.schoolName = schoolName;
+      query.studentHighSchool = schoolName;
+    }
+
+    let event = await Event.findOne(query).populate("applicant");
+    if (!event) {
+      query.schoolName = "";
+      query.studentHighSchool = schoolName;
+      event = await IndividualTour.findOne(query).populate("applicant");
+    }
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const token = jwt.sign(
+      { eventId: event._id, applicantId: event.applicant._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Error generating session token:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Cancel an event
+exports.cancelEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { reason } = req.body;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    event.status = "canceled-by-applicant";
+    event.rejectionReason = reason;
+    await event.save();
+
+    res.status(200).json({ message: "Event canceled successfully" });
+  } catch (error) {
+    console.error("Error canceling event:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

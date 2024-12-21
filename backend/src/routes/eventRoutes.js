@@ -30,6 +30,9 @@ const {
   unapplyFromEvent,
   resendApplicationEmail,
   sendNotificationAboutEventToGuide,
+  getEventByReferenceCode,
+  generateApplicantSessionToken,
+  cancelEvent,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
 
@@ -53,6 +56,15 @@ router.get("/:id", getEvent);
 router.get("/details/:id", auth, getEvent);
 router.get("/:id/assignees", auth, getEventAssignees);
 router.get("/check-review/:eventId", isReviewSubmitted);
+
+// Route to find event by reference code
+router.get("/reference/:referenceCode", getEventByReferenceCode);
+
+// Route to generate session token for applicants
+router.get("/generate-session/:referenceCode", generateApplicantSessionToken);
+
+// Route to cancel an event
+router.post("/cancel/:eventId", cancelEvent);
 
 // Routes for updating and deleting events
 router.put("/:eventId", advisorAuth, updateEvent);
