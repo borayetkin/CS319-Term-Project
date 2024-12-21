@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/TourApplication.css";
 import CustomDateTimePicker from "../components/SchoolTourDatePicker";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
@@ -1003,6 +1003,9 @@ const TourApplication = () => {
             )}
           </div>
         </form>
+        <Link to="/check-application" className="check-application-link">
+          Check Application Status
+        </Link>
       </div>
     </section>
   );

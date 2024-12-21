@@ -40,6 +40,8 @@ import ResubmitForm from "./pages/ResubmitForm";
 import TraineeshipApplication from "./pages/TraineeshipApplication";
 import ViewTraineesPage from "./pages/AdvisorPages/ViewTraineesPage";
 import ViewLogsPage from "./pages/CoordinatorPages/DashboardPages/ViewLogsPage";
+import CheckApplication from "./pages/CheckApplication";
+import EditApplication from "./pages/EditApplication";
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
         <Route path="/advisor-info" element={<AdvisorInformation />} />
         <Route path="/resubmit-form/:eventId" element={<ResubmitForm />} />
         <Route path="/traineeship-application" element={<TraineeshipApplication />} />
+        <Route path="/check-application" element={<CheckApplication />} />
+        <Route path="/edit-application/:referenceCode" element={<EditApplication />} />
 
         {/* Private Routes */}
         <Route

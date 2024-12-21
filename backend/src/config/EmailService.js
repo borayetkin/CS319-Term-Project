@@ -40,13 +40,13 @@ const sendApplicationReceivedEmail = async (email, name, tourData) => {
         <!-- Header -->
         <h2 style="color: #0056b3; margin-bottom: 10px;">Hello ${name},</h2>
         <p style="font-size: 16px; margin-bottom: 20px;">
-          Thank you for submitting your tour application!
+          Thank you for submitting your tour application! 
         </p>
 
         <!-- Status Section -->
         <div style="background-color: #e7f3ff; padding: 10px 15px; border-left: 4px solid #0056b3; margin-bottom: 20px;">
           <p style="margin: 0; font-size: 16px; color: #0056b3; font-weight: bold;">
-            Your application is currently being processed. We will notify you once a decision has been made.
+            Your application is currently being processed. We will notify you once a decision has been made. You can use the reference code to track your application status or cancel it.
           </p>
         </div>
 
@@ -601,6 +601,7 @@ const generateTourDetails = (tourData, email) => {
         .join("")}
       <p><strong>Phone Number:</strong> ${tourData.applicant.phoneNumber}</p>
       <p><strong>Additional Notes:</strong> ${additionalNotes || "N/A"}</p>
+      <p><stong> Reference Code </strong> ${tourData.referenceCode}</p>
     `;
   } else if (__t === "IndividualTour") {
     return `
@@ -611,6 +612,7 @@ const generateTourDetails = (tourData, email) => {
       <p><strong>Visit Time:</strong> ${visitTime}</p>
       <p><strong>High School:</strong> ${city}, ${tourData.studentHighSchool}, ${district}</p>
       <p><strong>Major of Interest:</strong> ${tourData.majorOfInterest}</p>
+      <p><stong> Reference Code </strong> ${tourData.referenceCode}</p>
       <p><strong>Additional Notes:</strong> ${additionalNotes || "N/A"}</p>
     `;
   } else {

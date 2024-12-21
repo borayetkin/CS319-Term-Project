@@ -26,7 +26,7 @@ const eventSchema = new mongoose.Schema({
   },
   status : {
     type: String,
-    enum : ["pending", "scheduled", "accepted", "rejected","canceled-resubmission-requested","completed-non-verified","completed-verified"],
+    enum : ["pending", "scheduled", "accepted", "rejected","canceled-resubmission-requested","completed-non-verified","completed-verified","canceled-by-applicant"],
     default: "pending"
   },
   hoursOfWork : {
@@ -82,6 +82,9 @@ const eventSchema = new mongoose.Schema({
   rejectionReason: {
     type: String,
     required: false
+  },
+  referenceCode: {
+    type: String,
   }
 
 });
@@ -187,6 +190,13 @@ eventSchema.methods.setReview = async function(reviewId) {
     throw new Error(`Failed to save review: ${error.message}`);
   }
 }
+
+// Method to generate a unique 8-character reference code
+eventSchema.methods.generateReferenceCode = function () {
+  const uniqueString = `${this._id}-${Date.now()}`;
+  this.referenceCode = Buffer.from(uniqueString).toString('base64').substring(0, 8);
+  return this.save();
+};
 
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;
