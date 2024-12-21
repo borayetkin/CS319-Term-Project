@@ -457,3 +457,124 @@ exports.unapplyFromFair = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// Get fairs for a specific user
+exports.getUserFairs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const fairs = await Fair.find({
+      assignedUsers: userId,
+      status: "accepted"
+    })
+    .populate('assignedUsers', 'name email phoneNumber major')
+    .exec();
+
+    res.status(200).json(fairs);
+  } catch (error) {
+    console.error("Error fetching user's fairs:", error);
+    res.status(500).json({
+      message: "Failed to fetch user's fairs",
+      error: error.message,
+    });
+  }
+};
+
+exports.markFairAsCompleted = async (req, res) => {
+  try {
+    const fairId = req.params.fairId || req.body.fairId;
+    const userId = req.user.id;
+    const workHours = req.body.workHours || 3;
+
+    console.log('Starting markFairAsCompleted with:', { fairId, userId, workHours });
+
+    let fair = await Fair.findById(fairId);
+    if (!fair) {
+      createLog(userId, req.user.role, 'markFairAsCompleted', fairId, 'error', 'Fair not found');
+      return res.status(404).json({ message: "Fair not found" });
+    }
+
+    const isAssigned = fair.assignedUsers.some(id => id.toString() === userId.toString());
+    if (!isAssigned) {
+      createLog(userId, req.user.role, 'markFairAsCompleted', fairId, 'error', 'User not assigned to fair');
+      return res.status(403).json({ message: "User not assigned to this fair" });
+    }
+
+    // Update all assigned users
+    for (const assignedUserId of fair.assignedUsers) {
+      try {
+        const user = await User.findById(assignedUserId);
+        if (user) {
+          // Remove from assignedFairs and add to completedEvents
+          await user.removeAssignedFair(fairId);
+          if (!user.completedEvents) {
+            user.completedEvents = [];
+          }
+          if (!user.completedEvents.includes(fairId)) {
+            user.completedEvents.push(fairId);
+          }
+          if (!user.totalWorkHours) {
+            user.totalWorkHours = 0;
+          }
+          user.totalWorkHours += workHours;
+          await user.save();
+        }
+      } catch (userError) {
+        console.error('Error updating user:', assignedUserId, userError);
+      }
+    }
+
+    // Update fair status and hours - Changed to match event completion status
+    fair.status = "completed-non-verified";  // Changed from "completed" to "completed-non-verified"
+    fair.hoursOfWork = workHours;
+    await fair.save();
+
+    createLog(userId, req.user.role, 'markFairAsCompleted', fairId, 'success', 'Fair marked as completed');
+    res.status(200).json({
+      message: "Fair marked as completed successfully",
+      fair: fair
+    });
+
+  } catch (error) {
+    console.error("Error in markFairAsCompleted:", error);
+    createLog(req.user.id, req.user.role, 'markFairAsCompleted', req.params.fairId, 'error', error.message);
+    res.status(500).json({ message: "Failed to complete fair", error: error.message });
+  }
+};
+
+exports.takeBackFairAction = async (req, res) => {
+  try {
+    const { fairId } = req.params;
+    const userId = req.user.id;
+    
+    const fair = await Fair.findById(fairId).populate("assignedUsers");
+    if (!fair) {
+      createLog(req.user.id, req.user.role, 'takeBackFairAction', fairId, 'error', 'Fair not found');
+      return res.status(404).json({ message: "Fair not found" });
+    }
+
+    if (!fair.assignedUsers.some((user) => user._id.toString() === userId)) {
+      createLog(req.user.id, req.user.role, 'takeBackFairAction', fairId, 'error', 'User not assigned to fair');
+      return res.status(403).json({ message: "User not assigned to this fair" });
+    }
+
+    // Reset fair status
+    fair.status = "accepted";
+    
+    // Update all assigned users
+    for (let i = 0; i < fair.assignedUsers.length; i++) {
+      let user = fair.assignedUsers[i];
+      await user.takeBackCompletedEvent(fairId, fair.hoursOfWork);
+      await user.save();
+    }
+
+    fair.hoursOfWork = 0;
+    await fair.save();
+
+    createLog(req.user.id, req.user.role, 'takeBackFairAction', fairId, 'success', 'Fair status set back to accepted');
+    res.status(200).json({ message: "Fair status set back to accepted" });
+  } catch (error) {
+    console.error(error);
+    createLog(req.user.id, req.user.role, 'takeBackFairAction', req.params.fairId, 'error', error.message);
+    res.status(500).json({ message: "Failed to take back fair", error: error.message });
+  }
+};

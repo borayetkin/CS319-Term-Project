@@ -3,7 +3,16 @@ import React, { useState } from "react";
 
 import { FaCheck, FaUserMinus, FaMinus } from "react-icons/fa";
 
-const AssignedEventsActions = ({ event, user, setMessage, handleCompleteEvent, handleCancelEvent, handleTakeBackAction, actionInProcess = false, setActionInProcess = () => {} }) => {
+const AssignedEventsActions = ({
+  event,
+  user,
+  setMessage,
+  handleCompleteEvent,
+  handleCancelEvent,
+  handleTakeBackAction,
+  actionInProcess,
+  setActionInProcess
+}) => {
   const isPast = new Date(event.visitDate) < new Date();
   const isCompleted = event.status.includes("completed") || event.status.includes("canceled");
   const [workHours, setWorkHours] = useState(0);
@@ -111,7 +120,7 @@ const AssignedEventsActions = ({ event, user, setMessage, handleCompleteEvent, h
               className={"action-button apply"}
               disabled={actionInProcess}
               style={buttonStyle}
-              onClick={() => handleCompleteEvent(event._id, workHours)}
+              onClick={() => handleCompleteEvent(event)}
             >
               <FaCheck />
               Complete

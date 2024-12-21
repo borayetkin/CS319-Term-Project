@@ -108,25 +108,31 @@ userSchema.methods.removeAssignedEvent = function (eventId) {
     return Promise.reject(new Error("Event not assigned"));
   }
 };
-userSchema.methods.completeEvent = function (eventId, workHour) {
-  if (this.assignedEvents.includes(eventId)) {
-    let ind2 = this.completedEvents.indexOf(eventId);
-    if (ind2 > -1) {
-      return Promise.reject(new Error("Event already completed"));
-    } else {
-      let ind = this.assignedEvents.indexOf(eventId);
-      if (ind > -1) {
-        this.assignedEvents.splice(ind, 1);
-        this.completedEvents.push(eventId);
-        this.totalWorkHours += parseFloat(workHour);
-        return this.save();
-      } else {
-        return Promise.reject(new Error("Event not assigned"));
-      }
-    }
-  } else {
-    return Promise.reject(new Error("Server Error"));
+userSchema.methods.completeEvent = function (eventId, workHours) {
+  // Remove from assigned events if it exists
+  const assignedIndex = this.assignedEvents.indexOf(eventId);
+  if (assignedIndex > -1) {
+    this.assignedEvents.splice(assignedIndex, 1);
   }
+
+  // Remove from assigned fairs if it exists
+  const fairIndex = this.assignedFairs.indexOf(eventId);
+  if (fairIndex > -1) {
+    this.assignedFairs.splice(fairIndex, 1);
+  }
+
+  // Add to completed events if not already there
+  if (!this.completedEvents.includes(eventId)) {
+    this.completedEvents.push(eventId);
+  }
+
+  // Update work hours
+  if (!this.totalWorkHours) {
+    this.totalWorkHours = 0;
+  }
+  this.totalWorkHours += workHours;
+
+  return this.save();
 };
 userSchema.methods.takeBackCompletedEvent = function (eventId,workHours) {
   if (this.completedEvents.includes(eventId)) {

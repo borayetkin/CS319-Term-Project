@@ -78,28 +78,42 @@ const AssignedEvents = () => {
     }
   };
   const fetchAssignedEvents = async (token) => {
-  
     try {
-      const response = await fetch("http://localhost:3000/api/events/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      let events = [];
+      
+      // Fetch tours
+      const eventsResponse = await fetch("http://localhost:3000/api/events/user", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        setAssignedEvents(data);
-        setIsLoading(false);
-      } else {
-        setMessage("Failed to fetch assigned events.");
-        setIsLoading(false);
+      
+      if (eventsResponse.ok) {
+        const eventsData = await eventsResponse.json();
+        events = eventsData;
       }
-    } catch (error) {
-      setIsLoading(false);
-      setMessage("Error fetching assigned events: " + error.message);
-    }
 
+      // Fetch fairs
+      const fairsResponse = await fetch("http://localhost:3000/api/fairs/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (fairsResponse.ok) {
+        const fairsData = await fairsResponse.json();
+        // Add __t property to fairs to match tour structure
+        const formattedFairs = fairsData.map(fair => ({
+          ...fair,
+          __t: "Fair",
+          visitDate: fair.fairDate, // normalize date field
+          status: fair.status || "accepted"
+        }));
+        events = [...events, ...formattedFairs];
+      }
+
+      setAssignedEvents(events);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setIsLoading(false);
+    }
   };
 
   const handleCompleteEvent = async (eventId, workHours) => {
@@ -171,41 +185,56 @@ const AssignedEvents = () => {
     }
     setActionInProcess(false);
   };
-  const handleTakeBack = async (eventId) => {
+  const handleTakeBack = async (eventId, eventType) => {
     setActionInProcess(true);
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/events/${eventId}/take-back`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const endpoint = eventType === "Fair"
+          ? `http://localhost:3000/api/fairs/${eventId}/take-back`
+          : `http://localhost:3000/api/events/${eventId}/take-back`;
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (response.ok) {
-          // Update the event status in state to mark it as accepted
           setAssignedEvents((prevEvents) =>
             prevEvents.map((event) =>
-              event._id === eventId ? { ...event, status: "accepted" , hoursOfWork: 0} : event
+              event._id === eventId ? { ...event, status: "accepted", hoursOfWork: 0 } : event
             )
           );
+          setMessage("✅ Event status reset successfully");
         } else {
-          alert("Failed to take back the event.");
+          const error = await response.json();
+          setMessage(`⚠️ ${error.message || "Failed to reset event status"}`);
         }
       } catch (error) {
-        console.error("Error taking back event:", error);
+        console.error("Error resetting event status:", error);
+        setMessage("⚠️ Error resetting event status");
       }
     }
     setActionInProcess(false);
   };
-  const filteredEvents = assignedEvents.filter(
-    (event) =>
-      (((showPastEvents ||showWorkLog) && new Date(event.visitDate) < new Date()) ||
-      (!showPastEvents && new Date(event.visitDate) > new Date())) && (event.__t === tourType)
-  );
+  const filteredEvents = assignedEvents.filter((event) => {
+    const eventDate = event.visitDate || event.fairDate;
+    const isPastEvent = new Date(eventDate) < new Date();
+    const isFutureEvent = new Date(eventDate) > new Date();
+    
+    if (!eventDate) return false;
+
+    const matchesTourType = 
+      (tourType === "Fair" && event.__t === "Fair") ||
+      (tourType !== "Fair" && event.__t === tourType);
+
+    return (
+      ((showPastEvents || showWorkLog) && isPastEvent) ||
+      (!showPastEvents && isFutureEvent)
+    ) && matchesTourType;
+  });
   const setExtraProperties = () => {
     if (showPastEvents && !showWorkLog){
       return {
@@ -233,6 +262,58 @@ const AssignedEvents = () => {
   const handleCloseModal = () => {
     setSelectedEvent(null);
   };
+  const handleComplete = async (event) => {
+    console.log("Event data received:", event); // Debug log
+
+    if (!event || !event._id) {
+      console.log("Invalid event data:", { event }); // Debug what's invalid
+      setMessage("⚠️ Invalid event data");
+      return;
+    }
+
+    setActionInProcess(true);
+    const token = localStorage.getItem("token");
+    
+    if (token) {
+      try {
+        const endpoint = event.__t === "Fair" 
+          ? `http://localhost:3000/api/fairs/${event._id}/complete`
+          : `http://localhost:3000/api/events/${event._id}/complete`;
+
+        console.log("Completing event:", { endpoint, event }); // Debug log
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 
+            workHours: event.hoursOfWork || 3, // Default to 3 hours if not specified
+            fairId: event._id, // Add for fairs
+            eventId: event._id // Add for events
+          }),
+        });
+
+        if (response.ok) {
+          setAssignedEvents((prevEvents) =>
+            prevEvents.map((e) =>
+              e._id === event._id ? { ...e, status: "completed-verified" } : e
+            )
+          );
+          setMessage("✅ Event marked as completed successfully");
+        } else {
+          const errorData = await response.json();
+          setMessage(`⚠️ ${errorData.message || "Failed to complete event"}`);
+        }
+      } catch (error) {
+        console.error("Error completing event:", error);
+        setMessage("⚠️ Error completing event");
+      }
+    }
+    setActionInProcess(false);
+  };
+
   return (
     <div className="events-container">
       <div
@@ -263,7 +344,7 @@ const AssignedEvents = () => {
           </button>
         )}
       </div>
-      <TypeSelectionTrio showType={tourType} setShowType={setTourType} haveFairButton= {false}/>
+      <TypeSelectionTrio showType={tourType} setShowType={setTourType} haveFairButton= {true}/>
       {message && <p>{message}</p>}
 
       {!isLoading &&<GeneralTable
@@ -283,9 +364,9 @@ const AssignedEvents = () => {
               event={event}
               user={user}
               setMessage={setMessage}
-              handleCompleteEvent={handleCompleteEvent}
+              handleCompleteEvent={handleComplete}
               handleCancelEvent={handleMarkCanceled}
-              handleTakeBackAction={handleTakeBack}
+              handleTakeBackAction={(eventId) => handleTakeBack(eventId, event.__t)}
               actionInProcess={actionInProcess}
               setActionInProcess={setActionInProcess}
             />
