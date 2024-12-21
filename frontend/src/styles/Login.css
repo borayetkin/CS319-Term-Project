@@ -22,10 +22,39 @@ body.login-page {
 }
 
 .login-container {
-  display: flex;
-  height: 100vh;
+  position: relative;
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
+}
+
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    #1a103c 0%, 
+    #2d1f75 50%, 
+    #3b1d8c 100%
+  );
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.login-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 2;
+  pointer-events: none;
+  padding-right: 8%;
 }
 
 .login-left {
@@ -54,6 +83,8 @@ body.login-page {
     radial-gradient(5px 5px at 45% 15%, rgba(255, 255, 255, 0.8) 50%, transparent 100%),
     radial-gradient(3px 3px at 75% 75%, rgba(255, 255, 255, 0.7) 50%, transparent 100%);
   animation: particleMove2 25s linear infinite;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .login-left::after {
@@ -84,6 +115,8 @@ body.login-page {
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding-left: 8%;
+  width: 60%;
 }
 
 .atom-group {
@@ -224,15 +257,7 @@ body.login-page {
 }
 
 .login-box {
-  max-width: 450px;
-  height: auto;
-  width: 90%;
-  padding: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  pointer-events: auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -241,8 +266,8 @@ body.login-page {
     0 2px 4px rgba(0, 0, 0, 0.05);
   border-radius: 16px;
   padding: 48px;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 400px;
+  max-width: 90%;
 }
 
 .login-box h2 {
@@ -476,6 +501,29 @@ label {
   }
   100% {
     transform: translate(0, 0);
+  }
+}
+
+@media (max-width: 1200px) {
+  .login-overlay {
+    padding-right: 4%;
+  }
+  
+  .login-text {
+    padding-left: 4%;
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-overlay {
+    justify-content: center;
+    padding-right: 0;
+  }
+  
+  .login-text {
+    padding-left: 0;
+    width: 100%;
   }
 }
 

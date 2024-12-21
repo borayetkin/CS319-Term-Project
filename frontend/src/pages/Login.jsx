@@ -19,7 +19,7 @@ const Login = () => {
 
 useEffect(() => {
   const atomContainer = document.querySelector('.atom-container');
-  const loginLeft = document.querySelector('.login-left');
+  const loginBackground = document.querySelector('.login-background');
   let currentX = 0;
   let currentY = 0;
   let targetX = 0;
@@ -45,7 +45,7 @@ useEffect(() => {
   };
 
   const handleMouseMove = (e) => {
-    const rect = loginLeft.getBoundingClientRect();
+    const rect = loginBackground.getBoundingClientRect();
     // Center the atom on the cursor
     targetX = e.clientX - (atomContainer.offsetWidth / 2);
     targetY = e.clientY - (atomContainer.offsetHeight / 2);
@@ -63,15 +63,15 @@ useEffect(() => {
     atomContainer.classList.remove('moving');
   };
 
-  if (loginLeft && atomContainer) {
-    loginLeft.addEventListener('mousemove', handleMouseMove);
-    loginLeft.addEventListener('mouseleave', handleMouseLeave);
+  if (loginBackground && atomContainer) {
+    loginBackground.addEventListener('mousemove', handleMouseMove);
+    loginBackground.addEventListener('mouseleave', handleMouseLeave);
   }
 
   return () => {
-    if (loginLeft) {
-      loginLeft.removeEventListener('mousemove', handleMouseMove);
-      loginLeft.removeEventListener('mouseleave', handleMouseLeave);
+    if (loginBackground) {
+      loginBackground.removeEventListener('mousemove', handleMouseMove);
+      loginBackground.removeEventListener('mouseleave', handleMouseLeave);
     }
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
@@ -138,8 +138,8 @@ useEffect(() => {
 
   return (
     <div className="login-container">
-      <div className="login-left">
-        
+      {/* Background layer */}
+      <div className="login-background">
         <div className="login-text">
           <div className="atom-group">
             <div className="title-line">LOG INTO</div>
@@ -164,7 +164,8 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="login-right">
+      {/* Overlay login box */}
+      <div className="login-overlay">
         <div className="login-box">
           <h2>Login</h2>
           {errors.general && <p style={{ color: "red" }}>{errors.general}</p>}
