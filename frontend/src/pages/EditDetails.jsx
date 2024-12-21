@@ -46,6 +46,7 @@ const Event = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log("Input Changed:", { name, value });
     // Prevent changes to the date field
       if (name === "visitDate") {
         setEditedEvent({ ...editedEvent, [name]: new Date(value).toISOString() });
@@ -113,10 +114,10 @@ const Event = () => {
                     onChange={handleInputChange}
                     placeholder="enter the student number"
                   />
-                   <label htmlFor="reservedRoom" style={{ marginRight: "8px", fontWeight: "bold" }}>Reserved Room:</label>
+                   <label htmlFor="reservedRooms" style={{ marginRight: "8px", fontWeight: "bold" }}>Reserved Room:</label>
                    <select
-                     name="reservedRoom"
-                     value={editedEvent.reservedRoom || ""}
+                     name="reservedRooms"
+                     value={editedEvent.reservedRooms || ""}
                      onChange={handleInputChange}
                      style={{
                          padding: "8px",

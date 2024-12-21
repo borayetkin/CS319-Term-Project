@@ -1,4 +1,3 @@
-// Applications.jsx - Part 1
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/AdvisorPages/Applications.css";
@@ -39,6 +38,12 @@ const Applications = () => {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [actionType, setActionType] = useState(""); // "reject" or "delete"
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+  const [showActionConfirmation, setShowActionConfirmation] = useState(false);
+  const [actionDetails, setActionDetails] = useState({
+    type: '', // 'reject' or 'delete'
+    eventId: null,
+    event: null
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -108,37 +113,75 @@ const Applications = () => {
     }
   };
 
-  const handleConfirmation = async () => {
-    if (!selectedApplicationId) return;
-
+  const handleAction = async (eventId, event, status) => {
     try {
       const token = localStorage.getItem("token");
-      const endpoint =
-        actionType === "reject"
-          ? `http://localhost:3000/api/applications/reject/${selectedApplicationId}`
-          : `http://localhost:3000/api/applications/delete/${selectedApplicationId}`;
-      const method = actionType === "reject" ? "PUT" : "DELETE";
-
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/events/${eventId}`,
+        {
+          method: "PUT",
+          headers: {
+            userrole: user.role,
+            userid: user._id,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status, event }),
+        }
+      );
 
       if (response.ok) {
-        setMessage(`Application ${actionType}ed successfully!`);
-        handleActionComplete();
+        setMessage(
+          `Application ${status} successfully. An email notification has been sent to the applicant.`
+        );
+        // Refresh the applications list
+        const token = localStorage.getItem("token");
+        await fetchApplications(token, user);
       } else {
-        setMessage(`Failed to ${actionType} application.`);
+        const errData = await response.json();
+        setMessage(`Failed to ${status} application: ${errData.message}`);
       }
     } catch (error) {
-      setMessage(`Error: Unable to ${actionType} application.`);
+      setMessage("Error: " + error.message);
+    }
+  };
+
+  const handleDelete = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/api/events/${eventId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setMessage("Application deleted successfully.");
+        // Refresh the applications list
+        const token = localStorage.getItem("token");
+        await fetchApplications(token, user);
+      } else {
+        setMessage("Failed to delete application.");
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+    }
+  };
+
+  const handleConfirmation = async () => {
+    try {
+      if (actionDetails.type === 'reject') {
+        await handleAction(actionDetails.eventId, actionDetails.event, 'rejected');
+      } else if (actionDetails.type === 'delete') {
+        await handleDelete(actionDetails.eventId);
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
     } finally {
-      setShowConfirmationPopup(false);
-      setActionType("");
-      setSelectedApplicationId(null);
+      setShowActionConfirmation(false);
     }
   };
 
@@ -458,6 +501,11 @@ const Applications = () => {
     setShowDetailsModal(true);
   };
 
+  const handleActionConfirmation = (type, eventId, event) => {
+    setActionDetails({ type, eventId, event });
+    setShowActionConfirmation(true);
+  };
+
   return (
     <div className="applications-page-container">
       <h1>APPLICATIONS</h1>
@@ -490,6 +538,24 @@ const Applications = () => {
           </div>
         </div>
       )}
+      {showActionConfirmation && (
+        <div className="confirmation-popup-overlay">
+          <div className="confirmation-popup">
+            <h3>Are you sure you want to {actionDetails.type} this application?</h3>
+            <div className="popup-actions">
+              <button className="popup-confirm" onClick={handleConfirmation}>
+                Yes
+              </button>
+              <button
+                className="popup-cancel"
+                onClick={() => setShowActionConfirmation(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="controls-container">
         <div className="controls-left">
           <TypeSelectionTrio
@@ -511,10 +577,11 @@ const Applications = () => {
                 <option value="pending">Pending</option>
                 <option value="scheduled">Scheduled</option>
                 <option value="canceled-resubmission-requested">
-                  Canceled
+                  Cancelled
                 </option>
                 <option value="accepted">Accepted</option>
                 <option value="rejected">Rejected</option>
+                <option value="completed-verified">Completed</option>
               </select>
             </div>
             <div className="sort-controls">
@@ -782,6 +849,7 @@ const Applications = () => {
                 handleDeleteApplication(applicationId)
               }
               onActionComplete={handleActionComplete}
+              onConfirmAction={handleActionConfirmation}
             />
           )}
           extraRowContent={(application) => (

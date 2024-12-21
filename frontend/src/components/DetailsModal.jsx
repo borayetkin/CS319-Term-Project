@@ -297,7 +297,7 @@ const DetailsModal = ({ application, onClose, context, user }) => {
 
 
               /*FOR DEBUGGING, show applied users*/
-              {!isFair && application.__t === 'IndividualTour' && application.appliedUsers && application.appliedUsers.length > 0 && (
+              {application.appliedUsers && application.appliedUsers.length > 0 && (
                 <div className="detail-group">
                   <div className="detail-item">
                     <label>Applied Guides</label>
