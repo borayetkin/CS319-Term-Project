@@ -125,6 +125,10 @@ const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
   const checkIfUserHasApplied = () => {
     return fair.appliedUsers?.some((appliedUser) => appliedUser._id === user?._id);
   };
+  const checkIfFairIsFull = () => {
+    console.log(fair.assignedUsers.length, fair.requiredNumberOfGuides);
+    return fair.assignedUsers.length >= fair.requiredNumberOfGuides;
+  }
 
   return (
     <div className="action-buttons">
@@ -133,7 +137,7 @@ const FairRowActions = ({ fair, user, setMessage, setFairs }) => {
         View Details
       </Link>
       
-      {user &&
+      {user && !checkIfFairIsFull() && 
       rolesThatApply.includes(user.role) &&
       !checkIfUserHasApplied() && !checkIfUserHasAssigned() &&
       !fairIsFull && (
