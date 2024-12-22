@@ -261,9 +261,16 @@ const WeeklySchedules = ({ onAddEvent }) => {
   
     // Extract new slot details
     const { visitDate, visitTime } = newReserveDate;
-    const slotDay = daysOfWeek[(new Date(visitDate).getDay() + 6) % 7]; // Match Monday-Sunday format
-    const weekBeginning = currentWeek?.weekBeginning;
+    const targetDate = new Date(visitDate);
   
+    // Find the week that contains the target date
+    const targetWeekBeginning = new Date(targetDate);
+    targetWeekBeginning.setDate(targetDate.getDate() - ((targetDate.getDay() + 6) % 7)); // Get Monday of the target week
+    targetWeekBeginning.setHours(0, 0, 0, 0);
+
+    // Get the day name for the target date
+    const slotDay = daysOfWeek[(targetDate.getDay() + 6) % 7]; // Match Monday-Sunday format
+
     try {
       // Call the remove-from-schedule API
       const removeResponse = await fetch("http://localhost:3000/api/schedules/remove-from-schedule", {
@@ -279,14 +286,19 @@ const WeeklySchedules = ({ onAddEvent }) => {
         throw new Error("Failed to remove event from schedule");
       }
   
-      // Call the assign-to-slot API
+      // Call the assign-to-slot API with the correct week beginning
       const assignResponse = await fetch("http://localhost:3000/api/schedules/assign-to-slot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ eventId, weekBeginning, slotDay, slotTime: visitTime }),
+        body: JSON.stringify({ 
+          eventId, 
+          weekBeginning: targetWeekBeginning.toISOString(),
+          slotDay,
+          slotTime: visitTime 
+        }),
       });
   
       if (!assignResponse.ok) {
