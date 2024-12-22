@@ -2,7 +2,6 @@
 
 .applications-page-container {
   padding: 20px;
-  width: 100%;
 }
 
 .controls-container {
@@ -86,77 +85,6 @@
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
-
-
-
-
-/* Weekly Controls and Date Range */
-.weekly-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  margin: 20px 0;
-}
-
-.date-range {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  background-color: #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 16px;
-  color: #1a202c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-
-
-
-
-/* Weekly Schedule */
-.weekly-schedule {
-  margin-top: 20px;
-  padding: 20px;
-  background: linear-gradient(to bottom right, #f9fafb, #ffffff);
-  border-radius: 20px;
-  box-shadow: 10px 10px 12px rgba(0, 0, 0, 0.1);
-}
-
-.schedule-info {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.legend {
-  display: inline-block;
-  width: 16px; /* Size of the legend circle */
-  height: 16px;
-  border-radius: 50%; /* Makes it circular */
-  background-color: transparent; /* Default background color */
-}
-
-.legend.accepted {
-  background-color: rgba(72, 187, 120, 0.3);
-}
-
-.legend.scheduled {
-  background-color: rgba(234, 179, 8, 0.3);
-}
-
-/* Styling for the text accompanying the legend */
-.schedule-info p {
-  font-size: 0.9rem; /* Adjust font size */
-  font-weight: bold; /* Make the text bold */
-  margin: 0; /* Remove any default margins */
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Space between legend and text */
-}
-
 /* Table Styling */
 table {
   width: 100%;
@@ -181,45 +109,6 @@ td {
   text-overflow: ellipsis;
 }
 
-/* Row Highlighting */
-.scheduled-event {
-  background-color: rgba(234, 179, 8, 0.3);
-  border-radius: 12px;
-}
-
-.accepted-event {
-  background-color: rgba(72, 187, 120, 0.3);
-  border-radius: 8px;
-}
-
-.scheduled-event,
-.accepted-event {
-  padding: 8px;
-}
-
-/* Action Buttons */
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-}
-
-.button-container button {
-  height: 36px;
-  padding: 0;
-  border-radius: 4px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.button-container button:hover {
-  transform: translateY(-1px);
-  filter: brightness(110%);
-}
 
 .view-details {
   background-color: #3b82f6;
@@ -239,196 +128,6 @@ td {
 .delete {
   background-color: #dc2626;
   color: white;
-}
-
-.slider-and-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.slider-box {
-  width: 60%;
-  max-width: 500px;
-  margin: 0 auto;
-  flex: 0 1 auto;
-}
-
-.weekly-schedule table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.weekly-schedule th,
-.weekly-schedule td {
-  border: 1px solid #e2e8f0;
-  text-align: center;
-  padding: 10px;
-}
-
-.event {
-  margin: 5px 0;
-  padding: 15px;
-  border-radius: 10px;
-  color: #1a202c;
-}
-
-/* Table Cell Styling for Events */
-.weekly-schedule td {
-  position: relative; /* Enables positioning of the cross sign inside the cell */
-  text-align: center; /* Center-align content */
-  vertical-align: top; /* Align content to the top of the cell */
-  padding: 10px; /* Add padding for better spacing */
-  border: 1px solid #e2e8f0;
-}
-
-/* Cross Sign Styling */
-.remove-cross {
-  position: absolute; /* Position relative to the cell */
-  top: -10px; /* Adjust top distance */
-  right: -5px; /* Adjust right distance */
-  font-size: 1.2rem; /* Adjust size */
-  font-weight: bold;
-  color: #dc2626; /* Red for remove */
-  cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease; /* Add smooth hover effects */
-}
-
-.remove-cross:hover {
-  color: darkred; /* Darker red on hover */
-  transform: scale(1.2); /* Slight zoom effect on hover */
-}
-
-td {
-  position: relative; /* Makes the cell a positioning context */
-}
-
-/* Event Content Styling */
-.event {
-  position: relative;
-  padding: 12px;
-  background-color: rgba(234, 179, 8, 0.3); /* Default to soft yellow */
-  border-radius: 10px; /* Rounded corners */
-  text-align: center;
-  color: #1a202c; /* Dark text for readability */
-}
-
-/* Event Background Variants */
-.scheduled-event {
-  background-color: rgba(234, 179, 8, 0.3); 
-}
-
-.accepted-event {
-  background-color: rgba(72, 187, 120, 0.3); 
-}
-
-/* Empty Slot Button Styling */
-.add-event-button {
-  background-color: #d0ddf2;
-  color: rgb(92, 94, 255);
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  margin: 16px 10px 10px 10px;
-}
-
-.add-event-button:hover {
-  background-color: rgb(199, 195, 250); 
-  transform: scale(1.05); 
-}
-
-
-/* Popup for Adding Events */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.popup-content {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.popup-content h3 {
-  margin-bottom: 16px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.popup-content ul {
-  list-style: none;
-  padding: 0;
-}
-
-.popup-content li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: #e5e7eb;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  word-wrap: break-word;
-}
-
-.popup-content li:hover {
-  background-color: #d1d5db;
-}
-
-.popup-close {
-  background-color: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 20px 0 0 0;
-}
-
-.popup-close:hover {
-  background-color: #b91c1c;
-}
-
-.popup-loading-spinner {
-  flex-shrink: 0;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #373b3d;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* Expand Dates Button */
@@ -482,69 +181,6 @@ td {
   border-radius: 4px;
   font-size: 0.875rem;
   color: #4b5563;
-}
-
-/* Modern button styles for schedule controls */
-.weekly-schedule-toggle,
-.rebuild-schedules-button {
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 
-              0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Show Schedule button */
-.weekly-schedule-toggle {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-}
-
-.weekly-schedule-toggle.soft-red {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-}
-
-/* Rebuild Schedule button */
-.rebuild-schedules-button {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-}
-
-/* Hover effects */
-.weekly-schedule-toggle:hover,
-.rebuild-schedules-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Active/pressed state */
-.weekly-schedule-toggle:active,
-.rebuild-schedules-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-
-
-/* Status badges */
-.applications-page-container .status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 0.75rem;
-  text-transform: capitalize;
 }
 
 /* Add specific status colors */
@@ -631,4 +267,113 @@ td {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+
+/* New Features */
+
+.applications-page-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-schedule-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
+  width: 200%; /* Side-by-side layout */
+  transition: transform 0.5s ease-in-out, height 0.5s ease-in-out;
+  transform: translateX(0); /* Default: show Applications */
+  flex-direction: row; /* Keep children in a row */
+  align-items: flex-start; /* Allow children to have their own heights */
+}
+
+.content-wrapper.show-schedule {
+  transform: translateX(-50%);
+}
+
+.applications-view,
+.weekly-schedule-view {
+  width: 50%; /* Each view takes half of the wrapper */
+  flex-shrink: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.applications-view {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 1%
+}
+
+.weekly-schedule-view {
+  background-color: #e9ecef;
+  padding: 20px;
+  border-radius: 1%
+}
+
+
+/* Base Button Styling */
+.switch-button {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #4caf50; /* Fresh green color */
+  color: white;
+  border: none;
+  border-radius: 30px; /* Rounded for a modern look */
+  cursor: pointer;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  z-index: 10;
+  display: flex; /* Flex to align sliding indicator and text */
+  align-items: center;
+  justify-content: space-between;
+  transition: left 0.5s ease, right 0.5s ease, background-color 0.3s ease, transform 0.5s ease;
+  width: 250px; /* Consistent size */
+  text-align: center;
+  overflow: hidden; /* For sliding indicator */
+}
+
+/* Sliding Indicator */
+.sliding-indicator {
+  position: relative;
+  width: 40px; /* Adjust track size */
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3); /* Subtle white track */
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 12px; /* Space between indicator and text */
+}
+
+.sliding-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%; /* Sliding bar covers half the track initially */
+  height: 100%;
+  background-color: white;
+  transform: translateX(0); /* Default position */
+  transition: transform 0.5s ease; /* Smooth slide animation */
+}
+
+/* Applications View: Bar Slides Right */
+.switch-button.applications-view .sliding-bar {
+  transform: translateX(0%); /* Stay at the start */
+}
+
+/* Weekly View: Bar Slides Left */
+.switch-button.weekly-view .sliding-bar {
+  transform: translateX(100%); /* Slide to the right */
+}
+
+/* Hover Effect */
+.switch-button:hover {
+  background-color: #45a049; /* Slightly darker green */
+  transform: scale(1.05); /* Slight zoom effect */
 }

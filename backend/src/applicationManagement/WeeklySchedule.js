@@ -24,12 +24,12 @@ const weeklyScheduleSchema = new mongoose.Schema({
       events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Event",
-        required: false,
+        required: true,
       }],
       availableEvents: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Event",
-        required: false,
+        required: true,
       }],
       isEmpty: {
         type: Boolean,
