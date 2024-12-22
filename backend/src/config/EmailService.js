@@ -620,57 +620,60 @@ const generateTourDetails = (tourData, email) => {
   }
 };
 
-exports.sendNotificationEmail = async (email, name, changedFields,tourData) => {
+exports.sendNotificationEmail = async (email, name, changedFields, tourData) => {
   try {
+    const resubmissionLink = `http://localhost:5173/resubmit-form/${tourData._id}`;
 
-      const resubmissionLink = `http://localhost:5173/resubmit-form/${tourData._id}`;
+    // Check if the changes qualify for sending an email
+    const qualifyingFields = ["visitDate", "studentCount", "reservedRooms"];
+    const isEligibleForEmail = qualifyingFields.some(field => field in changedFields);
 
-      let message = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    if (!isEligibleForEmail) {
+      console.log("No qualifying changes. Email not sent.");
+      return; // Exit early if no qualifying fields have changed
+    }
+
+    let message = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <h2 style="color: #0056b3;">Hello ${name},</h2>
         <p>There have been updates to your scheduled tour:</p>
         <ul>`;
 
+    if (changedFields.visitDate) {
+      message += `<li><strong>Date Update:</strong> Unfortunately, your current date is not suitable. The new date our advisor suggests is: <strong>${new Date(changedFields.visitDate).toLocaleDateString()}</strong>.</li>`;
+      message += `
+            <p style="text-align: center; margin:;">
+              <a href="${resubmissionLink}"
+                style="background-color: #0056b3; color: white; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
+                Change Preferred Dates
+              </a>
+            </p>`;
+    }
+    if (changedFields.studentCount) {
+      message += `<li><strong>Number of Students:</strong> ${changedFields.studentCount} </li>`;
+    }
 
-      if (changedFields.visitDate) {
-        message += `<li><strong>Date Update:</strong> Unfortunately, your current date is not suitable. The new date our advisor suggests is: <strong>${new Date(changedFields.visitDate).toLocaleDateString()}</strong>.</li>`;
-        message += `
-              <p style="text-align: center; margin:;">
-                <a href="${resubmissionLink}"
-                  style="background-color: #0056b3; color: white; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
-                  Change Preferred Dates
-                </a>
-              </p>`;
-      }
-      if (changedFields.studentCount) {
-        message += `<li><strong>Number of Students:</strong> ${changedFields.studentCount} </li>`;
-      }
-      if (changedFields.advisorNotes) {
-        message += `<li><strong>Advisor Notes:</strong> ${changedFields.advisorNotes}</li>`;
-      }
-
-      if (changedFields.visitDate) {
-      message +=`
+    if (changedFields.visitDate) {
+      message += `
         <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
           Alternatively, you can copy and paste the following link into your browser:<br />
           <a href="${resubmissionLink}" style="color: #0056b3; font-weight: bold;">${resubmissionLink}</a>
         </p>`;
-      }
+    }
 
-      message += `</ul>
+    message += `</ul>
         <p>Thank you for your understanding.</p>
         <p><strong>Your Event Team</strong></p>
       </div>`;
 
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Update on Your Scheduled Event",
+      html: message,
+    });
 
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Update on Your Scheduled Event",
-        html: message,
-      });
-
-      console.log(`Notification email sent to ${email}`);
-    } catch (error) {
-      console.error(`Failed to send email to ${email}:`, error);
-    }
+    console.log(`Notification email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}:`, error);
+  }
 };
