@@ -182,22 +182,25 @@ body.login-page {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 220px;
-  height: 220px;
-  border: 20px solid rgba(255, 255, 255, 0.9);
+  width: 200px;
+  height: 200px;
+  border: 10px solid rgba(255, 255, 255, 0.9);
   border-radius: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .orbital-1 {
-  transform: translate(-50%, -50%) rotateX(60deg);
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%) rotate(0deg);
 }
 
 .orbital-2 {
-  transform: translate(-50%, -50%) rotateX(60deg) rotateY(60deg);
+  transform: translate(-50%, -50%) rotate(60deg);
 }
 
 .orbital-3 {
-  transform: translate(-50%, -50%) rotateX(60deg) rotateY(-60deg);
+  transform: translate(-50%, -50%) rotate(-60deg);
 }
 
 .block {
@@ -208,29 +211,49 @@ body.login-page {
   border-radius: 50%;
   top: 50%;
   left: 50%;
-  margin-top: -25px;
-  margin-left: -25px;
+  margin-top: -12.5px;
+  margin-left: -12.5px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+/*
+@keyframes moveElectron1 {
+  0% {
+    transform: rotate(0deg) translateX(60px);
+  }
+  100% {
+    transform: rotate(360deg) translateX(60px);
+  }
+}*/
+
+@keyframes moveElectron2 {
+  0% {
+    transform: rotate(0deg) translateX(45px);
+  }
+  100% {
+    transform: rotate(360deg) translateX(45px);
+  }
+}
+
+@keyframes moveElectron3 {
+  0% {
+    transform: rotate(0deg) translateX(95px);
+  }
+  100% {
+    transform: rotate(360deg) translateX(95px);
+  }
 }
 
 .orbital-1 .block {
-  animation: moveElectron 6s linear infinite;
+  animation: moveElectron1 4s linear infinite;
 }
 
 .orbital-2 .block {
-  animation: moveElectron 3s linear infinite;
+  animation: moveElectron2 4s linear infinite;
 }
 
 .orbital-3 .block {
-  animation: moveElectron 2s linear infinite;
-}
-
-@keyframes moveElectron {
-  0% {
-    transform: rotate(0deg) translateX(90px) rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg) translateX(90px) rotate(-360deg);
-  }
+  animation: moveElectron3 4s linear infinite;
 }
 
 @keyframes pulse {

@@ -25,6 +25,7 @@ useEffect(() => {
   let targetX = 0;
   let targetY = 0;
   let animationFrameId;
+  let isDragging = false;
 
   // Get the atom's natural position in the layout
   const atomRect = atomContainer.getBoundingClientRect();
@@ -45,8 +46,9 @@ useEffect(() => {
   };
 
   const handleMouseMove = (e) => {
+    if (!isDragging) return;
+
     const rect = loginBackground.getBoundingClientRect();
-    // Center the atom on the cursor
     targetX = e.clientX - (atomContainer.offsetWidth / 2);
     targetY = e.clientY - (atomContainer.offsetHeight / 2);
     
@@ -56,7 +58,13 @@ useEffect(() => {
     atomContainer.classList.add('moving');
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseDown = () => {
+    isDragging = true;
+    atomContainer.classList.add('moving');
+  };
+
+  const handleMouseUp = () => {
+    isDragging = false;
     // Return to the natural position
     targetX = initialX;
     targetY = initialY;
@@ -65,14 +73,18 @@ useEffect(() => {
 
   if (loginBackground && atomContainer) {
     loginBackground.addEventListener('mousemove', handleMouseMove);
-    loginBackground.addEventListener('mouseleave', handleMouseLeave);
+    atomContainer.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
   }
 
   return () => {
     if (loginBackground) {
       loginBackground.removeEventListener('mousemove', handleMouseMove);
-      loginBackground.removeEventListener('mouseleave', handleMouseLeave);
     }
+    if (atomContainer) {
+      atomContainer.removeEventListener('mousedown', handleMouseDown);
+    }
+    window.removeEventListener('mouseup', handleMouseUp);
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
     }
