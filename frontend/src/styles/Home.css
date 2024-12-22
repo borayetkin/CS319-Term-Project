@@ -178,6 +178,11 @@
   animation: fadeIn 0.8s ease-out;
 }
 
+.stat-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-10px);
+}
+
 .stat-number {
   font-size: 2.5rem;
   font-weight: 800;

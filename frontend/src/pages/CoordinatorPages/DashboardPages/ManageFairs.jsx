@@ -252,8 +252,7 @@ const ManageFairs = () => {
       {message && <p className="message">{message}</p>}
 
       <div className="controls-container">
-        <div className="search-bar">
-          <FiSearch className="search-icon" />
+        <div className="fairs-search-bar">
           <input
             type="text"
             placeholder="Search by school, organiser, city..."
@@ -262,7 +261,7 @@ const ManageFairs = () => {
           />
         </div>
 
-        <div className="filter-controls">
+        <div className="fairs-filter-controls">
           <FiFilter className="filter-icon" />
           <select
             value={filterStatus}

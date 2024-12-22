@@ -104,7 +104,7 @@ const Home = () => {
               </div>
               <p className="hero-subtitle">Geleceğinizi Şekillendirin</p>
               <div className="hero-buttons">
-                <Link to="/admissions" className="hero-cta">Başvuru Yap</Link>
+                <Link to="/apply" className="hero-cta">Başvuru Yap</Link>
                 <Link to="/virtual-tour" className="hero-secondary">Sanal Tur</Link>
               </div>
             </div>
