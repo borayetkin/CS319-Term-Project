@@ -15,7 +15,7 @@ import Profile from "./pages/Profile";
 import Applications from "./pages/AdvisorPages/Applications";
 import ManageGuides from "./pages/AdvisorPages/ManageGuides";
 import ApplicationDetails from "./pages/AdvisorPages/ApplicationDetails";
-import CompletedTours from "./pages/AdvisorPages/CompletedTours";
+
 import Events from "./pages/GuidePages/Events";
 import AssignedEvents from "./pages/GuidePages/AssignedEvents";
 import UsersPage from "./pages/CoordinatorPages/DashboardPages/UsersPage";
@@ -108,16 +108,7 @@ function App() {
         />
 
         {/* completed tours Route (Admin, Advisor) */}
-        <Route
-            path="/completed-tours"
-            element={
-              <PrivateRoute
-                allowedRoles={["advisor","admin"]}
-              >
-                <CompletedTours />
-              </PrivateRoute>
-            }
-        />
+
 
         {/* Applications Route (Admin, Coordinator, Advisor) */}
         <Route
