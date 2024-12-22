@@ -39,6 +39,7 @@ const ViewLogsPage = () => {
   }
   
   const filteredLogs = logs.filter((log) =>
+    log&& log.userId&&
     log.userId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
     formatActionName(log.action).toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -106,7 +107,7 @@ const ViewLogsPage = () => {
           {paginatedLogs.map((log) => (
             
             <tr key={log._id}>
-                <td>{log.userId.name}</td>
+                <td>{log.userId && log.userId.name || " N/A" }</td>
               <td>{log.role}</td>
               <td>{formatActionName(log.action)}</td>
               <td>{log.details.status}</td>
