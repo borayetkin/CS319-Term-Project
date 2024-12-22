@@ -108,12 +108,18 @@ const ViewGuidesPage = () => {
     
     const formatEventInfo = (event) => {
       if (!event) return null;
-      
-      let title = event.schoolName || event.applicant?.name || "Unnamed Event";
+      let title = "";
+      if(event.typeStr === "Individual Tour"){        
+        title = event.studentHighSchool || event.applicant?.name || "Unnamed Event";
+      }
+      else{
+        title = event.schoolName || event.applicant?.name || "Unnamed Event";
+      }
       return (
         <div key={event._id} className="event-item">
           <div className="event-header">
             <strong>{title}</strong>
+            <span className="event-type">{event.typeStr}</span>
             <span className="event-status">{event.status}</span>
           </div>
           <div className="event-details">
@@ -123,9 +129,7 @@ const ViewGuidesPage = () => {
             <p>
               <span>Time:</span> {event.visitTime || 'N/A'}
             </p>
-            <p>
-              <span>Location:</span> {event.location || 'N/A'}
-            </p>
+
             <p>
               <span>City:</span> {event.city || 'N/A'}
             </p>
