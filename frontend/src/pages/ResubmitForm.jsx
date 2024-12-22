@@ -51,11 +51,12 @@ const ResubmitForm = () => {
     return timeSlots;
   };
 
-const handleReserveDatesChange = (updatedDates) => {
-  const formattedDates = updatedDates.map(({ visitDate, visitTime }) => ({
-    visitDate,
-    visitTime,
-  }));
+const handleReserveDatesChange = (e) => {
+  const value = e.target.value;
+  console.log(value);
+  const updatedDates = value.reserveDates
+
+  const formattedDates = updatedDates
   setReserveDates(formattedDates);
 };
 

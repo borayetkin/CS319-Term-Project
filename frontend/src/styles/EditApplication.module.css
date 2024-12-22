@@ -1,4 +1,3 @@
-
 .editApplicationSection {
   display: flex;
   justify-content: center;
@@ -70,6 +69,99 @@
 
 .cancelButton:hover {
   background: #cc0000;
+}
+
+.resubmitLink {
+  display: inline-block;
+  padding: 0.75rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.resubmitLink:hover {
+  background: #45a049;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+.modalHeader {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modalTextarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.modalButton {
+  padding: 0.75rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 0.5rem;
+}
+
+.modalButton:hover {
+  background: #45a049;
+}
+
+.modalCancelButton {
+  padding: 0.75rem;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modalCancelButton:hover {
+  background: #cc0000;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
 }
 
 @keyframes fadeIn {

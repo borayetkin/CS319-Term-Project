@@ -333,7 +333,7 @@ exports.getEventByReferenceCode = async (req, res) => {
     const { referenceCode } = req.params;
     const { city, district, schoolName } = req.query;
 
-    const query = { referenceCode };
+    let query = { referenceCode };
 
     if (city) query.city = city;
     if (district) query.district = district;
@@ -346,6 +346,7 @@ exports.getEventByReferenceCode = async (req, res) => {
     if(!event) {
       query.schoolName ="";
       query.studentHighSchool = schoolName;
+      query = { referenceCode, studentHighSchool: schoolName };
       event = await IndividualTour.findOne(query)
       .populate("applicant");
     }
@@ -965,6 +966,8 @@ exports.resubmitEventReserveDates = async (req, res) => {
         return res.status(400).json({ message: "Please provide valid reserveDates for school tours." });
       }
       event.reserveDates = reserveDates;
+      event.visitDate = reserveDates[0].date;
+      event.visitTime = reserveDates[0].time;
     } else if (event.__t === "IndividualTour") {
       console.log("in individual tour");
       // For individual tours, update the visitDate and visitTime
