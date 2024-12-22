@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiSearch, FiFilter, FiCheck, FiX, FiTrash2, FiEye } from 'react-icons/fi';
 import '../../../styles/CoordinatorPages/ManageFairs.css';
 import { useNavigate } from "react-router-dom";
+import { RiCloseFill } from 'react-icons/ri';
 
 const ManageFairs = () => {
   const [fairs, setFairs] = useState([]);
@@ -199,7 +200,7 @@ const ManageFairs = () => {
           </div>
 
           <button className="close-button" onClick={onClose}>
-            Close
+            <RiCloseFill size={16} />
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiSearch, FiEye, FiMail, FiPhone, FiStar } from 'react-icons/fi';
-import { RiTeamLine } from 'react-icons/ri';
+import { RiTeamLine, RiCloseFill } from 'react-icons/ri';
 import "../../../styles/CoordinatorPages/ViewGuidesPage.css";
 import LoadingSpinner from '../../../components/LoadingSpinner';
 
@@ -95,7 +95,7 @@ const ViewGuidesPage = () => {
           <p className="no-reviews">No reviews available for this guide.</p>
         )}
         <button className="close-button" onClick={onClose}>
-          Close
+          <RiCloseFill size={16} />
         </button>
       </div>
     </div>
@@ -210,7 +210,7 @@ const ViewGuidesPage = () => {
           </div>
 
           <button className="close-button" onClick={onClose}>
-            X
+            <RiCloseFill size={16} />
           </button>
         </div>
       </div>
