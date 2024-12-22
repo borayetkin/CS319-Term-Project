@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../styles/components/WeeklySchedules.css';
 import { LuRefreshCw } from "react-icons/lu";
 
-const WeeklySchedules = ({ onAddEvent }) => {
+const WeeklySchedules = ({onAddEvent, shouldFetchSchedules, onFetchComplete }) => {
   const [schedules, setWeeklySchedules] = useState([]);
   const [currentIndex, setCurrentWeekIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +54,7 @@ const WeeklySchedules = ({ onAddEvent }) => {
       setMessage("Error fetching weekly schedules: " + error.message);
     } finally {
       setIsLoading(false);
+      if (onFetchComplete) onFetchComplete();
     }
   };
 
@@ -175,21 +176,6 @@ const WeeklySchedules = ({ onAddEvent }) => {
       pending: [],
       scheduled: [],
       "canceled-resubmission-requested": [],
-    };
-
-    // Categorize events
-    activeSlot.availableEvents.forEach((event) => {
-      categorizedEvents[event.status]?.push(event);
-    });
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-
-    const popupStyle = {
-      left: scrollX + viewportWidth / 2 - 200, // Adjust for popup width (e.g., 400px)
-      top: scrollY + viewportHeight / 2 - 150, // Adjust for popup height (e.g., 300px)
     };
 
     return (
@@ -315,14 +301,28 @@ const WeeklySchedules = ({ onAddEvent }) => {
     setActiveEvent(null);
   };
 
-  const handleRemoveEvent = async (eventId) => {
+  const handleRemoveEvent = async (event) => {
     const token = localStorage.getItem("token");
+    const eventId = event._id
   
     if (!token) {
       setMessage("No token found. Please log in.");
       return;
     }
-  
+    
+    // Update frontend data by removing the event from its slot
+    event.status = "pending"; // Change the status to pending
+    setWeeklySchedules((prevSchedules) =>
+      prevSchedules.map((schedule) => ({
+        ...schedule,
+        slots: schedule.slots.map((slot) => ({
+          ...slot,
+          events: slot.events.filter((event) => event._id !== eventId),
+        })),
+      }))
+    );
+    setActiveEvent(null); // Close the popup
+
     try {
       // Call the remove-from-schedule API
       const removeResponse = await fetch("http://localhost:3000/api/schedules/remove-from-schedule", {
@@ -338,24 +338,11 @@ const WeeklySchedules = ({ onAddEvent }) => {
         throw new Error("Failed to remove event from schedule");
       }
   
-      // Update frontend data by removing the event from its slot
-      setWeeklySchedules((prevSchedules) =>
-        prevSchedules.map((schedule) => ({
-          ...schedule,
-          slots: schedule.slots.map((slot) => ({
-            ...slot,
-            events: slot.events.filter((event) => event._id !== eventId),
-          })),
-        }))
-      );
-  
       setMessage("Event removed successfully.");
     } catch (error) {
       setMessage(`Error removing event: ${error.message}`);
       console.error(error);
     }
-  
-    setActiveEvent(null); // Close the popup
   };
 
   const renderPopup = () => {
@@ -379,7 +366,7 @@ const WeeklySchedules = ({ onAddEvent }) => {
       >
         <button
           className="remove-event-button"
-          onClick={() => handleRemoveEvent(activeEvent._id)}
+          onClick={() => handleRemoveEvent(activeEvent)}
         >
           Remove Event
         </button>
@@ -465,17 +452,23 @@ const WeeklySchedules = ({ onAddEvent }) => {
     );
   };
   
-
-  const handleAddEventClick = (slot) => {
-    onAddEvent(slot); // Notify Applications to open the modal
-  };
-  
   
 
   const currentWeek = schedules[currentIndex];
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const currentDayIndex = (new Date().getDay() + 6) % 7 +3; // Adjust to match your table's first day (Monday)
   const currentDay = daysOfWeek[currentDayIndex];
+
+  const handleAddEventClick = (slot) => {
+    console.log("weekBeginning in weekly schedules", currentWeek?.weekBeginning);
+    onAddEvent(slot, currentWeek?.weekBeginning); // Pass weekBeginning from currentWeek
+  };
+
+  useEffect(() => {
+    if (shouldFetchSchedules) {
+      fetchSchedules();
+    }
+  }, [shouldFetchSchedules]);
 
 
   return (
@@ -603,8 +596,14 @@ const WeeklySchedules = ({ onAddEvent }) => {
                       <button
                         className="add-event-button"
                         onClick={() => handleAddEventClick(slot)}
+                        disabled={slot.availableEvents.length === 0} // Disable if no available events
+                        title={
+                          slot.availableEvents.length === 0
+                            ? "No available events to add"
+                            : ""
+                        } // Add a tooltip for clarity
                       >
-                        Add Event
+                        +Add Event
                       </button>
                     </td>
                   );

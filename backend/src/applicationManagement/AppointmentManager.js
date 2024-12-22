@@ -435,13 +435,13 @@ async function assignAvailableEventsToSlots(weeklySchedule) {
       const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
       const visitTime = reservedDate.visitTime;
 
-      if (new Date(weeklySchedule.weekBeginning) < new Date(reservedDate.visitDate) &&
-             new Date(weeklySchedule.weekEnding) > new Date(reservedDate.visitDate)) {
+      if (new Date(weeklySchedule.weekBeginning) <= new Date(reservedDate.visitDate) &&
+             new Date(weeklySchedule.weekEnding) >= new Date(reservedDate.visitDate)) {
 
         const possibleSlot = weeklySchedule.slots.find((s) => s.slotDay === visitDay && s.slotTime === visitTime);
         
         if (possibleSlot && !doesAlreadyExistInAvailableEvents(event, possibleSlot)) {
-          possibleSlot.availableEvents.push(event);
+          possibleSlot.availableEvents.push(event._id);
         }
       }
     }
@@ -537,6 +537,8 @@ exports.loadWeeklySchedules = async (req, res) => {
     const schedules = [];
     for (const date of weeklyDates) {
       let weeklySchedule = await WeeklySchedule.findOne({ weekBeginning: date });
+      await assignAvailableEventsToSlots(weeklySchedule);
+
 
       if (!weeklySchedule) {
         weeklySchedule = await assignEventsToSlots(date);
@@ -580,101 +582,6 @@ exports.removeEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-/*
-exports. getAllEventsAndMatchingSlots = async (req, res) => {
-  try {
-    const { weekBeginning } = req.query;
-
-    if (!weekBeginning) {
-      return res.status(400).json({ message: "Missing required parameters." });
-    }
-    const weekStartDate = new Date(weekBeginning);
-    const weekEndDate = new Date(weekStartDate.getTime() + 7 * 24 * 60 * 60 * 1000 - 1);
-
-    const allEvents = await Event.find({
-      status: "pending" ,
-      __t: "SchoolTour", reserveDates: { $elemMatch: { visitDate: { $gte: weekStartDate, $lte: weekEndDate } } }
-    });
-
-    const schedule   = await WeeklySchedule.findOne({ weekBeginning: weekStartDate });
-    const slots = schedule.slots;
-
-    const matchingSlots = [];
-    for (const event of allEvents) {
-      for (const slot of slots) {
-        if (slot.isEmpty) {
-          const visitDay = event.visitDate.toLocaleDateString("en-US", { weekday: "long" });
-          if (slot.slotDay === visitDay && slot.slotTime === event.visitTime) {
-            matchingSlots.push({
-              event: event,
-              slot: slot,
-            });
-          }
-        }
-      }
-    }
-    
-    return res.status(200).json(matchingSlots);
-  } catch (error) {
-    console.error("Error in getAllEventsAndMatchingSlots:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-     
-}
-exports.getMatchingEventsForSlot = async (req, res) => {
-  try {
-    const { weekBeginning, slotDay, slotTime } = req.body;
-
-    if (!weekBeginning || !slotDay || !slotTime) {
-      return res.status(400).json({ message: "Missing required parameters." });
-    }
-
-    
-    // Convert weekBeginning to a Date object
-    const weekStartDate = new Date(weekBeginning);
-    weekStartDate.setHours(0, 0, 0, 0);
-
-    
-    // Locate the weekly schedule with the given weekBeginning
-    const schedule = await WeeklySchedule.findOne({ weekBeginning: weekStartDate });
-    if (!schedule) {
-      return res.status(404).json({ message: "No matching weekly schedule found." });
-    }
-
-    // Find all events with status 'pending'
-    const pendingEvents = await Event.find({
-      status: "pending" ,
-      __t: "SchoolTour"
-    });
-
-    // Filter events to match those with a reserveDate matching the slot's date
-    const matchingEvents = pendingEvents.filter((event) =>
-      event.reserveDates.some((date) => {
-        const visitDate = new Date(date.visitDate);
-        const weekStart = new Date(schedule.weekBeginning);
-        const weekEnd = new Date(schedule.weekEnding);
-        const visitDay = date.visitDate.toLocaleDateString("en-US", { weekday: "long" });
-        const visitTime = date.visitTime;
-        return (
-          visitDate >= weekStart &&
-          visitDate <= weekEnd &&
-          visitDay === slotDay &&
-          visitTime === slotTime
-        );
-      })
-    );
-
-    // Extract the schoolName properties of matching events
-    const schoolNames = matchingEvents.map((event) => event.schoolName || "Unnamed School");
-
-    return res.status(200).json(schoolNames);
-  } catch (error) {
-    console.error("Error in getMatchingEventsForSlot:", error);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-};
-
-*/
 
 exports.assignEventToSlot = async (req, res) => {
   const { eventId, weekBeginning, slotDay, slotTime } = req.body;

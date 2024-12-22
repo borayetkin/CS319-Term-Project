@@ -28,6 +28,7 @@ const Applications = () => {
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [showActionConfirmation, setShowActionConfirmation] = useState(false);
   const [actionDetails, setActionDetails] = useState({
+    
     type: '', // 'reject' or 'delete'
     eventId: null,
     event: null
@@ -38,6 +39,8 @@ const Applications = () => {
   const wrapperRef = useRef(null);
   const applicationsRef = useRef(null);
   const scheduleRef = useRef(null);
+  const [weekBeginning, setWeekBeginning] = useState(null);
+
 
   const adjustHeights = () => {
     const activeContent = showWeeklySchedule ? scheduleRef.current : applicationsRef.current;
@@ -312,14 +315,21 @@ const Applications = () => {
     setShowActionConfirmation(true);
   };
 
-  const handleOpenAddEventModal = (slot) => {
+  const handleOpenAddEventModal = (slot,weekBeginning) => {
     setActiveSlot(slot);
     setIsAddEventModalOpen(true);
+    setWeekBeginning(weekBeginning);
   };
 
   const handleCloseAddEventModal = () => {
     setIsAddEventModalOpen(false);
     setActiveSlot(null);
+  };
+
+  const [shouldFetchSchedules, setShouldFetchSchedules] = useState(false);
+
+  const triggerFetchSchedules = () => {
+    setShouldFetchSchedules(true);
   };
 
   return (
@@ -485,7 +495,9 @@ const Applications = () => {
         </div>
         <div className="weekly-schedule-view" ref={scheduleRef}>
           <h1>Weekly Schedules</h1>
-          <WeeklySchedules onAddEvent={handleOpenAddEventModal}/>
+          <WeeklySchedules onAddEvent={handleOpenAddEventModal}
+            shouldFetchSchedules={shouldFetchSchedules}
+            onFetchComplete={() => setShouldFetchSchedules(false)}/>
         </div>
       </div>
           {showDetailsModal && (
@@ -499,7 +511,9 @@ const Applications = () => {
           {isAddEventModalOpen && (
             <AddEventModal
               slot={activeSlot}
+              weekBeginning={weekBeginning} // Pass the weekBeginning state
               onClose={handleCloseAddEventModal}
+              triggerFetchSchedules={triggerFetchSchedules}// Callback to refresh schedules
             />
           )}
     </div>

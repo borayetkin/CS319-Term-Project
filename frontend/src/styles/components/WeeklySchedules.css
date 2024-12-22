@@ -220,35 +220,6 @@ li {
   background-color: #cccaca;
 }
 
-/* Disable interactions and dim the background */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
-  z-index: 12; /* High z-index to overlay everything */
-}
-
-.add-event-popup {
-  position: fixed; /* Absolute positioning for dynamic placement */
-  background-color: #ffffff;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 400px; /* or whatever width you like */
-  background-color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  z-index: 13; /* a bit higher to stack above overlay */
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  animation: fadeIn 0.3s ease-in-out; /* Optional fade-in animation */
-}
-
 /* Remove Event Button */
 .remove-event-button {
   display: block;
@@ -522,4 +493,26 @@ body {
 
 .confirmation-cancel-button:hover {
   background-color: #c82333;
+}
+
+.add-event-button:disabled {
+  background-color: #ccc; /* Light gray to indicate disabled state */
+  color: #666; /* Dimmed text color */
+  cursor: not-allowed; /* Change the cursor */
+  border: 1px solid #aaa; /* Subtle border */
+}
+
+.add-event-button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -25px; /* Adjust based on placement */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 10;
 }
