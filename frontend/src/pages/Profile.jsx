@@ -447,7 +447,7 @@ const Profile = () => {
                 <div className="card-content">
                   <h3>Year</h3>
                   <p>
-                    {profile.year ? `${profile.year}th year` : "Not specified"}
+                    {profile.year == 1 ? `${profile.year}st year` : profile.year == 2 ? `${profile.year}nd year` : profile.year == 3 ? `${profile.year}rd year` : `${profile.year}th year`}
                   </p>
                 </div>
               </div>
