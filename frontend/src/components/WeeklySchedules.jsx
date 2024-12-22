@@ -99,7 +99,6 @@ const WeeklySchedules = ({onAddEvent, shouldFetchSchedules, onFetchComplete }) =
       setMessage("Error rebuilding schedules: " + error.message);
     } finally {
       setIsLoading(false);
-      setIsSpinning(false);
     }
   };
 

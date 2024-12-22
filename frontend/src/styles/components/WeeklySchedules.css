@@ -339,6 +339,7 @@ body.disable-scroll {
 /* Reduce Button Size */
 .event-button,
 .add-event-button {
+  display: inline-block;
   font-size: 0.9rem;
   border-radius: 6px;
   border: 1px;
@@ -380,7 +381,7 @@ body {
 
 .event-button {
   position: relative;
-  display: flex;
+  display: inline-block;
   flex-direction: column; /* Stack the name and priority vertically */
   align-items: center;
   justify-content: center;
@@ -393,6 +394,11 @@ body {
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 0 0;
+}
+
+.event-button span {
+  display: inline-block; /* Forces the text to take up full width */
+  text-align: center; /* Ensures the text is centered */
 }
 
 .priority-label {

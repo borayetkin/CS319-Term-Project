@@ -141,7 +141,7 @@ const AddEventModal = ({ slot, weekBeginning, onClose, triggerFetchSchedules }) 
                     key={event._id}
                     className="event-item"
                     data-priority={event.applicant?.priority || "General"}
-                    onClick={() => handleAssignToSlot(event._id)}
+                    onClick={() => handleAssignToSlot(event._id, event.status)}
                   >
                     <span>{event.schoolName}</span>
                     {loadingEventId === event._id && (
