@@ -19,7 +19,7 @@ async function createWeeklySchedule(startOfTheWeek) {
         slotDay: day,
         slotTime: time,
         isEmpty: true,
-        events: [],
+        event: null,
       };
       slots.push(slot);
     }
@@ -37,24 +37,6 @@ async function createWeeklySchedule(startOfTheWeek) {
     slots: slots,
   });
 
-  if (new Date() > weekBeginning) {
-    for (const slot of weeklySchedule.slots) {
-      const approvedEvent = await Event.findOne({
-        status: { $in: ["accepted", "completed-verified"] },
-        __t: "SchoolTour",
-        visitDate: {
-          $gte: new Date(weeklySchedule.weekBeginning),
-          $lte: new Date(weeklySchedule.weekEnding),
-        },
-        visitTime: slotTime,
-        weekday: slotDay,
-      }).populate("applicant");
-
-      if (approvedEvent)
-        await assignEventToSlot(approvedEvent, slot, weeklySchedule);
-    }
-  }
-
   await weeklySchedule.save();
   return weeklySchedule;
 }
@@ -68,21 +50,20 @@ async function assignEventsToSlots(startOfTheWeek) {
       weeklySchedule = await createWeeklySchedule(startOfTheWeek);
     }
 
-    const validWeekBeginning = getValidStartDate(weeklySchedule);
-
-    const filteredEvents = await Event.find({
-      status: { $in: ["pending", "scheduled"] },
-      __t: "SchoolTour",
-      reserveDates: {
-        $elemMatch: {
-          visitDate: {
-            $gte: new Date(validWeekBeginning),
-            $lte: new Date(weeklySchedule.weekEnding),
-          },
-        },
-      },
+    const allEvents = await Event.find({
+      status: "pending" ,
+      __t: "SchoolTour"
     }).populate("applicant");
     
+    const filteredEvents = allEvents.filter((event) =>
+      event.reserveDates.some((date) => {
+        const visitDate = new Date(date.visitDate);
+        return (
+          visitDate >= new Date(weeklySchedule.weekBeginning) &&
+          visitDate <= new Date(weeklySchedule.weekEnding)
+        );
+      })
+    );
 
     const sortedEvents = await sortEventsByPriority(filteredEvents);
 
@@ -92,7 +73,14 @@ async function assignEventsToSlots(startOfTheWeek) {
       if (!isPlaced) notPlacedEvents.push(event);
     }
 
-    const eventsToCancel = await checkLastChances(notPlacedEvents, weeklySchedule);
+    const remainingEvents = await Promise.all(
+      notPlacedEvents.map(async (anEvent) => {
+        const hasFutureDate = await hasFutureReserveDate(anEvent, weeklySchedule);
+        return hasFutureDate ? null : anEvent;
+      })
+    ).then((events) => events.filter((event) => event !== null));
+
+    const eventsToCancel = await checkLastChances(remainingEvents, weeklySchedule);
 
     await cancelEvents(eventsToCancel);
 
@@ -131,19 +119,16 @@ async function sortEventsByPriority(events) {
 }
 
 async function placeToAvailableSlot(event, weeklySchedule) {
-  const validWeekBeginning = getValidStartDate(weeklySchedule);
-
   for (const reservedDate of event.reserveDates) {
     const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
     const visitTime = reservedDate.visitTime;
     
-    if (new Date(reservedDate.visitDate) >= new Date(validWeekBeginning) &&
+    if (new Date(reservedDate.visitDate) >= new Date(weeklySchedule.weekBeginning) &&
         new Date(reservedDate.visitDate) <= new Date(weeklySchedule.weekEnding)) {
 
       const slot = weeklySchedule.slots.find(
-        (slot) => slot.slotDay === visitDay && 
-                  slot.slotTime === visitTime && 
-                  !slot.isFull);
+        (slot) => slot.slotDay === visitDay && slot.slotTime === visitTime && slot.isEmpty
+      );
 
       if (slot) {
         await assignEventToSlot(event, slot, weeklySchedule);
@@ -161,6 +146,15 @@ async function hasFutureReserveDate(event, weeklySchedule) {
   );
 }
 
+/**
+ * Recursively finds an empty slot for an event and places it there,
+ * shifting other events if necessary.
+ * @param {Object} event - The event to be placed.
+ * @param {Object} weeklySchedule - The weekly schedule containing slots.
+ * @param {Function} populateEvent - A function to populate the slot's event.
+ * @param {Set} visitedSlots - Tracks slots already visited to prevent revisits.
+ * @returns {Boolean} - Returns true if the event was successfully placed.
+ */
 async function replaceEventsRecursively(event, weeklySchedule, visitedSlots = new Set()) {
   for (const reservedDate of event.reserveDates) {
     const visitDay = new Date(reservedDate.visitDate).toLocaleDateString("en-US", { weekday: "long" });
@@ -170,31 +164,26 @@ async function replaceEventsRecursively(event, weeklySchedule, visitedSlots = ne
     const slot = weeklySchedule.slots.find(
       (s) => s.slotDay === visitDay && s.slotTime === visitTime
     );
-  
-    const validWeekBeginning = getValidStartDate(weeklySchedule);
-    if (!slot || visitedSlots.has(slot) || validWeekBeginning > reservedDate.visitDate) continue; // Skip if slot does not exist or is already visited
+
+    if (!slot || visitedSlots.has(slot)) continue; // Skip if slot does not exist or is already visited
 
     visitedSlots.add(slot); // Mark this slot as visited
 
-    if (!slot.isFull) {
-      // If slot is not full, place the event and return success
+    if (slot.isEmpty) {
+      // If slot is empty, place the event and return success
       await assignEventToSlot(event, slot, weeklySchedule);
       return true;
     } else {
+      // If slot is not empty, attempt to recursively place the current event
+      const currentEvent = slot.event;
 
-      for (const slotEvent of slot.events) {
-        if (slotEvent.status === "scheduled") {
-          const success = await replaceEventsRecursively(slotEvent, weeklySchedule, visitedSlots);
+      // Recursively attempt to place the current event elsewhere
+      const success = await replaceEventsRecursively(currentEvent, weeklySchedule, visitedSlots);
 
-          if (success) {
-            // If successfully placed, now assign the new event to the current slot
-            await assignEventToSlot(event, slot, weeklySchedule);
-
-            await removeEventFromSlot(slotEvent, slot, weeklySchedule);
-
-            return true;
-          }
-        }
+      if (success) {
+        // If successfully placed, now assign the new event to the current slot
+        await assignEventToSlot(event, slot, weeklySchedule);
+        return true;
       }
     }
   }
@@ -206,51 +195,38 @@ async function replaceEventsRecursively(event, weeklySchedule, visitedSlots = ne
 
 async function checkLastChances(remainingEvents, weeklySchedule) {
   const eventsToCancel = [];
-  const validWeekBeginning = getValidStartDate(weeklySchedule);
   await weeklySchedule.populate({
-    path: "slots.events",
+    path: "slots.event",
     model: "Event",
   });
   
   for (const event of remainingEvents) {
     
     let isScheduled = false;
-    let hasFutureDates = false;
     for (const reservedDate of event.reserveDates) {
-      if (validWeekBeginning < reservedDate.visitDate) {
-        const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
-        const visitTime = reservedDate.visitTime;
+      const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
+      const visitTime = reservedDate.visitTime;
 
-        const slot = weeklySchedule.slots.find((slot) => slot.slotDay === visitDay && slot.slotTime === visitTime);
+      const slot = weeklySchedule.slots.find((slot) => slot.slotDay === visitDay && slot.slotTime === visitTime);
 
-        isScheduled = await replaceEventsRecursively(event, weeklySchedule);
+      isScheduled = await replaceEventsRecursively(event, weeklySchedule);
 
-        if (!isScheduled) {
-          hasFutureDates = await hasFutureReserveDate(event, weeklySchedule);
-        }
+      // If event still not could not find a place, try to postpone some events
+      if (!isScheduled) {
+        const slotEventHasFutureDates = await hasFutureReserveDate(slot.event, weeklySchedule);
+        if (slotEventHasFutureDates) {
+          slot.event.status = "pending";
+          await slot.event.save();
 
-        // If event still not could not find an alternative, try to postpone some events
-        if (!hasFutureDates) {
-          for (const slotEvent of slot.events) {
-            
-            const slotEventHasFutureDates = await hasFutureReserveDate(slotEvent, weeklySchedule);
-            if (slotEventHasFutureDates && slotEvent.status === "scheduled") {
-              
-              slotEvent.status = "pending";
-              await slotEvent.save();
-              await removeEventFromSlot(slotEvent, slot, weeklySchedule);
-              await assignEventToSlot(event, slot, weeklySchedule);
-  
-              isScheduled = true;
-            }
-          }
+          await assignEventToSlot(event, slot, weeklySchedule);
 
+          isScheduled = true;
         }
       }
 
       if (isScheduled) {
         await weeklySchedule.populate({
-          path: "slots.events",
+          path: "slots.event",
           model: "Event",
         });
         
@@ -287,6 +263,11 @@ async function getCurrentMonday() {
 }
 
 async function assignEventToSlot(event, slot, weeklySchedule) {
+
+  slot.event = event._id;
+  slot.isEmpty = false;
+  await weeklySchedule.save();
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const targetDayIndex = daysOfWeek.indexOf(slot.slotDay);
 
@@ -299,97 +280,31 @@ async function assignEventToSlot(event, slot, weeklySchedule) {
   event.weekday = slot.slotDay;
   event.status = "scheduled";
   await event.save()
-
-  slot.events.push(event._id);
-  slot.isEmpty = false;
-  if (slot.events.length > 4) {
-    slot.isFull = true;
-  }
-  await weeklySchedule.save();
-}
-
-function getValidStartDate(weeklySchedule) {
-  const today = new Date();
-  const weekBeginning = new Date(weeklySchedule.weekBeginning);
-
-  // If weekBeginning has passed, return tomorrow at 00:00
-  if (weekBeginning < today) {
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 2); // Move 2 days
-    tomorrow.setHours(0, 0, 0, 0); // Set time to 00:00
-    return tomorrow;
-  }
-
-  // If weekBeginning is not past yet, return weekBeginning
-  return weekBeginning;
-}
-
-async function removeEventFromSlot(event, slot, weeklySchedule) {
-  const index = slot.events.findIndex(
-    (anEvent) => anEvent._id.toString() === slotEvent._id.toString()
-  );
-  if (index !== -1) {
-    slot.events.splice(index, 1);
-  }
-
-  if (slot.events.length < 1) {
-    slot.isEmpty = true;
-  }
-
-  await weeklySchedule.save();
-}
-
-async function assignAvailableEventsToSlots(weeklySchedule) {
-
-  const filteredEvents = await Event.find({
-    status: { $in: ["pending", "scheduled"] },
-    __t: "SchoolTour",
-    reserveDates: {
-      $elemMatch: {
-        visitDate: {
-          $gte: new Date(weeklySchedule.weekBeginning),
-          $lte: new Date(weeklySchedule.weekEnding),
-        },
-      },
-    },
-  }).populate("applicant");
-  
-  for (const event of filteredEvents) {
-    for (const reservedDate of event.reserveDates) {
-      const visitDay = reservedDate.visitDate.toLocaleDateString("en-US", { weekday: "long" });
-      const visitTime = reservedDate.visitTime;
-
-      if (weeklySchedule.weekBeginning < reservedDate.visitDate && weeklySchedule.weekEnding > reservedDate.visitDate) {
-
-        const possibleSlot = weeklySchedule.slots.find((s) => s.slotDay === visitDay && s.slotTime === visitTime);
-
-        possibleSlot.availableEvents.push(event);
-      }
-    }
-  }
-
-  await weeklySchedule.save();
 }
 
 exports.removeEventFromSchedule = async (eventId) => {
   try {
     // Find the weekly schedule containing the event
     const schedule = await WeeklySchedule.findOne({
-      "slots.events": eventId,
+      "slots.event": eventId,
     });
 
     // Find and update the slot containing the event
     const slot = schedule.slots.find(
-      (s) => s.events && s.events.some((e) => e.toString() === eventId)
+      (s) => s.event && s.event.toString() === eventId
     );
 
-    const event = await Event.findById(eventId);
-
     if (slot) {
-      await removeEventFromSlot(event, slot, schedule);
+      slot.event = null; // Remove event from slot
+      slot.isEmpty = true; // Mark slot as empty
     }
 
-    if (event.status !== "rejected") {
+    await schedule.save();
+
+    // Update the event status to "pending"
+    const event = await Event.findById(eventId);
+
+    if (!(event.status === "rejected")) {
       event.status = "pending";
     }
     await event.save();
@@ -411,10 +326,9 @@ exports.getWeeklySchedules = async (req, res) => {
 
     const schedules = [];
     for (const date of weeklyDates) {
-      const newSchedule = await assignEventsToSlots(date);
-      await assignAvailableEventsToSlots(newSchedule);
+      const currentSchedule = await assignEventsToSlots(date);
 
-      schedules.push(await finalSchedule.populate({
+      schedules.push(await currentSchedule.populate({
         path: "slots",
         populate: {
           path: "event",
@@ -435,7 +349,7 @@ exports.loadWeeklySchedules = async (req, res) => {
     const currentMonday = await getCurrentMonday();
 
     const weeklyDates = [];
-    for (let i = -2; i <= 7; i++) {
+    for (let i = 0; i <= 7; i++) {
       const weekStart = new Date(currentMonday);
       weekStart.setDate(weekStart.getDate() + i * 7);
       weeklyDates.push(weekStart);
@@ -448,12 +362,11 @@ exports.loadWeeklySchedules = async (req, res) => {
       if (!weeklySchedule) {
         weeklySchedule = await assignEventsToSlots(date);
       }
-      await assignAvailableEventsToSlots(weeklySchedule);
 
       schedules.push(await weeklySchedule.populate({
         path: "slots",
         populate: {
-          path: "events",
+          path: "event",
           model: "Event", // Ensure this matches the name of your Event model
         },
       }));
@@ -478,7 +391,6 @@ exports.removeEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-/*
 exports. getAllEventsAndMatchingSlots = async (req, res) => {
   try {
     const { weekBeginning } = req.query;
@@ -571,8 +483,6 @@ exports.getMatchingEventsForSlot = async (req, res) => {
     return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
-
-*/
 
 exports.assignEventToSlot = async (req, res) => {
   const { schoolName, weekBeginning, slotDay, slotTime } = req.body;
