@@ -294,8 +294,8 @@ exports.getCompletedEvents = async (req, res) => {
       .populate("assignedAdvisor")
       .populate("assignedUsers")
       .populate("applicant")
-      .populate("appliedUsers");
-
+      .populate("appliedUsers")
+      .populate("review");
     res.status(200).json(events);
   } catch (error) {
     res

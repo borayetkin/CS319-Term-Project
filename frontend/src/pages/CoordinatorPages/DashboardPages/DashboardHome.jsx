@@ -73,7 +73,7 @@ const DashboardHome = () => {
 
   const fetchRecentActivity = async (token) => {
     try {
-      const response = await fetch('http://localhost:3000/api/events/completed', {
+      const response = await fetch('http://localhost:3000/api/events/completed?populate=review', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const completedEvents = await response.json();
@@ -315,9 +315,12 @@ const DashboardHome = () => {
                     <strong>Guide:</strong> {event.assignedUsers.map(user => user.name).join(', ')}
                   </p>
                   <p>
-                    <strong>Rating:</strong> {event.rating ? 
-                      <span className="rating">{'★'.repeat(Math.round(event.rating))}</span> 
-                      : 'Not rated'}
+                    <strong>Rating:</strong> {event.review ? (
+                      <>
+                        <span className="rating">{'★'.repeat(Math.round(event.review.rating))}</span>
+                        <span className="review-text"> - {event.review.comment || 'No comment provided'}</span>
+                      </>
+                    ) : 'Not rated'}
                   </p>
                 </div>
               </div>
