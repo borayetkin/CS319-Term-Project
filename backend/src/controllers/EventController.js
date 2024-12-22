@@ -243,8 +243,9 @@ exports.getAllEvents = async (req, res) => {
       if (accepted === "true") {
         query.status = "accepted";
       }
-
-      const events = await Event.find(query)
+      const advisorsApplications = foundAdvisor.dayApplications;
+      const advisorQuery = { _id: { $in: advisorsApplications } };
+      const events = await Event.find(advisorQuery)
         .populate("assignedAdvisor")
         .populate("assignedUsers")
         .populate("applicant")

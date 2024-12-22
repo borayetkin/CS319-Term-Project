@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import "../../styles/AdvisorPages/ManageGuides.css";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import GuideFinder from "../../components/GuideFinder";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
+import GeneralTable from "../../components/GeneralTable";
 
 const ManageGuides = () => {
   const [events, setEvents] = useState([]);
-  const [guides, setGuides] = useState([]);
-  const [updatedAssignments, setUpdatedAssignments] = useState({});
-  const [updatedRemovals, setUpdatedRemovals] = useState({});
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showGuideFinder, setShowGuideFinder] = useState(false);
   const [selectedEventOrFair, setSelectedEventOrFair] = useState(null);
   const [tourType, setTourType] = useState("SchoolTour");
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   const token = localStorage.getItem("token");
-  const personIconUrl =
-  "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,18 +31,13 @@ const ManageGuides = () => {
       if (response.ok) {
         const eventsData = await response.json();
         setEvents(eventsData);
-        const guides = eventsData.map((event) => event.appliedUsers);
-        setGuides(guides);  
         setIsLoading(false);
-
       } else {
         setIsLoading(false);
-
         setMessage("Failed to fetch events.");
       }
     } catch (error) {
       setIsLoading(false);
-
       setMessage("Error fetching events: " + error.message);
     }
   };
@@ -54,15 +45,7 @@ const ManageGuides = () => {
   const handleEditClick = (event) => {
     navigate(`/edit/${event._id}`);
   };
- 
-  const clearChoices = () => {
-    setUpdatedAssignments({});
-    setUpdatedRemovals({});
 
-  }
-  const checkIfGuideHasBeenAssigned = (event, guide) => {
-    return event.assignedUsers.some((assignedGuide) => assignedGuide._id === guide._id);
-  };
   const assignGuide = async (eventId, guideId) => {
     try {
       const response = await fetch("http://localhost:3000/api/events/assign-guide", {
@@ -125,78 +108,45 @@ const ManageGuides = () => {
     }
   };
 
-  const saveChanges = async (eventId) => {
-    const guideToAssign = updatedAssignments[eventId];
-
-    
-    const guideToRemove = updatedRemovals[eventId];
-
-    try {
-      // Assign new guide
-      if (guideToAssign) {
-        const assignResponse = await fetch(
-          "http://localhost:3000/api/events/assign-guide",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              userID: guideToAssign,
-              eventID: eventId,
-            }),
-          }
-        );
-
-        if (!assignResponse.ok) {
-          const errorData = await assignResponse.json();
-          throw new Error(errorData.message || "Failed to assign guide");
-        }
-        clearChoices();
-      }
-
-      // Remove selected guide
-      if (guideToRemove) {
-        const removeResponse = await fetch(
-          "http://localhost:3000/api/events/remove-guide",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              userID: guideToRemove,
-              eventID: eventId,
-            }),
-          }
-        );
-
-        if (!removeResponse.ok) {
-          const errorData = await removeResponse.json();
-          throw new Error(errorData.message || "Failed to remove guide");
-        }
-      }
-
-      setMessage("Changes saved successfully!");
-      fetchEvents(); // Refresh the events list
-    } catch (error) {
-      setMessage("Error saving changes: " + error.message);
-    }
-  };
-
   const openGuideFinder = (eventOrFair) => {
     setSelectedEventOrFair(eventOrFair);
     setShowGuideFinder(true);
   };
 
   const closeGuideFinder = () => {
+    console.log("close guide finder");
+    
     setShowGuideFinder(false);
     setSelectedEventOrFair(null);
   };
 
-  const filteredEvents = events.filter(event => event.__t === tourType);
+  const toggleShowPastEvents = () => {
+    setShowPastEvents((prevShowPastEvents) => !prevShowPastEvents);
+  };
+
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.visitDate);
+    return event.__t === tourType && (showPastEvents ? eventDate < new Date() : eventDate >= new Date());
+  });
+
+  const EventRowActions = ({ event }) => {
+    const eventDate = new Date(event.visitDate);
+    const isEventPast = eventDate < new Date();
+    return !isEventPast &&
+    <div>
+      <button onClick={() => handleEditClick(event)} className="edit-details-button">
+        Edit Details
+      </button>
+      <button onClick={() => openGuideFinder(event)} className="find-guide-button">
+        Find Guide
+      </button>
+    </div>
+  };
+
+  const extraProperties = {
+    SchoolTour: ["assignedUsers", "requiredNumberOfGuides"],
+    IndividualTour: ["majorOfInterest"],
+  };
 
   return (
     <div style={{ padding: "20px" }} className="manage-guides-page">
@@ -208,125 +158,31 @@ const ManageGuides = () => {
           haveFairButton={false}
           upperCase={false}
         />
-        <button onClick={() => navigate("/completed-tours")} style={{ padding: "10px 20px" , width :"auto" }}>
-          View Completed Tours
+        <button onClick={toggleShowPastEvents} style={{ padding: "10px 20px", width: "auto" }}>
+          {showPastEvents ? "View Upcoming Tours" : "View Completed Tours"}
         </button>
-        <button onClick={() => navigate("/trainees")} style={{ padding: "10px 20px" , width :"auto" }}>
+        <button onClick={() => navigate("/trainees")} style={{ padding: "10px 20px", width: "auto" }}>
           View Trainees
         </button>
       </div>
       {message && <p>{message}</p>}
       {showGuideFinder && (
-        <GuideFinder eventOrFair={selectedEventOrFair} onClose={closeGuideFinder} assignGuide={assignGuide} unassignGuide={unassignGuide}  />
+        <GuideFinder eventOrFair={selectedEventOrFair} onClose={closeGuideFinder} assignGuide={assignGuide} unassignGuide={unassignGuide} />
       )}
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>High School/Applicant</th>
-            <th>City</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Number of Visitors/Details</th>
-            <th>Assigned Guides</th>
-            <th>Assign New Guide</th>
-            <th>Remove Guide</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEvents.length>0 ? (filteredEvents.map((event, index) => (
-            <tr key={event._id}>
-              <td>{index + 1}</td>
-              <td>{event.applicant.name}</td>
-              <td>{event.city}</td>
-              <td>{new Date(event.visitDate).toLocaleDateString()}</td>
-              <td>{event.visitTime}</td>
-              <td>{event.studentCount || event.details || "N/A"}</td>
-              <td>
-                {event.assignedUsers.map((guide) => (
-                  <div key={guide._id} style={{display : "flex", alignItems : "center",gap : "5px"}}>
-                    <img
-                        src={personIconUrl}
-                        alt={guide.name}
-                        title={guide.name}
-                        style={{ width: "20px", height: "20px",cursor: "pointer" }}
-                      />
-                    {guide.name}</div>
-                ))}
-              </td>
-              <td>
-                <select
-                  onChange={(e) =>
-                    setUpdatedAssignments((prev) => ({
-                      ...prev,
-                      [event._id]: e.target.value,
-                    }))
-                  }
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select Guide
-                  </option>
-                  {guides[index].map((guide) => (
-                    checkIfGuideHasBeenAssigned(event,guide) ? null :
-                    <option key={guide._id} value={guide._id}>
-                      {guide.name}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <select
-                  onChange={(e) =>
-                    setUpdatedRemovals((prev) => 
-                      ({
-                      
-                      ...prev,
-                      [event._id]: e.target.value,
-                    }))
-                  }
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select Guide
-                  </option>
-                  {event.assignedUsers.map((guide) => 
-                    (
-                    <option key={guide._id} value={guide._id}>
-                      {guide.name}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                 <button onClick={() => handleEditClick(event)} className="edit-details-button">
-                     Edit Details
-                 </button>
-                <button onClick={() => saveChanges(event._id)} className="save-changes-button">
-                    Save Changes
-                </button>
-                <button onClick={() => openGuideFinder(event)} className="find-guide-button">
-                    Find Guide
-                </button>
-              </td>
-            </tr>
-          ))):( isLoading ? (
-          <tr>
-            <td colSpan="100" style={{ textAlign: "center",  background : "none"}}>
-            <LoadingSpinner
-            loading="Guides & Events" />
-            </td>
-          </tr>
-          ):(
-            <tr>
-              <td colSpan="100" style={{ textAlign: "center" }}>
-                No tours found.
-              </td>
-            </tr>)
-          )}
-        </tbody>
-      </table>
+      {!isLoading && (
+        <GeneralTable
+          showFairs={false}
+          showTours={true}
+          events={filteredEvents}
+          setMessage={setMessage}
+          user={null}
+          showType={tourType}
+          viewType="events"
+          EventRowActions={EventRowActions}
+          showExtraProperties={extraProperties}
+        />
+      )}
+      {isLoading && <LoadingSpinner />}
     </div>
   );
 };

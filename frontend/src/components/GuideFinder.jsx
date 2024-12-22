@@ -49,7 +49,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
     return isDayAvailable && isTimeAvailable;
   };
   const canNotifyGuide = (guide) => {
-    return !isUserAssigned(guide._id)&& guide.availability.some((availability) => checkAvailabilityMatch(availability, eventOrFair));
+    return !checkIfUserHasApplied(guide._id)&& !isUserAssigned(guide._id)&& guide.availability.some((availability) => checkAvailabilityMatch(availability, eventOrFair));
   };
   const filterGuides = () => {
     let filtered = guides;
@@ -85,6 +85,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
   };
 
   const notifyGuide = async (guideId) => {
+    
     try {
       await fetch(`http://localhost:3000/api/events/notify-guide`, {
         method: "POST",
@@ -94,6 +95,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
         },
         body: JSON.stringify({ guideId, eventId: eventOrFair._id }),
       });
+      onClose()
     } catch (error) {
       console.error("Error notifying guide:", error);
     }
@@ -102,11 +104,13 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
   const handleAssignGuide = async (eventId, guideId) => {
     if (checkIfUserHasApplied(guideId)) {
       await assignGuide(eventId, guideId);
+      onClose()
     }
   };
 
   const handleUnassignGuide = async (eventId, guideId) => {
     await unassignGuide(eventId, guideId);
+    onClose()
     setGuides((prevGuides) =>
       prevGuides.map((guide) =>
         guide._id === guideId ? { ...guide, assigned: false } : guide
@@ -116,6 +120,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
 
   const handleNotifyGuide = async (guideId) => {
     await notifyGuide(guideId);
+    
     setGuides((prevGuides) =>
       prevGuides.map((guide) =>
         guide._id === guideId ? { ...guide, notified: true } : guide
@@ -182,17 +187,6 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
           X
         </button>
         <h2>Find a Guide</h2>
-        <div>
-          <label>
-            Type:
-            <input
-              type="text"
-              value={getType(eventOrFair)}
-              readOnly
-              className={styles.readOnlyInput}
-            />
-          </label>
-        </div>
         <input
           type="text"
           placeholder="Search guides..."
@@ -229,7 +223,7 @@ const GuideFinder = ({ eventOrFair, onClose, assignGuide, unassignGuide }) => {
                   <PersonRemoveIcon /> Unassign
                 </button>
               )}
-              {isSchoolTour && !guide.notified && canNotifyGuide(guide) && (
+              { !guide.notified && canNotifyGuide(guide) &&  !checkEventIsFull()&&(
                 <button
                   className={styles.notifyButton}
                   onClick={() => handleNotifyGuide(guide._id)}
