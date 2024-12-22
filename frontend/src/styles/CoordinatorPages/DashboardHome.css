@@ -86,3 +86,25 @@
   width: 100%;
   height: auto;
 }
+
+/* Custom tooltip styling */
+#svg-turkiye-haritasi-container > #svg-turkiye-haritasi-container-tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhance map hover interactions */
+.map-container path {
+  transition: fill 0.2s ease;
+}
+
+.map-container path:hover {
+  filter: brightness(0.95);
+}

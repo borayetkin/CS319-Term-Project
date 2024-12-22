@@ -120,7 +120,7 @@ const AssignedEventsActions = ({
               className={"action-button apply"}
               disabled={actionInProcess}
               style={buttonStyle}
-              onClick={() => handleCompleteEvent(event)}
+              onClick={() => handleCompleteEvent(event._id, workHours)}
             >
               <FaCheck />
               Complete

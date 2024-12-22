@@ -23,7 +23,15 @@ const DashboardHome = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
-  const [cityData, setCityData] = useState({});
+  const [cityData, setCityData] = useState({
+    "ISTANBUL": 150,
+    "ANKARA": 120,
+    "IZMIR": 80,
+    "BURSA": 45,
+    "ANTALYA": 60,
+    "ADANA": 30,
+    // Add more cities as needed
+  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -140,6 +148,23 @@ const DashboardHome = () => {
     return `${count}: ${count} applications (${percentage}% of total)`;
   };
 
+  const handleHover = ({ name }) => {
+    // Convert city names to match our data format
+    const cityName = name.toUpperCase()
+      .replace('İ', 'I')
+      .replace('Ğ', 'G')
+      .replace('Ü', 'U')
+      .replace('Ş', 'S')
+      .replace('Ç', 'C')
+      .replace('Ö', 'O');
+    
+    const count = cityData[cityName] || 0;
+    const total = Object.values(cityData).reduce((a, b) => a + b, 0);
+    const percentage = total ? ((count / total) * 100).toFixed(1) : 0;
+    
+    return `${name}: ${count} başvuru (${percentage}%)`;
+  };
+
   if (isLoading) {
     return (
       <div className="loading-spinner">
@@ -242,10 +267,11 @@ const DashboardHome = () => {
           <TurkeyMap 
             hoverable={true}
             showTooltip={true}
-            onHover={handleCityHover}
+            onHover={handleHover}
             customStyle={{
-              idleColor: "#444",
-              hoverColor: "#dc3522"
+              idleColor: "#e0e0e0",
+              hoverColor: "#5a67b3",
+              hoverBorderColor: "#5a67b3"
             }}
           />
         </div>

@@ -165,10 +165,6 @@ const ViewGuidesPage = () => {
               <p>{guide.major || "N/A"}</p>
             </div>
 
-            <div className="detail-item">
-              <label>Bilkent ID:</label>
-              <p>{guide.bilkentId || "N/A"}</p>
-            </div>
 
             <div className="detail-item">
               <label>Year:</label>
@@ -210,7 +206,7 @@ const ViewGuidesPage = () => {
           </div>
 
           <button className="close-button" onClick={onClose}>
-            Close
+            X
           </button>
         </div>
       </div>
@@ -268,7 +264,7 @@ const ViewGuidesPage = () => {
                 <td>
                   <div className="guide-phone">
                     <FiPhone className="phone-icon" />
-                    {guide.phone || "N/A"}
+                    {guide.phoneNumber || "N/A"}
                   </div>
                 </td>
                 <td>{guide.major || "N/A"}</td>

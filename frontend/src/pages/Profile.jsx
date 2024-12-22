@@ -8,8 +8,9 @@ import {
   FaClock,
   FaEdit,
   FaSave,
+  FaStar,
 } from "react-icons/fa";
-import { MdWork, MdSchool, MdLocationOn, MdLanguage } from "react-icons/md";
+import { MdWork, MdSchool, MdLocationOn, MdLanguage, MdEvent } from "react-icons/md";
 import "../styles/Profile.css";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { majors } from "./TourApplication.jsx"; // Adjust the import path as necessary
@@ -50,6 +51,7 @@ const Profile = () => {
       if (!response.ok) throw new Error("Failed to fetch profile");
 
       const data = await response.json();
+      console.log("Profile data:", data); // For debugging
       setProfile(data);
       setEditForm({
         email: data.email,
@@ -496,46 +498,91 @@ const Profile = () => {
         />
       )}
 
-      <div className="guide-info-section">
-        <h2>Guide Information</h2>
-        <div className="profile-grid">
-          <div className="info-card">
-            <div className="card-content">
-              <div className="card-icon">
-                <h3>Preferred Time and Hours</h3> <FaCalendarAlt /> <FaClock />
+      {(profile.role === "guide" || profile.role === "advisor") && (
+        <div className="guide-info-section">
+          <h2>Guide Information</h2>
+          <div className="profile-grid">
+            <div className="info-card">
+              <div className="card-content">
+                <div className="card-icon">
+                  <h3>Preferred Time and Hours</h3> <FaCalendarAlt /> <FaClock />
+                </div>
+                {profile.availability?.length ? (
+                  <ul>
+                    {profile.availability.map((day) => (
+                      <li key={day.day}>
+                        <strong>{day.day}</strong>
+                        <ul>
+                          {day.timeSlots.map((timeSlot) => (
+                            <li key={timeSlot}>{timeSlot}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Not set</p>
+                )}
               </div>
-              {profile.availability?.length ? ( // Check if availability is set
-                <ul>
-                  {profile.availability.map((day) => (
-                    <li key={day.day}>
-                      <strong>{day.day}</strong>
-                      <ul>
-                        {day.timeSlots.map((timeSlot) => (
-                          <li key={timeSlot}>{timeSlot}</li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Not set</p>
-              )}
             </div>
-          </div>
 
+            <div className="info-card">
+              <div className="card-icon">
+                <MdWork />
+              </div>
 
-
-          <div className="info-card">
-            <div className="card-icon">
-              <MdWork />
+              <div className="card-content">
+                <h3>Tours Completed</h3>
+                <p>{profile.completedEvents?.length || "0"}</p>
+              </div>
             </div>
-            <div className="card-content">
-              <h3>Tours Completed</h3>
-              <p>{profile.completedEvents.length || "0"}</p>
+
+            <div className="info-card completed-fairs">
+              <div className="card-icon">
+                <MdEvent />
+              </div>
+              <div className="card-content">
+                <h3>Completed Fairs</h3>
+                {profile.completedFairs?.length > 0 ? (
+                  <div className="fairs-list">
+                    {profile.completedFairs.map((fair, index) => (
+                      <div key={fair._id || index} className="fair-item">
+                        <h4>{fair.schoolName || 'Unnamed Fair'}</h4>
+                        <div className="fair-details">
+                          <span className="fair-date">
+                            <FaCalendarAlt />
+                            {new Date(fair.fairDate).toLocaleDateString()}
+                          </span>
+                          <span className="fair-time">
+                            <FaClock />
+                            {fair.fairTime}
+                          </span>
+                          <span className="fair-location">
+                            <MdLocationOn />
+                            {fair.city}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>No completed fairs yet</p>
+                )}
+              </div>
+            </div>
+
+            <div className="info-card">
+              <div className="card-icon">
+                <FaStar />
+              </div>
+              <div className="card-content">
+                <h3>Total Work Hours</h3>
+                <p>{profile.totalWorkHours || "0"}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

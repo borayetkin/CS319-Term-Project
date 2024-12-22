@@ -255,7 +255,12 @@ exports.loginUser = async (req, res) => {
 // Get the current user's profile
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id)
+      .populate('completedFairs')
+      .populate('assignedFairs')
+      .populate('completedEvents')
+      .populate('assignedEvents')
+      .populate('totalWorkHours');
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -291,6 +296,8 @@ exports.getAllGuides = async (req,res) => {
     const guides = await User.find({ role: "guide" }).select("-password")
                                                       .populate('assignedEvents')
                                                       .populate('completedEvents')
+                                                      .populate('completedFairs')
+                                                      .populate('assignedFairs')
                                                       .populate({
                                                         path: 'reviews',
                                                         populate: [
