@@ -5,6 +5,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GuideFinder from "../../components/GuideFinder";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
 import GeneralTable from "../../components/GeneralTable";
+import DetailsModal from "../../components/DetailsModal";
 
 const ManageGuides = () => {
   const [events, setEvents] = useState([]);
@@ -14,14 +15,17 @@ const ManageGuides = () => {
   const [selectedEventOrFair, setSelectedEventOrFair] = useState(null);
   const [tourType, setTourType] = useState("SchoolTour");
   const [showPastEvents, setShowPastEvents] = useState(false);
-
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-
+  const [selectedItem, setSelectedItem] = useState(null);
   useEffect(() => {
     fetchEvents();
   }, []);
-
+  const handleShowDetails = (item) => {
+    setSelectedItem(item);
+    setShowDetailsModal(true);
+  };
   const fetchEvents = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/events?accepted=true&advisor=true", {
@@ -180,9 +184,17 @@ const ManageGuides = () => {
           viewType="events"
           EventRowActions={EventRowActions}
           showExtraProperties={extraProperties}
+          onShowDetails={handleShowDetails}
         />
       )}
       {isLoading && <LoadingSpinner />}
+      {showDetailsModal && (
+              <DetailsModal
+                application={selectedItem}
+                onClose={() => setShowDetailsModal(false)}
+                context="events"
+              />
+            )}
     </div>
   );
 };
