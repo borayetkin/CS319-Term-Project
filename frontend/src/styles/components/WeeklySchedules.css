@@ -1,0 +1,525 @@
+/* WeeklySchedules.css */
+
+.weekly-schedule-container {
+  margin: 20px auto;
+  padding: 20px 20px 100px 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.weekly-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.weekly-controls button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.weekly-controls button:hover {
+  background-color: #0056b3;
+}
+
+.date-range {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+  margin: 20px 0;
+}
+
+.no-data {
+  text-align: center;
+  font-size: 18px;
+  color: #999;
+  margin: 20px 0;
+}
+
+/* Default event styles */
+li {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+}
+
+/* Event background colors based on status */
+.event-scheduled {
+  background-color: rgba(236, 236, 93, 0.514);
+}
+
+.event-accepted {
+  background-color: rgba(158, 231, 158, 0.541);
+}
+
+.event-completed-verified {
+  background-color: rgba(126, 33, 126, 0.336);
+}
+
+.legend-and-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.legend-color.event-scheduled {
+  background-color: rgb(236, 236, 93, 0.568);
+}
+
+.legend-color.event-accepted {
+  background-color: rgb(158, 231, 158, 0.582);
+}
+
+.legend-color.event-completed-verified {
+  background-color: rgb(126, 33, 126, 0.555);
+}
+
+.actions button {
+  background-color: #525151;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  width: 150px;
+}
+
+.actions button:hover {
+  background-color: #3f3d3d;
+}
+
+.actions .clear-schedules-button {
+  background-color: #dc3545;
+}
+
+.actions .clear-schedules-button:hover {
+  background-color: #c82333;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+
+.clear-schedules-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.clear-schedules-button:hover {
+  background-color: #c82333;
+}
+
+.refresh-button {
+  font-size: 24px;
+  color: #007bff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.refresh-button:hover {
+  color: #0056b3;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.popup {
+  position: absolute;
+  background-color: #f0efef;
+  border: 2px solid #cfcfcf;
+  border-radius: 8px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px); /* Start position for drop-down effect */
+  z-index: 11;
+  pointer-events: none;
+}
+
+.popup.visible {
+  opacity: 1;
+  transform: translateY(0); /* Drop down to the button */
+  pointer-events: auto;
+}
+
+.popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.popup ul li {
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: #cccaca 1px solid;
+  cursor: pointer;
+  color: black
+}
+
+.popup ul li:hover {
+  background-color: #cccaca;
+}
+
+/* Disable interactions and dim the background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  z-index: 12; /* High z-index to overlay everything */
+}
+
+.add-event-popup {
+  position: fixed; /* Absolute positioning for dynamic placement */
+  background-color: #ffffff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px; /* or whatever width you like */
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  z-index: 13; /* a bit higher to stack above overlay */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out; /* Optional fade-in animation */
+}
+
+/* Remove Event Button */
+.remove-event-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #ec4b5b; /* Red background */
+  color: white;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.remove-event-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+
+/* Prevent popup from appearing immediately */
+@keyframes fadeIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Close button styling */
+.close-popup {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-popup:hover {
+  background: #0056b3;
+}
+
+
+body.disable-scroll {
+  overflow: hidden; /* Prevent page scrolling */
+}
+
+.event-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+  border: 5px solid #000000;
+}
+
+
+
+/* Table Cells */
+/* Weekly Schedule Table */
+.weekly-schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #ffffff;
+  border: 2px solid #333; /* Darker border for the entire table */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.weekly-schedule-table th,
+.weekly-schedule-table td {
+  font-size: 0.9rem; /* Slightly smaller font size */
+  line-height: 1.2; /* Tighter line spacing */
+  vertical-align: middle; /* Ensures content is vertically aligned */
+  border: 2px solid #dad0d0; /* Darker border for rows and columns */
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.weekly-schedule-table th {
+  background-color: #f1f1f1;
+  color: #4a5568;
+  font-weight: bold;
+  border-bottom: 2px solid #333; /* Slightly thicker border for header */
+}
+
+.weekly-schedule-table td {
+  background-color: #ffffff;
+}
+
+.weekly-schedule-table td:first-child {
+  font-size: 1rem; /* Increase font size for better visibility */
+  font-weight: bold; /* Make it bold */
+  text-align: center; /* Center align the text */
+  background-color: #f4f6f5; /* Light background for differentiation */
+  color: #333; /* Dark text for contrast */
+  border-right: 2px solid #ccc; /* Highlight separation from schedule columns */
+  padding: 12px; /* Add padding for spacing */
+}
+
+
+/* Reduce Button Size */
+.event-button,
+.add-event-button {
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px;
+  border: none;
+  cursor: pointer;
+  color: #313131;
+  transition: all 0.3s ease;
+  margin: 0 0;
+}
+
+/* Add Event Button */
+.add-event-button {
+  background-color: #598fe6;
+  margin: 0 auto;
+  color: white;
+  font-weight: 500;
+  width: fit-content;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.add-event-button:hover {
+  background-color: #2563eb;
+}
+
+body {
+  font-size: 0.875rem; /* Small but readable */
+}
+
+.event-button:hover {
+  background-color: rgb(201, 199, 199);
+}
+
+.highlight {
+  background-color: #f0f8ff; /* Light blue */
+  font-weight: bold; /* Optional: emphasize text */
+  border: 2px solid #007bff; /* Optional: add border for clarity */
+}
+
+.event-button {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* Stack the name and priority vertically */
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 0 0;
+}
+
+.priority-label {
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: white;
+  display: inline-block;
+}
+
+.priority-high {
+  background-color: #ff00008e; /* Red for High priority */
+}
+
+.priority-medium {
+  background-color: #ffa6008a; /* Orange for Medium priority */
+}
+
+.priority-general {
+  background-color: #3295ff9a; /* Blue for General priority */
+}
+
+/* Weekly Controls */
+.weekly-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-range {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #222121;
+  background-color:#d1d1d1;
+
+  padding: 8px 16px;
+  margin-top: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.date-range-dates {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.confirmation-popup {
+  position: absolute;
+  z-index: 11;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  font-weight: bold;
+}
+
+.confirmation-popup p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.confirmation-popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 3px;
+}
+
+.confirmation-yes-button {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 50%
+}
+
+.confirmation-yes-button:hover {
+  background-color: #218838;
+}
+
+.confirmation-cancel-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 50%;
+}
+
+.confirmation-cancel-button:hover {
+  background-color: #c82333;
+}

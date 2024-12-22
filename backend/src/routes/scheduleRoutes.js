@@ -7,7 +7,8 @@ const { getWeeklySchedules,
         removeEvent, 
         getMatchingEventsForSlot, 
         getAllEventsAndMatchingSlots,
-        assignEventToSlot
+        assignEventToSlot,
+        clearSchedules,
       } = require("../applicationManagement/AppointmentManager");
 
 // Routes for schedule fetching
@@ -17,9 +18,10 @@ router.get("/rebuild", advisorAuth, getWeeklySchedules);
 // Routes for schedule editing
 // Remove Event from Schedule
 router.post("/remove-from-schedule", advisorAuth, removeEvent);
-router.get("/week-all", advisorAuth, getAllEventsAndMatchingSlots);
+router.post("/clear", advisorAuth, clearSchedules);
+//router.get("/week-all", advisorAuth, getAllEventsAndMatchingSlots);
 // Find Events Matching Slot
-router.put("/matching-slot", advisorAuth, getMatchingEventsForSlot);
+//router.put("/matching-slot", advisorAuth, getMatchingEventsForSlot);
 
 // Assign Event to Slot
 router.post("/assign-to-slot", advisorAuth, assignEventToSlot);

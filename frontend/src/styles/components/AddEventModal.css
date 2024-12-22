@@ -1,0 +1,64 @@
+.modal-overlay {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex; /* Flexbox centering */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.add-event-popup {
+    position: relative; /* Relative to .modal-overlay's flexbox */
+    background-color: white;
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+}
+
+  
+  
+  .add-event-popup.show {
+    opacity: 5; /* Fade in */
+    transform: scale(1); /* Grow to full size */
+  }
+  
+  
+  
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .add-event-popup h3 {
+    margin-top: 0;
+  }
+  
+  .add-event-popup ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .add-event-popup ul li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .add-event-popup button {
+    margin-top: 10px;
+  }
+  
