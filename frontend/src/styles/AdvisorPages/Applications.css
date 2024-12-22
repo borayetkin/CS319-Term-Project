@@ -327,3 +327,111 @@ td {
 .popup-cancel:hover {
   background-color: #dc2626;
 }
+
+/* New Features */
+
+.applications-page-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-schedule-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
+  width: 200%; /* Side-by-side layout */
+  transition: transform 0.5s ease-in-out, height 0.5s ease-in-out;
+  transform: translateX(0); /* Default: show Applications */
+  flex-direction: row; /* Keep children in a row */
+  align-items: flex-start; /* Allow children to have their own heights */
+}
+
+.content-wrapper.show-schedule {
+  transform: translateX(-50%);
+}
+
+.applications-view,
+.weekly-schedule-view {
+  width: 50%; /* Each view takes half of the wrapper */
+  flex-shrink: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.applications-view {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 1%
+}
+
+.weekly-schedule-view {
+  background-color: #e9ecef;
+  padding: 20px;
+  border-radius: 1%
+}
+
+
+/* Base Button Styling */
+.switch-button {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #4caf50; /* Fresh green color */
+  color: white;
+  border: none;
+  border-radius: 30px; /* Rounded for a modern look */
+  cursor: pointer;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  z-index: 10;
+  display: flex; /* Flex to align sliding indicator and text */
+  align-items: center;
+  justify-content: space-between;
+  transition: left 0.5s ease, right 0.5s ease, background-color 0.3s ease, transform 0.5s ease;
+  width: 250px; /* Consistent size */
+  text-align: center;
+  overflow: hidden; /* For sliding indicator */
+}
+
+/* Sliding Indicator */
+.sliding-indicator {
+  position: relative;
+  width: 40px; /* Adjust track size */
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.3); /* Subtle white track */
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 12px; /* Space between indicator and text */
+}
+
+.sliding-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%; /* Sliding bar covers half the track initially */
+  height: 100%;
+  background-color: white;
+  transform: translateX(0); /* Default position */
+  transition: transform 0.5s ease; /* Smooth slide animation */
+}
+
+/* Applications View: Bar Slides Right */
+.switch-button.applications-view .sliding-bar {
+  transform: translateX(0%); /* Stay at the start */
+}
+
+/* Weekly View: Bar Slides Left */
+.switch-button.weekly-view .sliding-bar {
+  transform: translateX(100%); /* Slide to the right */
+}
+
+/* Hover Effect */
+.switch-button:hover {
+  background-color: #45a049; /* Slightly darker green */
+  transform: scale(1.05); /* Slight zoom effect */
+}

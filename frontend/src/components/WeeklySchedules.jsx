@@ -567,7 +567,7 @@ const WeeklySchedules = ({ onAddEvent }) => {
                                   }
                                 }}
                               >
-                                <span>{event.schoolName || "Unknown School"} ({event.status})</span>
+                                <span>{event.schoolName || "Unknown School"}</span>
                                 <span
                                   className={`priority-label ${
                                     event.applicant?.priority === "High"
