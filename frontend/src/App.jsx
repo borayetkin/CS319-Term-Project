@@ -42,6 +42,7 @@ import ViewTraineesPage from "./pages/AdvisorPages/ViewTraineesPage";
 import ViewLogsPage from "./pages/CoordinatorPages/DashboardPages/ViewLogsPage";
 import CheckApplication from "./pages/CheckApplication";
 import EditApplication from "./pages/EditApplication";
+import ApplicantsPage from "./pages/CoordinatorPages/ApplicantsPage";
 
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="schoolPriority" element={<SchoolPriorityPage />} />
           <Route path="logs" element={<ViewLogsPage />} />
+          <Route path="applicants" element={<ApplicantsPage />} />
         </Route>
 
         {/* Events Route (Admin, Coordinator, Advisor) */}

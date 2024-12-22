@@ -49,10 +49,35 @@ exports.createApplicant = async (req, res) => {
   }
 };
 
-// Get all applicants
+// Get all applicants with pagination
 exports.getAllApplicants = async (req, res) => {
   try {
-    const applicants = await Applicant.find();
+    const { limit = 0, skip = 0 } = req.query;
+    const aggregateOptions = [
+      {
+        $lookup: {
+          from: 'events',
+          localField: 'events',
+          foreignField: '_id',
+          as: 'events'
+        }
+      },
+      {
+        $addFields: {
+          eventsCount: { $size: '$events' }
+        }
+      },
+      {
+        $sort: { eventsCount: -1 }
+      }
+    ];
+    if (parseInt(limit) > 0) {
+      aggregateOptions.push({ $limit: parseInt(limit) });
+    }
+    if (parseInt(skip) > 0) {
+      aggregateOptions.push({ $skip: parseInt(skip) });
+    }
+    const applicants = await Applicant.aggregate(aggregateOptions);
     res.status(200).send(applicants);
   } catch (error) {
     console.error(error);
@@ -79,14 +104,13 @@ exports.addEventToApplicant = async (req, res) => {
 };
 exports.getApplicantById = async (req, res) => {
   try {
-    const applicant = await Applicant.findById(req.params.id);
+    const applicant = await Applicant.findById(req.params.id).populate("events");
     if (!applicant) {
       return res.status(404).send("Applicant not found");
     }
     res.status(200).json(applicant);
   } catch (error) {
     console.error(error);
-
     res.status(500).send("Server error");
   }
 };

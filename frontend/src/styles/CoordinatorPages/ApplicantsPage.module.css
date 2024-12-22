@@ -1,0 +1,108 @@
+.applicantsPage { 
+    h1{
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.searchBar {
+  padding: 10px;
+  width: 60%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filterSelect {
+  padding: 10px;
+  width: 35%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.applicantsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.applicantCard {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: calc(33.333% - 20px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.applicantCard:hover {
+  transform: scale(1.05);
+}
+
+.applicantCard h3 {
+  margin-top: 0;
+}
+
+.applicantCard p {
+  margin: 5px 0;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.modalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  background-color: white;
+  border: 2px solid #000;
+  box-shadow: 24px;
+  padding: 2rem;
+  border-radius: 8px;
+  outline: none;
+}
+
+.closeButton {
+  position: absolute;
+  margin: 1rem;
+  top: -10px;
+  left: 0px;
+}
+
+.applicantDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eventsList {
+  list-style: none;
+  padding: 0;
+}
+
+.eventItem {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
+}
+
+.eventItem:hover {
+  background-color: #e0e0e0;
+}
