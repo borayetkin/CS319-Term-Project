@@ -19,6 +19,7 @@ const AssignedEventsActions = ({
   const [showWorkHoursPopup, setShowWorkHoursPopup] = useState(false);
 
   const handleWorkHours = (e) => {
+    console.log(e.target.value);
     const value = e.target.value;
     if (value < 0) {
       return;

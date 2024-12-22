@@ -801,8 +801,9 @@ exports.markEventAsCompleted = async (req, res) => {
   try {
     const { eventId } = req.params;
     const userId = req.user.id;
-    const workHours = req.body.workHours;
-
+    let workHours = req.body.workHours;
+    // Parse workHours to a number
+    workHours = parseFloat(workHours);
     // Fetch event by ID
     let event = await Event.findById(eventId).populate("assignedUsers");
     if (!event) {

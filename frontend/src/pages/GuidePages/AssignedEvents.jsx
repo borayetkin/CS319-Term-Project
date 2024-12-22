@@ -154,6 +154,9 @@ const AssignedEvents = () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
+        console.log("workHours", workHours);
+        const intWorkHours = parseInt(workHours);
+
         const response = await fetch(
           `http://localhost:3000/api/events/${eventId}/complete`,
           {
