@@ -10,6 +10,8 @@ const EditApplication = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [reason, setReason] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +26,6 @@ const EditApplication = () => {
           `http://localhost:3000/api/events/reference/${referenceCode}?city=${city}&district=${district}&schoolName=${schoolName}`
         );
         const data = await response.json();
-
         if (response.ok) {
           setEvent(data);
         } else {
@@ -40,7 +41,10 @@ const EditApplication = () => {
 
     fetchEventDetails();
   }, [referenceCode, location.search]);
-
+  let resubmissionLink = "";
+  if(event){
+    resubmissionLink = `http://localhost:5173/resubmit-form/${event._id}`;
+  }
   const handleCancelEvent = async () => {
     try {
       const response = await fetch(
@@ -67,6 +71,19 @@ const EditApplication = () => {
     }
   };
 
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const confirmCancelEvent = () => {
+    handleCancelEvent();
+    closeModal();
+  };
+
   if (loading) {
     return <LoadingSpinner loading="event details" />;
   }
@@ -87,19 +104,42 @@ const EditApplication = () => {
             <p><strong>Status:</strong> {event.status}</p>
           </div>
         )}
-        <div className={styles.cancelSection}>
-          <label htmlFor="reason" className={styles.label}>Reason for Cancellation:</label>
-          <textarea
-            id="reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className={styles.textarea}
-          ></textarea>
-          <button onClick={handleCancelEvent} className={styles.cancelButton}>
-            Cancel Event
-          </button>
-        </div>
+        {event && (event.status === "pending" || event.status === "scheduled") && (
+          <div className={styles.cancelSection}>
+            <div className={styles.buttonContainer}>
+              <a
+                href={resubmissionLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.resubmitLink}
+              >
+                Resubmit Date
+              </a>
+              <button onClick={openModal} className={styles.cancelButton}>
+                Cancel Event
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+      {showModal && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h2 className={styles.modalHeader}>Reason for Cancellation</h2>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className={styles.modalTextarea}
+            ></textarea>
+            <button onClick={confirmCancelEvent} className={styles.modalButton}>
+              Confirm
+            </button>
+            <button onClick={closeModal} className={styles.modalCancelButton}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

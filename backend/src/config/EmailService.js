@@ -601,7 +601,7 @@ const generateTourDetails = (tourData, email) => {
         .join("")}
       <p><strong>Phone Number:</strong> ${tourData.applicant.phoneNumber}</p>
       <p><strong>Additional Notes:</strong> ${additionalNotes || "N/A"}</p>
-      <p><stong> Reference Code </strong> ${tourData.referenceCode}</p>
+      <p><strong> Reference Code </strong> ${tourData.referenceCode}</p>
     `;
   } else if (__t === "IndividualTour") {
     return `
@@ -612,7 +612,7 @@ const generateTourDetails = (tourData, email) => {
       <p><strong>Visit Time:</strong> ${visitTime}</p>
       <p><strong>High School:</strong> ${city}, ${tourData.studentHighSchool}, ${district}</p>
       <p><strong>Major of Interest:</strong> ${tourData.majorOfInterest}</p>
-      <p><stong> Reference Code </strong> ${tourData.referenceCode}</p>
+      <p><strong> Reference Code </strong> ${tourData.referenceCode}</p>
       <p><strong>Additional Notes:</strong> ${additionalNotes || "N/A"}</p>
     `;
   } else {
