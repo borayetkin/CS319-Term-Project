@@ -52,15 +52,16 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
     if (!date) return "white";
     if (isDisabled(date)) return "disabled";
 
-    if (schoolPriority === "High") return "white";
+    
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     const dateStr = `${year}-${month}-${day}`;
     const key = `${dateStr}-${time}`;
     let count = applications[key] || 0;
-    if (schoolPriority === "Medium") count-=2;
-    if (count >= 3) return "disabled";
+    if (schoolPriority === "High") count-=3;
+    if (schoolPriority === "Medium") count-=1;
+    if (count >= 6) return "disabled";
     return count <= 0 ? "white" : count === 1 ? "yellow" : "red";
   };
   const isTimeSlotSelected = (time, date) => {
@@ -181,6 +182,7 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
     color: "black",
   };
   const isDisabled = (date) => {
+    // Three days from now
     if (date < today) {
       return true;
     }
@@ -228,12 +230,13 @@ const CustomDateTimePicker = ({ handleChange, reserveDatesImp,schoolPriority }) 
       }
       return acc;
     }, 0);
-    if( schoolPriority === "High") return;
+    if (totalTours > 20) return "disabled";
+    if( schoolPriority === "High") totalTours-=5;
     if (schoolPriority === "Medium") totalTours-=2;
 
-    if (totalTours > 7) return "disabled";
-    if (totalTours > 5) return "red";
-    if (totalTours > 3) return "yellow";
+
+    if (totalTours > 13) return "red";
+    if (totalTours > 8) return "yellow";
     return "";
   };
 

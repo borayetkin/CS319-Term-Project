@@ -467,7 +467,7 @@ exports.removeEventFromSchedule = async (eventId) => {
       await removeEventFromSlot(event, slot, schedule);
     }
 
-    if (event.status !== "rejected") {
+    if (event.status !== "rejected" && event.status !== "canceled-by-applicant" && event.status !== "completed-non-verified" && event.status !== "canceled-resubmission-requested") {
       event.status = "pending";
     }
     await event.save();
