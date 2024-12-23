@@ -13,7 +13,7 @@ const {
   sendGuideAssignmentEmail,
   sendNotificationEmail,
 } = require("../config/EmailService");
-const { removeEventFromSchedule } = require("../applicationManagement/AppointmentManager");
+const { removeEventFromSchedule, removeEvent } = require("../applicationManagement/AppointmentManager");
 const { createLog } = require("./LogController");
 const jwt = require("jsonwebtoken");
 
@@ -414,11 +414,11 @@ const acceptTourApplication = async (req, res) => {
 exports.updateEventTwo = async (req, res) => {
   const { eventId } = req.params;
   const updateData = req.body;
-
+  const userid = req.user.id;
   try {
     // Find the event by ID
     const event = await Event.findById(eventId);
-
+    const dateBeforeUpdate = event.visitDate;
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -471,7 +471,17 @@ exports.updateEventTwo = async (req, res) => {
 
     // Save the updated event
     const updatedEvent = await event.save();
-
+    const dateAfterUpdate = updatedEvent.visitDate;
+    if(dateBeforeUpdate !== dateAfterUpdate){
+      updatedEvent.cancellationTimes += 1;
+      updatedEvent.status = "canceled-resubmission-requested";
+      // remove event from advisor day applications
+      const advisor = await Advisor.findById(updatedEvent.assignedAdvisor);
+      advisor.dayApplications = advisor.dayApplications.filter((appId) => appId.toString() !== eventId);
+      updatedEvent.assignedAdvisor = null;
+      await advisor.save();
+      await updatedEvent.save();
+    }
     // Populate applicant
     await updatedEvent.populate("applicant");
     const applicant = updatedEvent.applicant;
@@ -965,8 +975,12 @@ exports.resubmitEventReserveDates = async (req, res) => {
       if (!Array.isArray(reserveDates) || reserveDates.length === 0) {
         return res.status(400).json({ message: "Please provide valid reserveDates for school tours." });
       }
-      event.reserveDates = reserveDates;
-      event.visitDate = reserveDates[0].date;
+      event.reserveDates = reserveDates
+      ? reserveDates.map((date) => {
+          return { visitDate: new Date(date.date).setHours(0,0,0,0,), visitTime: date.time };
+        })
+      : [];
+      event.visitDate = new Date(reserveDates[0].date).setHours(0,0,0,0);
       event.visitTime = reserveDates[0].time;
     } else if (event.__t === "IndividualTour") {
       console.log("in individual tour");
@@ -974,7 +988,7 @@ exports.resubmitEventReserveDates = async (req, res) => {
       if (!visitDate || !visitTime) {
         return res.status(400).json({ message: "Please provide a valid visitDate and visitTime for individual tours." });
       }
-      event.visitDate = visitDate;
+      event.visitDate = new Date(visitDate).setHours(0,0,0,0);
       event.visitTime = visitTime;
     } else {
       return res.status(400).json({ message: "Invalid tour type. Cannot process the request." });
@@ -1293,7 +1307,7 @@ exports.cancelEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-
+    await removeEventFromSchedule(eventId);
     event.status = "canceled-by-applicant";
     event.rejectionReason = reason;
     await event.save();
