@@ -331,8 +331,8 @@ async function cancelEvents(events) {
     event.populate('applicant');
     const resubmissionLink = `http://localhost:5173/resubmit-form/${event._id}`;
     try {
+      // Turned off because of google email sending limits
       //sendCancelationEmail(event.applicant.email, event.schoolName, resubmissionLink);
-      // google service is broken
     }
     catch {
       console.error("Could not sent canceling email");
@@ -407,7 +407,7 @@ async function removeEventFromSlot(event, slot, weeklySchedule) {
 }
 
 async function resetEvents() {
-  scheduledEvents = await SchoolTour.find( {status: "scheduled"} ); // Maybe I can add canceled events to this as well
+  scheduledEvents = await SchoolTour.find( {status: {$in: ["scheduled", "canceled-resubmission-requested"]}} );
   for (const event of scheduledEvents) {
     event.status = "pending";
     await event.save();
