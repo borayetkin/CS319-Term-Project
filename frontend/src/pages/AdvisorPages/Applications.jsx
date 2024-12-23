@@ -9,6 +9,7 @@ import { FaSearch } from "react-icons/fa";
 import DetailsModal from "../../components/DetailsModal";
 import WeeklySchedules from "../../components/WeeklySchedules";
 import AddEventModal from "../../components/AddEventModal";
+import ReactDOM from "react-dom";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -40,6 +41,8 @@ const Applications = () => {
   const applicationsRef = useRef(null);
   const scheduleRef = useRef(null);
   const [weekBeginning, setWeekBeginning] = useState(null);
+  const [rejectionNote, setRejectionNote] = useState(""); // State for rejection note
+
 
 
   const adjustHeights = () => {
@@ -197,6 +200,26 @@ const Applications = () => {
   const handleConfirmation = async () => {
     try {
       if (actionDetails.type === 'reject') {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:3000/api/events/reject", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            eventId: actionDetails.eventId,
+            rejectionNote: note, // Include the rejection note
+          }),
+        });
+  
+        if (response.ok) {
+          setMessage("Application rejected successfully.");
+        } else {
+          const errorData = await response.json();
+          setMessage(`Failed to reject application: ${errorData.message}`);
+        }
+
         await handleAction(actionDetails.eventId, actionDetails.event, 'rejected');
       } else if (actionDetails.type === 'delete') {
         await handleDelete(actionDetails.eventId);
@@ -303,6 +326,46 @@ const Applications = () => {
     });
   };
 
+  const renderConfirmationPopup = () => {
+    if (!showActionConfirmation) return null;
+  
+    return ReactDOM.createPortal(
+      <div className="confirmation-popup-overlay">
+        <div className="confirmation-popup">
+          <h3>Are you sure you want to {actionDetails.type} this application?</h3>
+          {actionDetails.type === "reject" && (
+            <div className="rejection-note-container">
+              <label htmlFor="rejection-note">Rejection Note:</label>
+              <textarea
+                id="rejection-note"
+                value={rejectionNote}
+                onChange={(e) => setRejectionNote(e.target.value)}
+                placeholder="Write your rejection note here..."
+              />
+            </div>
+          )}
+          <div className="popup-actions">
+            <button
+              className="popup-confirm"
+              onClick={() => handleConfirmation(rejectionNote)}
+            >
+              Yes
+            </button>
+            <button
+              className="popup-cancel"
+              onClick={() => setShowActionConfirmation(false)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+  
+
+
 
 
   const handleShowDetails = (application) => {
@@ -357,42 +420,7 @@ const Applications = () => {
               {message}
             </div>
           )}
-          {showConfirmationPopup && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to {actionType} this application?</h3>
-            <div className="popup-actions">
-              <button className="popup-confirm" onClick={handleConfirmation}>
-                Yes
-              </button>
-              <button
-                className="popup-cancel"
-                onClick={() => setShowConfirmationPopup(false)}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showActionConfirmation && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to {actionDetails.type} this application?</h3>
-            <div className="popup-actions">
-              <button className="popup-confirm" onClick={handleConfirmation}>
-                Yes
-              </button>
-              <button
-                className="popup-cancel"
-                onClick={() => setShowActionConfirmation(false)}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          {renderConfirmationPopup()}
           <div className="controls-container">
             <div className="controls-left">
               <TypeSelectionTrio
