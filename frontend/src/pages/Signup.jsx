@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Signup.css";
+import { majors } from "./TourApplication.jsx"; // Adjust the import path as necessary
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    phoneNumber: "",
+    major: "",
+    year: "",
     role: "guide", // Default role
-    assignedDay: "",
   });
 
   const [error, setError] = useState(null);
@@ -114,42 +117,53 @@ const Signup = () => {
               required
             />
 
-            <label htmlFor="role">Role:</label>
+            <label htmlFor="phoneNumber">Phone Number:</label>
+            <input
+              type="text"
+              id="phoneNumber"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="signup-input"
+              required
+            />
+
+            <label htmlFor="major">Major:</label>
             <select
-              id="role"
-              name="role"
-              value={formData.role}
+              id="major"
+              name="major"
+              value={formData.major}
               onChange={handleChange}
               className="signup-input"
               required
             >
-              <option value="guide">Guide</option>
-              <option value="coordinator">Coordinator</option>
-              <option value="advisor">Advisor</option>
+              <option value="">Select a major</option>
+              {majors.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((major) => (
+                    <option key={major} value={major}>
+                      {major}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
 
-            {formData.role === "advisor" && (
-              <div className="form-group">
-                <label htmlFor="assignedDay">Assigned Day:</label>
-                <select
-                  id="assignedDay"
-                  name="assignedDay"
-                  value={formData.assignedDay}
-                  onChange={handleChange}
-                  className="signup-input"
-                  required
-                >
-                  <option value="">Select a day</option>
-                  <option value="Monday">Monday</option>
-                  <option value="Tuesday">Tuesday</option>
-                  <option value="Wednesday">Wednesday</option>
-                  <option value="Thursday">Thursday</option>
-                  <option value="Friday">Friday</option>
-                  <option value="Saturday">Saturday</option>
-                  <option value="Sunday">Sunday</option>
-                </select>
-              </div>
-            )}
+            <label htmlFor="year">Year:</label>
+            <select
+              id="year"
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              className="signup-input"
+              required
+            >
+              <option value="">Select a year</option>
+              <option value="1">1st year</option>
+              <option value="2">2nd year</option>
+              <option value="3">3rd year</option>
+              <option value="4">4th year</option>
+            </select>
 
             <button type="submit" className="signup-button">Sign Up</button>
           </form>

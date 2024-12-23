@@ -14,7 +14,7 @@ const AddUser = () => {
     role: "guide", // default role
     assignedDay: "", // for advisors
   });
-  const [sendMail, setSendMail] = useState(false);
+  const [sendMail, setSendMail] = useState(true);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const generateRandomPassword = () => {
@@ -26,7 +26,7 @@ const AddUser = () => {
     }
     
     
-    return "1234";
+    return password;
   };
   const handleChange = (e) => {
     setError("");
@@ -202,16 +202,7 @@ const AddUser = () => {
             </select>
           </div>
         )}
-        <div className="form-group">
-          <label htmlFor="sendMail">Send Email?</label>
-          <input
-            type="checkbox"
-            id="sendMail"
-            name="sendMail"
-            value={sendMail}
-            onChange={() => setSendMail(!sendMail)}
-          />
-        </div>
+
         <button type="submit">Add User</button>
       </form>
     </div>
