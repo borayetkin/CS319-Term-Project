@@ -407,7 +407,7 @@ async function removeEventFromSlot(event, slot, weeklySchedule) {
 }
 
 async function resetEvents() {
-  scheduledEvents = await SchoolTour.find( {status: {$in: ["scheduled", "canceled-resubmission-requested"]}} );
+  const scheduledEvents = await SchoolTour.find( {status: {$in: ["scheduled", "canceled-resubmission-requested"]}} );
   for (const event of scheduledEvents) {
     event.status = "pending";
     await event.save();
