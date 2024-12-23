@@ -500,7 +500,7 @@ const Profile = () => {
 
       {(profile.role === "guide" || profile.role === "advisor") && (
         <div className="guide-info-section">
-          <h2>Guide Information</h2>
+          <h2>{profile.role === "advisor" ? "Advisor Information" : "Guide Information"}</h2>
           <div className="profile-grid">
             <div className="info-card">
               <div className="card-content">
