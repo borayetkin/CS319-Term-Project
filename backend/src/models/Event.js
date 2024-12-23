@@ -79,7 +79,7 @@ const eventSchema = new mongoose.Schema({
     default: 0
   },
 
-  rejectionReason: {
+  rejectionNote: {
     type: String,
     required: false
   },

@@ -1318,3 +1318,25 @@ exports.cancelEvent = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.setRejectionNote = async (req, res) => {
+  try {
+    const { eventId, rejectionNote } = req.body;
+
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    console.log(event.schoolName, rejectionNote);
+
+    event.rejectionNote = rejectionNote;
+    await event.save();
+
+    res.status(200).json({ message: "Rejection note set successfully" });
+  } catch (error) {
+    console.error("Error setting rejection note:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

@@ -201,7 +201,7 @@ const Applications = () => {
     try {
       if (actionDetails.type === 'reject') {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/api/events/reject", {
+        const response = await fetch("http://localhost:3000/api/events/rejection-note", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -209,7 +209,7 @@ const Applications = () => {
           },
           body: JSON.stringify({
             eventId: actionDetails.eventId,
-            rejectionNote: note, // Include the rejection note
+            rejectionNote: rejectionNote, // Include the rejection note
           }),
         });
   
@@ -228,6 +228,7 @@ const Applications = () => {
       setMessage("Error: " + error.message);
     } finally {
       setShowActionConfirmation(false);
+      setRejectionNote("");
     }
   };
 
@@ -347,7 +348,7 @@ const Applications = () => {
           <div className="popup-actions">
             <button
               className="popup-confirm"
-              onClick={() => handleConfirmation(rejectionNote)}
+              onClick={handleConfirmation}
             >
               Yes
             </button>
