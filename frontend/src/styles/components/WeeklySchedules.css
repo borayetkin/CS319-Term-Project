@@ -2,7 +2,7 @@
 
 .weekly-schedule-container {
   margin: 20px auto;
-  padding: 20px 20px 100px 20px;
+  padding: 20px 20px 120px 20px;
   border: 2px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -191,7 +191,7 @@ li {
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 0;
   transform: translateY(-10px); /* Start position for drop-down effect */
-  z-index: 11;
+  z-index: 12;
   pointer-events: none;
 }
 
@@ -209,7 +209,7 @@ li {
 
 .popup ul li {
   font-size: 14px;
-  padding: 8px 10px;
+  padding: 8px 4px;
   border-radius: 6px;
   border: #cccaca 1px solid;
   cursor: pointer;

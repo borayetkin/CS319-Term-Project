@@ -537,10 +537,8 @@ exports.loadWeeklySchedules = async (req, res) => {
     const schedules = [];
     for (const date of weeklyDates) {
       let weeklySchedule = await WeeklySchedule.findOne({ weekBeginning: date });
-      await assignAvailableEventsToSlots(weeklySchedule);
-
-
-      if (!weeklySchedule) {
+      if (weeklySchedule) {await assignAvailableEventsToSlots(weeklySchedule);}
+      else {
         weeklySchedule = await assignEventsToSlots(date);
       }
 
