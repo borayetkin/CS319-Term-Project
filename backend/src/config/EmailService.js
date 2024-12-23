@@ -213,7 +213,7 @@ const sendAcceptedEmail = async (email, name, tourData) => {
 
 const sendRejectionEmail = async (email, name, tourData) => {
   try {
-    const rejectionReason = tourData.rejectionReason;
+    const rejectionReason = tourData.rejectionNote;
     const subject = "Your Tour Application Has Been Rejected";
 
     const htmlContent = `

@@ -33,8 +33,10 @@ const {
   getEventByReferenceCode,
   generateApplicantSessionToken,
   cancelEvent,
+  setRejectionNote,
 } = require("../controllers/EventController");
 const adminAuth = require("../middleware/adminMiddleware");
+const { set } = require("mongoose");
 
 // Route for resubmission of an application
 router.post("/resubmit-form/:eventId", resubmitEventReserveDates);
@@ -91,4 +93,6 @@ router.post("/apply", auth, applyToEvent);
 
 router.post("/unapply", auth, unapplyFromEvent);
 router.post("/notify-guide", auth, sendNotificationAboutEventToGuide);
+
+router.post("/rejection-note", advisorAuth, setRejectionNote);
 module.exports = router;
