@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/Event.css";
-import "../styles/TourApplication.css";
+import styles from "./EditDetails.module.css"; // Import the CSS module
+
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Event = () => {
@@ -90,42 +90,38 @@ const Event = () => {
   return (
     <>
       {isLoading && <LoadingSpinner loading="Event" />}
-      {error && <div>{error}</div>}
+      {error && <div className={styles.error}>{error}</div>}
       {!isLoading && event && (
-        <div className="event-container">
-          <div className="event-info">
+        <div className={styles.eventContainer}>
+          <div className={styles.eventInfo}>
             {isEditing ? (
               <>
-                <label htmlFor="visitDate:" style={{ marginRight: "8px", fontWeight: "bold" }}>Visit date:</label>
+                <label htmlFor="visitDate:" className={styles.label}>Visit date:</label>
                 <input
                   type="date"
                   name="visitDate"
                   value={formatDateForInput(editedEvent.visitDate || "")}
                   onChange={handleInputChange}
                   placeholder="enter the new date"
+                  className={styles.input}
                 />
                 {event.__t === "SchoolTour" && (
                   <>
-                  <label htmlFor="student count" style={{ marginRight: "8px", fontWeight: "bold" }}>Student Number:</label>
+                  <label htmlFor="student count" className={styles.label}>Student Number:</label>
                   <input
                     type="number"
                     name="studentCount"
                     value={editedEvent.studentCount || ""}
                     onChange={handleInputChange}
                     placeholder="enter the student number"
+                    className={styles.input}
                   />
-                   <label htmlFor="reservedRooms" style={{ marginRight: "8px", fontWeight: "bold" }}>Reserved Room:</label>
+                   <label htmlFor="reservedRooms" className={styles.label}>Reserved Room:</label>
                    <select
                      name="reservedRooms"
                      value={editedEvent.reservedRooms || ""}
                      onChange={handleInputChange}
-                     style={{
-                         padding: "8px",
-                         borderRadius: "4px",
-                         border: "1px solid #ccc",
-                         boxSizing: "border-box",
-                         fontSize: "inherit",
-                       }}
+                     className={styles.select}
                    >
                      <option value="" disabled>Select a room</option>
                        {roomOptions.map((room) => (
@@ -135,15 +131,16 @@ const Event = () => {
                   </>
                 )}
                 <>
-                <label htmlFor="guide number" style={{ marginRight: "8px", fontWeight: "bold" }}>Guide Number:</label>
+                <label htmlFor="guide number" className={styles.label}>Guide Number:</label>
                 <input
                   name="requiredNumberOfGuides"
                   type="number"
                   value={editedEvent.requiredNumberOfGuides || ""}
                   onChange={handleInputChange}
                   placeholder="enter the required guide number"
+                  className={styles.input}
                 ></input>
-                <label htmlFor="advisor notes" style={{ marginRight: "8px", fontWeight: "bold" }}>Advisor Notes:</label>
+                <label htmlFor="advisor notes" className={styles.label}>Advisor Notes:</label>
                 <textarea
                   name="advisorNotes"
                   value={editedEvent.advisorNotes || ""}
@@ -153,22 +150,14 @@ const Event = () => {
                     })
                   }
                   placeholder="Write your advisor notes here..."
-                  style={{
-                    border: "1px solid #ccc",
-                    padding: "10px",
-                    minHeight: "50px",
-                    borderRadius: "5px",
-                    marginBottom: "10px",
-                    width: "100%",
-                    boxSizing: "border-box",
-                    resize: "none", // Prevent resizing if you want a fixed height
-                    fontFamily: "inherit", // Matches the parent font
-                    fontSize: "inherit",
-                    textAlign: "left",
-                    direction: "ltr", // Ensures left-to-right text
-                  }}
+                  className={styles.textarea}
                 />
-                <button onClick={handleSaveChanges}>Save Changes</button>
+                <div className={styles.buttonContainer}>
+                  <button onClick={handleSaveChanges} className={styles.saveButton}>Save Changes</button>
+                  <button className={styles.returnButton} onClick={() => navigate("/manage-guides")}>
+                    Return to Manage Guides
+                  </button>
+                </div>
                 </>
               </>
             ) : (
@@ -191,13 +180,15 @@ const Event = () => {
                   <p>Number of Guides: {event.requiredNumberOfGuides || "N/A"}</p>
                   <p>Additional Notes: {event.additionalNotes || "N/A"}</p>
                   <p>Advisor Notes: {event.advisorNotes || "N/A"}</p>
-                  <button onClick={() => setIsEditing(true)}>Edit</button>
+                  <div className={styles.buttonContainer}>
+                    <button onClick={() => setIsEditing(true)} className={styles.editButton}>Edit</button>
+                    <button className={styles.returnButton} onClick={() => navigate("/manage-guides")}>
+                      Return to Manage Guides
+                    </button>
+                  </div>
               </>
             )}
           </div>
-          <button className="return-button" onClick={() => navigate("/manage-guides")}>
-            Return to Manage Guides
-          </button>
         </div>
       )}
     </>

@@ -1,0 +1,95 @@
+.eventContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.eventInfo {
+  margin-bottom: 20px;
+}
+
+.label {
+  margin-right: 8px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input, .select, .textarea {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.textarea {
+  min-height: 100px;
+  resize: none;
+}
+
+.saveButton, .editButton, .returnButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #45a049;
+}
+
+.editButton {
+  background-color: #2196F3;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #1e87e5;
+}
+
+.returnButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.returnButton:hover {
+  background-color: #e53935;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+button {
+  margin-top: 10px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
