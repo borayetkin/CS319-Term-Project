@@ -212,7 +212,7 @@ const Applications = () => {
             rejectionNote: rejectionNote, // Include the rejection note
           }),
         });
-  
+        // letsgo
         if (response.ok) {
           setMessage("Application rejected successfully.");
         } else {

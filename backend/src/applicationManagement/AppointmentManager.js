@@ -510,7 +510,7 @@ exports.getWeeklySchedules = async (req, res) => {
 
       schedules.push(newSchedule);
     }
-
+//avch
     return res.status(200).json(schedules);
   } catch (error) {
     console.error("Error fetching weekly schedules:", error);
