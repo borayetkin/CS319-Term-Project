@@ -5,7 +5,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import GeneralTable from "../../components/GeneralTable";
 import ApplicationsRowActions from "../../components/ApplicationsRowActions";
 import TypeSelectionTrio from "../../components/TypeSelectionTrio";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import DetailsModal from "../../components/DetailsModal";
 import WeeklySchedules from "../../components/WeeklySchedules";
 import AddEventModal from "../../components/AddEventModal";
@@ -408,19 +408,24 @@ const Applications = () => {
         </div>
         {showWeeklySchedule ? "Applications" : "Weekly Schedule"}
       </button>
-
+      {message && (
+        <div
+          className={`message-popup ${
+            message.includes("Error") || message.includes("Failed") ? "error" : "success"
+          }`}
+        >
+          {message.includes("Error") || message.includes("Failed") ? (
+            <FaExclamationCircle className="icon" />
+          ) : (
+            <FaCheckCircle className="icon" />
+          )}
+          {message}
+        </div>
+      )}
       <div className={`content-wrapper ${showWeeklySchedule ? "show-schedule" : ""}`} ref={wrapperRef}>
         <div className="applications-view" ref={applicationsRef}>
           <h1>APPLICATIONS</h1>
-          {message && (
-            <div
-              className={`message-popup ${
-                message.includes("Error") || message.includes("Failed") ? "error" : "success"
-              }`}
-            >
-              {message}
-            </div>
-          )}
+
           {renderConfirmationPopup()}
           <div className="controls-container">
             <div className="controls-left">
