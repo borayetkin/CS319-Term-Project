@@ -347,6 +347,10 @@ const DetailsModal = ({ application, onClose, context, user }) => {
                             <span>Department:</span>{" "}
                             {application.assignedAdvisor?.department || "N/A"}
                           </p>
+                          <p>
+                            <span>advisor Notes:</span>{" "}
+                            {application.advisorNotes || "N/A"}
+                          </p>
                         </div>
                       </div>
                     </div>
