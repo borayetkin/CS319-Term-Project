@@ -10,6 +10,7 @@ const DetailsModal = ({ application, onClose, context, user }) => {
   const token = localStorage.getItem("token");
 
   const isFair = application.hasOwnProperty("fairDate");
+  const isSchoolTour = application.hasOwnProperty("contactPersonRole");
   const isApplicationContext = context === "applications";
 
   const checkIfGuideHasBeenAssigned = (guide) => {
@@ -89,13 +90,14 @@ const DetailsModal = ({ application, onClose, context, user }) => {
               ? "Application Details"
               : "Event Details"}
           </h2>
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={onClose} >
             <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
               <path
                 d="M1 1L13 13M1 13L13 1"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
+                
               />
             </svg>
           </button>
@@ -114,7 +116,12 @@ const DetailsModal = ({ application, onClose, context, user }) => {
                       : application.applicant?.name || "N/A"}
                   </p>
                 </div>
-
+                {isSchoolTour && (
+                  <div className="detail-item">
+                    <label>Contact Person Role</label>
+                    <p>{application.contactPersonRole || "N/A"}</p>
+                  </div>
+                )}
                 {!isFair && application.applicant?.priority && (
                   <div className="detail-item">
                     <label>Priority</label>

@@ -99,6 +99,7 @@ const TourApplication = () => {
   const [formData, setFormData] = useState({
     tourType: "",
     contactPerson: "",
+    contactPersonRole: "", // Add contactPersonRole to formData
     email: "",
     visitDate: "",
     visitTime: "",
@@ -477,6 +478,7 @@ const TourApplication = () => {
             ...tourData,
             visitDate: dateTime,
             typeStr: "School Tour",
+            contactPersonRole: formData.contactPersonRole, // Include contactPersonRole
           }
         : {
             visitDate: dateTime,
@@ -652,6 +654,15 @@ const TourApplication = () => {
                   id="contactPerson"
                   name="contactPerson"
                   value={formData.contactPerson}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor="contactPersonRole">Contact Person Role:</label>
+                <input
+                  type="text"
+                  id="contactPersonRole"
+                  name="contactPersonRole"
+                  value={formData.contactPersonRole}
                   onChange={handleChange}
                   required
                 />
@@ -865,6 +876,10 @@ const TourApplication = () => {
               </p>
               <p>
                 <strong>Contact Person:</strong> {formData.contactPerson}
+              </p>
+              <p>
+                <strong>Contact Person Role:</strong>{" "}
+                {formData.contactPersonRole}
               </p>
               <p>
                 <strong>Email:</strong> {formData.email}

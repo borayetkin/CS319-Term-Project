@@ -102,6 +102,7 @@ exports.createSchoolTour = async (req, res) => {
       applicant,
       schoolName,
       contactPerson,
+      contactPersonRole, // Add contactPersonRole
       email,
       visitDate,
       visitTime,
@@ -117,6 +118,7 @@ exports.createSchoolTour = async (req, res) => {
       !applicant ||
       !schoolName ||
       !contactPerson ||
+      !contactPersonRole || // Validate contactPersonRole
       !email ||
       !visitDate ||
       !visitTime ||
@@ -130,6 +132,7 @@ exports.createSchoolTour = async (req, res) => {
       applicant,
       schoolName,
       contactPerson,
+      contactPersonRole, // Include contactPersonRole
       email,
       visitDate: new Date(visitDate),
       visitTime,
