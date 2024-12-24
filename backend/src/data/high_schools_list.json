@@ -4260,7 +4260,7 @@
     "District": "ÇANKAYA",
     "SchoolName": "Ankara Atatürk Lisesi",
     "id": 609,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "ANKARA",
@@ -25701,7 +25701,7 @@
     "District": "BEŞİKTAŞ",
     "SchoolName": "Beşiktaş Kabataş Erkek Lisesi",
     "id": 3672,
-    "Priority": "General"
+    "Priority": "High"
   },
   {
     "City": "İSTANBUL",
